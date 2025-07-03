@@ -5,7 +5,7 @@
 
 📁 INFORMACIÓN DEL MODELO:
 • Directorio: outputs/models\20250703_122801
-• Fecha: 2025-07-03 14:32:24
+• Fecha: 2025-07-03 15:03:24
 
 🏗️  ARQUITECTURA:
 • Tipo: MLP con mecanismo de atención

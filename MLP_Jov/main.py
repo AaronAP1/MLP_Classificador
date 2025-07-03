@@ -2,6 +2,7 @@ import json, os
 from utils.etl       import preprocess_and_load
 from models.model_jovenes import JovenesMLP
 from models.trainer  import train_and_evaluate
+from utils.plot_training_metrics import plot_training_metrics
 import joblib
 import datetime
 
@@ -46,10 +47,19 @@ def main():
                        hidden_dims=mcfg["hidden_dims"],
                        attn_dim=mcfg["attn_dim"],
                        num_classes=n_cls,
-                       dropout_p=mcfg.get("dropout_p",0.0))
+                       dropout_p=mcfg.get("dropout_p", 0.0))
 
     # 5) Entrenar y evaluar
-    train_and_evaluate(model, dl_tr, dl_va, dl_te, cfg, class_names)
+    test_metrics = train_and_evaluate(model, dl_tr, dl_va, dl_te, cfg, class_names)
+    
+    # 6) Visualizar métricas de entrenamiento
+    metrics_csv = os.path.join(cfg["outputs"]["model_dir"], "metrics_by_epoch.csv")
+    if os.path.exists(metrics_csv):
+        plot_training_metrics(metrics_csv, cfg["outputs"]["plots_dir"])
+    
+    print(f"\n🎯 Entrenamiento completado exitosamente!")
+    print(f"📊 Resultados guardados en: {cfg['outputs']['model_dir']}")
+    print(f"📈 Gráficos guardados en: {cfg['outputs']['plots_dir']}")
 
 if __name__ == "__main__":
     main()

@@ -13,18 +13,26 @@ class JovenesMLP(nn.Module):
                  num_classes: int = 3,
                  dropout_p=0.2):        
         super().__init__()
-        # 1) Bloque MLP
+        # 1) Bloque MLP con inicialización Xavier
         layers = []
         prev = input_dim
         for h in hidden_dims:
-            layers += [nn.Linear(prev, h), nn.ReLU(), nn.Dropout(p=dropout_p)]
+            linear = nn.Linear(prev, h)
+            # Inicialización Xavier para mejor convergencia
+            nn.init.xavier_uniform_(linear.weight)
+            nn.init.zeros_(linear.bias)
+            layers += [linear, nn.ReLU(), nn.Dropout(p=dropout_p)]
             prev = h
         self.mlp = nn.Sequential(*layers)
+        
         # 2) Atención
         self.attn = FeatureAttention(feature_dim=hidden_dims[-1],
                                      attn_dim=attn_dim)
-        # 3) Salida
+        
+        # 3) Salida con inicialización cuidadosa
         self.classifier = nn.Linear(hidden_dims[-1], num_classes)
+        nn.init.xavier_uniform_(self.classifier.weight)
+        nn.init.zeros_(self.classifier.bias)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         h = self.mlp(x)            # → (B, hidden_dims[-1])

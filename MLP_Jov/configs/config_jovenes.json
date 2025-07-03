@@ -1,0 +1,26 @@
+{
+  "data": {
+    "raw_csv": "data/raw/jovenes_data1k.csv",
+    "test_size": 0.2,
+    "val_size": 0.1,
+    "random_state": 42
+  },
+  "etl": {
+    "cat_cols": ["P505","P506","P507","P508","P509"],
+    "num_cols": ["edad_total"],
+    "target_col": "habito_3clases",
+    "dropout_p":0.2
+    
+  },
+  "model": {
+    "hidden_dims": [128, 64, 32],
+    "attn_dim": 16,
+    "batch_size": 64,
+    "lr": 0.001,
+    "epochs": 50
+  },
+  "outputs": {
+    "model_dir": "outputs/models",
+    "plots_dir": "outputs/plots"
+  }
+}

@@ -1,0 +1,6 @@
+METRICAS TEST
+Accuracy: 1.0000
+Precision (weighted): 1.0000
+Recall (weighted): 1.0000
+F1 (weighted): 1.0000
+ROC AUC (weighted): 1.0000

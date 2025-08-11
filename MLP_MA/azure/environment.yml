@@ -1,0 +1,8 @@
+name: mlp-ma-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - -r ../requirements.txt

@@ -1,0 +1,47 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Train MLP_MA Adultos",
+			"type": "shell",
+			"command": "C:/Users/xdxdxdxd/AppData/Local/Programs/Python/Python312/python.exe",
+			"args": [
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\main.py",
+				"--config",
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\configs\\config_adultos.json",
+				"--paths",
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\configs\\paths_adultos.json"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "Train MLP_MA Jovenes",
+			"type": "shell",
+			"command": "C:/Users/xdxdxdxd/AppData/Local/Programs/Python/Python312/python.exe",
+			"args": [
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\main.py",
+				"--config",
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\configs\\config_jovenes.json",
+				"--paths",
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\configs\\paths_jovenes.json"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "Train MLP_MA Ninos",
+			"type": "shell",
+			"command": "C:/Users/xdxdxdxd/AppData/Local/Programs/Python/Python312/python.exe",
+			"args": [
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\main.py",
+				"--config",
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\configs\\config_ninos.json",
+				"--paths",
+				"c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\MLP_MA\\configs\\paths_ninos.json"
+			],
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}

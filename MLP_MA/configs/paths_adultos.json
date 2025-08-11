@@ -1,0 +1,6 @@
+{
+  "raw_data_dir": "MLP_Adul_s/data/raw",
+  "processed_data_dir": "MLP_Adul_s/data/processed",
+  "model_dir": "outputs/models",
+  "plots_dir": "outputs/plots"
+}

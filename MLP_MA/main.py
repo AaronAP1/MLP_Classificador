@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description="Entrenar MLP con Atención (MLP_MA)")
     parser.add_argument("--config", default="configs/config_ma.json", help="Ruta al archivo de configuración")
     parser.add_argument("--paths", default=None, help="Ruta al archivo de paths (opcional)")
+    parser.add_argument("--max_epochs", type=int, default=None, help="Sobrescribir épocas para corrida rápida")
     args = parser.parse_args()
 
     cfg = load_json(args.config)
@@ -22,6 +23,9 @@ def main():
     paths = load_json(paths_path)
 
     set_global_seeds(cfg["data"]["random_state"]) 
+
+    if args.max_epochs is not None:
+        cfg["model"]["epochs"] = int(args.max_epochs)
 
     run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     model_run = os.path.join(cfg["outputs"]["model_dir"], run_id)

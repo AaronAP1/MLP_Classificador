@@ -42,6 +42,15 @@
 			],
 			"isBackground": true,
 			"group": "build"
+		},
+		{
+			"label": "Install TabNet dependency",
+			"type": "shell",
+			"command": "C:/Users/xdxdxdxd/AppData/Local/Programs/Python/Python312/python.exe -m pip install -r c:\\Users\\xdxdxdxd\\Desktop\\MLP_Py_In01\\TabNet\\requirements.txt",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
 		}
 	]
 }

@@ -7,7 +7,7 @@
   },
   "etl": {
     "cat_cols": ["P505","P506","P507","P508","P509","P201","P203","P206","P207","P208","P311","P315_1","P315_2","P315_3","P315_4","P315_5","P315_6"],
-    "num_cols": ["FACTORFINAL_HOGAR","P210_A","P210_M","P310_N","P310_A","P409","P517","lectura_score"],
+    "num_cols": ["FACTORFINAL_HOGAR","P210_A","P210_M","P310_N","P310_A","P409","lectura_score"],
     "target_col": "habito_lectura_completo"
   },
   "model": {

@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
+# import seaborn as sns  # Comentado para evitar dependencia
 import os
 
 def plot_training_metrics(metrics_csv_path, save_dir=None):
@@ -11,7 +11,7 @@ def plot_training_metrics(metrics_csv_path, save_dir=None):
     df = pd.read_csv(metrics_csv_path)
     
     # Configurar estilo
-    plt.style.use('seaborn-v0_8')
+    plt.style.use('default')  # Cambio de seaborn a default
     fig, axes = plt.subplots(2, 2, figsize=(15, 10))
     fig.suptitle('Métricas de Entrenamiento por Época', fontsize=16, fontweight='bold')
     

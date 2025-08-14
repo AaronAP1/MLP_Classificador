@@ -26,9 +26,18 @@ def main():
 
     set_global_seeds(cfg["data"]["random_state"]) 
 
+    # Ensure outputs are under this model folder (not root)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    def to_abs(p):
+        return p if os.path.isabs(p) else os.path.join(base_dir, p)
+
     run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_run = os.path.join(cfg["outputs"]["model_dir"], run_id)
-    plots_run = os.path.join(cfg["outputs"]["plots_dir"], run_id)
+    out_models_base = to_abs(cfg["outputs"]["model_dir"])  # e.g., FT-Transformer/outputs/models
+    out_plots_base  = to_abs(cfg["outputs"]["plots_dir"])   # e.g., FT-Transformer/outputs/plots
+    os.makedirs(out_models_base, exist_ok=True)
+    os.makedirs(out_plots_base, exist_ok=True)
+    model_run = os.path.join(out_models_base, run_id)
+    plots_run = os.path.join(out_plots_base, run_id)
     os.makedirs(model_run, exist_ok=True)
     os.makedirs(plots_run, exist_ok=True)
     cfg["outputs"]["model_dir"] = model_run

@@ -1,0 +1,31 @@
+{
+  "data": {
+    "raw_csv": "MLP_Nino/data/raw/ninos.csv",
+    "test_size": 0.15,
+    "val_size": 0.15,
+    "random_state": 42
+  },
+  "etl": {
+    "cat_cols": ["P505","P506","P507","P508","P509","P201","P203","P206","P207","P208","P311","P315_1","P315_2","P315_3","P315_4","P315_5","P315_6"],
+    "num_cols": ["FACTORFINAL_HOGAR","P210_A","P210_M","P310_N","P310_A"],
+    "target_col": "habito_3clases",
+    "leakage_vars": ["P517","P409","P311","lectura_score","P315_1","P315_2","P315_3","P315_4","P315_5","P315_6"]
+  },
+  "model": {
+    "epochs": 200,
+    "batch_size": 128,
+    "n_d": 32,
+    "n_a": 32,
+    "n_steps": 5,
+    "gamma": 1.5,
+    "n_independent": 2,
+    "n_shared": 2,
+    "lambda_sparse": 0.001,
+    "lr": 0.02,
+    "mask_type": "entmax"
+  },
+  "outputs": {
+    "model_dir": "outputs/models",
+    "plots_dir": "outputs/plots"
+  }
+}

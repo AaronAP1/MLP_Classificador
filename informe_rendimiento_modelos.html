@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Rendimiento - Modelos de Clasificación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .ranking-table th,
+        .ranking-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .ranking-table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ranking-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .ranking-table tr:hover {
+            background-color: #e3f2fd;
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+
+        .model-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .model-card.winner {
+            border-left-color: #f39c12;
+            background: linear-gradient(135deg, #fff9e6, #ffffff);
+        }
+
+        .model-card.second {
+            border-left-color: #95a5a6;
+            background: linear-gradient(135deg, #f4f4f4, #ffffff);
+        }
+
+        .model-card.third {
+            border-left-color: #e67e22;
+            background: linear-gradient(135deg, #fdf2e9, #ffffff);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-box {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .metric-box:hover {
+            border-color: #3498db;
+            transform: scale(1.05);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .class-performance {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .class-performance h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .performance-bar {
+            background: #ecf0f1;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            transition: width 0.5s ease;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert.warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .alert.info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge.gold {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge.silver {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .badge.bronze {
+            background: #e67e22;
+            color: white;
+        }
+
+        .badge.excellent {
+            background: #27ae60;
+            color: white;
+        }
+
+        .badge.good {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge.regular {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .conclusions {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .conclusions h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .recommendation {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #2c3e50;
+            color: white;
+            margin-top: 40px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .model-card:hover {
+                transform: none;
+            }
+        }
+
+        .icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Informe de Rendimiento de Modelos</h1>
+            <p>Análisis Comparativo: MLP vs TabNet vs FT-Transformer</p>
+            <p>Clasificación de Hábitos de Lectura | Septiembre 2025</p>
+        </div>
+
+        <div class="content">
+            <!-- Resumen Ejecutivo -->
+            <div class="section">
+                <h2>🎯 Resumen Ejecutivo</h2>
+                <div class="alert success">
+                    <strong>🏆 Resultado Principal:</strong> El modelo <strong>FT-Transformer</strong> obtuvo el mejor rendimiento con un <strong>92.5% de accuracy</strong>, superando significativamente a TabNet (90.3%) y MLP (87.4%).
+                </div>
+                
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>🏅 Posición</th>
+                            <th>🤖 Modelo</th>
+                            <th>📈 Accuracy</th>
+                            <th>🎯 F1-Score</th>
+                            <th>📊 Estabilidad</th>
+                            <th>⭐ Calificación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge gold">🥇 1º</span></td>
+                            <td><strong>FT-Transformer</strong></td>
+                            <td><strong>92.5%</strong></td>
+                            <td><strong>92.5%</strong></td>
+                            <td><span class="badge excellent">Excelente</span></td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge silver">🥈 2º</span></td>
+                            <td><strong>TabNet</strong></td>
+                            <td><strong>90.3%</strong></td>
+                            <td><strong>90.3%</strong></td>
+                            <td><span class="badge good">Buena</span></td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bronze">🥉 3º</span></td>
+                            <td><strong>MLP</strong></td>
+                            <td><strong>87.4%</strong></td>
+                            <td><strong>87.3%</strong></td>
+                            <td><span class="badge regular">Regular</span></td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Análisis Detallado por Modelo -->
+            <div class="section">
+                <h2>🔬 Análisis Detallado por Modelo</h2>
+
+                <!-- FT-Transformer -->
+                <div class="model-card winner">
+                    <h3>🏆 FT-Transformer - GANADOR</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-value">92.5%</div>
+                            <div class="metric-label">Accuracy</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">92.6%</div>
+                            <div class="metric-label">Precision</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">92.5%</div>
+                            <div class="metric-label">Recall</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">92.5%</div>
+                            <div class="metric-label">F1-Score</div>
+                        </div>
+                    </div>
+
+                    <h4>📊 Rendimiento por Clase:</h4>
+                    <div class="class-performance">
+                        <h4>👤 No Lector</h4>
+                        <div>Precision: 91.3% | Recall: 94.6%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 91.3%"></div>
+                        </div>
+                    </div>
+                    <div class="class-performance">
+                        <h4>📖 Lector Medio</h4>
+                        <div>Precision: 93.6% | Recall: 90.6%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 93.6%"></div>
+                        </div>
+                    </div>
+                    <div class="class-performance">
+                        <h4>📚 Lector Frecuente</h4>
+                        <div>Precision: 92.8% | Recall: 92.4%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 92.8%"></div>
+                        </div>
+                    </div>
+
+                    <div class="alert success">
+                        <strong>✅ Fortalezas:</strong>
+                        <ul>
+                            <li>🎯 Mejor accuracy general (92.5%)</li>
+                            <li>⚖️ Excelente balance entre precisión y recall</li>
+                            <li>📈 Convergencia estable sin overfitting</li>
+                            <li>🔧 Arquitectura transformer especializada en datos tabulares</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- TabNet -->
+                <div class="model-card second">
+                    <h3>🥈 TabNet - SEGUNDO LUGAR</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-value">90.3%</div>
+                            <div class="metric-label">Accuracy</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">90.3%</div>
+                            <div class="metric-label">Precision</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">90.3%</div>
+                            <div class="metric-label">Recall</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">90.3%</div>
+                            <div class="metric-label">F1-Score</div>
+                        </div>
+                    </div>
+
+                    <h4>📊 Rendimiento por Clase:</h4>
+                    <div class="class-performance">
+                        <h4>👤 No Lector</h4>
+                        <div>Precision: 91.3% | Recall: 88.8%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 91.3%"></div>
+                        </div>
+                    </div>
+                    <div class="class-performance">
+                        <h4>📖 Lector Medio</h4>
+                        <div>Precision: 89.0% | Recall: 91.2%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 89.0%"></div>
+                        </div>
+                    </div>
+                    <div class="class-performance">
+                        <h4>📚 Lector Frecuente</h4>
+                        <div>Precision: 90.6% | Recall: 90.8%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 90.6%"></div>
+                        </div>
+                    </div>
+
+                    <div class="alert info">
+                        <strong>✅ Fortalezas:</strong>
+                        <ul>
+                            <li>🔍 Interpretabilidad nativa con mecanismo de atención</li>
+                            <li>📊 Rendimiento consistente entre clases</li>
+                            <li>⚡ Menor complejidad computacional que FT-Transformer</li>
+                            <li>🎯 90.3% accuracy sigue siendo excelente</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- MLP -->
+                <div class="model-card third">
+                    <h3>🥉 MLP - TERCER LUGAR</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-value">87.4%</div>
+                            <div class="metric-label">Accuracy</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">87.4%</div>
+                            <div class="metric-label">Precision</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">87.4%</div>
+                            <div class="metric-label">Recall</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">87.3%</div>
+                            <div class="metric-label">F1-Score</div>
+                        </div>
+                    </div>
+
+                    <h4>📊 Rendimiento por Clase:</h4>
+                    <div class="class-performance">
+                        <h4>👤 No Lector</h4>
+                        <div>Precision: 87.8% | Recall: 86.3%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 87.8%"></div>
+                        </div>
+                    </div>
+                    <div class="class-performance">
+                        <h4>📖 Lector Medio</h4>
+                        <div>Precision: 88.7% | Recall: 87.3%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 88.7%"></div>
+                        </div>
+                    </div>
+                    <div class="class-performance">
+                        <h4>📚 Lector Frecuente</h4>
+                        <div>Precision: 85.6% | Recall: 88.5%</div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 85.6%"></div>
+                        </div>
+                    </div>
+
+                    <div class="alert warning">
+                        <strong>⚠️ Observaciones:</strong>
+                        <ul>
+                            <li>📉 Rendimiento inferior comparado con los otros modelos</li>
+                            <li>🔄 Posible overfitting (train: 90%, val: 88%)</li>
+                            <li>🏗️ Arquitectura más simple, menos robustra para datos complejos</li>
+                            <li>✅ Aún así, 87.4% accuracy es un resultado aceptable</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Análisis de Convergencia -->
+            <div class="section">
+                <h2>📈 Análisis de Convergencia de Entrenamiento</h2>
+                
+                <div class="alert info">
+                    <h4>🎯 Métricas Finales de Entrenamiento (Época 250):</h4>
+                    <ul>
+                        <li><strong>FT-Transformer:</strong> Train Acc: 94.0% | Val Acc: 92.5% | ✅ Sin overfitting</li>
+                        <li><strong>TabNet:</strong> Train Acc: 92.0% | Val Acc: 90.3% | ✅ Convergencia estable</li>
+                        <li><strong>MLP:</strong> Train Acc: 90.0% | Val Acc: 88.0% | ⚠️ Leve overfitting</li>
+                    </ul>
+                </div>
+
+                <div class="model-card">
+                    <h4>🔍 Observaciones sobre el Entrenamiento:</h4>
+                    <ol>
+                        <li><strong>FT-Transformer</strong> mostró la mejor capacidad de generalización</li>
+                        <li><strong>TabNet</strong> demostró convergencia consistente y estable</li>
+                        <li><strong>MLP</strong> presentó el mayor gap entre entrenamiento y validación</li>
+                        <li>Todos los modelos convergen adecuadamente después de 250 épocas</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Recomendaciones -->
+            <div class="conclusions">
+                <h2>🎯 Conclusiones y Recomendaciones</h2>
+                
+                <div class="recommendation">
+                    <h3>🏆 Modelo Principal - FT-Transformer</h3>
+                    <p><strong>Recomendación:</strong> Usar como modelo principal en producción</p>
+                    <ul>
+                        <li>✅ Mejor accuracy general (92.5%)</li>
+                        <li>✅ Mayor equilibrio entre todas las clases</li>
+                        <li>✅ Convergencia más estable</li>
+                        <li>✅ Mayor confiabilidad en predicciones</li>
+                    </ul>
+                </div>
+
+                <div class="recommendation">
+                    <h3>🔍 Modelo Alternativo - TabNet</h3>
+                    <p><strong>Recomendación:</strong> Usar para casos que requieran interpretabilidad</p>
+                    <ul>
+                        <li>🔬 Mejor explicabilidad de decisiones</li>
+                        <li>⚡ Menor complejidad computacional</li>
+                        <li>📊 90.3% accuracy sigue siendo excelente</li>
+                        <li>🎯 Ideal para análisis de características importantes</li>
+                    </ul>
+                </div>
+
+                <div class="recommendation">
+                    <h3>🔧 Modelo de Respaldo - MLP</h3>
+                    <p><strong>Recomendación:</strong> Mantener como modelo de baseline</p>
+                    <ul>
+                        <li>💰 Menor costo computacional</li>
+                        <li>🔧 Más fácil de implementar y mantener</li>
+                        <li>📊 87.4% accuracy es respetable</li>
+                        <li>🎯 Útil para comparaciones y validaciones</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Información Técnica -->
+            <div class="section">
+                <h2>⚙️ Información Técnica del Dataset</h2>
+                <div class="model-card">
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-value">4,000</div>
+                            <div class="metric-label">Muestras de Test</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">3</div>
+                            <div class="metric-label">Clases</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">102</div>
+                            <div class="metric-label">Features</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">250</div>
+                            <div class="metric-label">Épocas</div>
+                        </div>
+                    </div>
+
+                    <h4>📋 Clases del Dataset:</h4>
+                    <ul>
+                        <li><strong>No Lector:</strong> Personas sin hábitos de lectura regulares</li>
+                        <li><strong>Lector Medio:</strong> Personas con hábitos de lectura moderados</li>
+                        <li><strong>Lector Frecuente:</strong> Personas con hábitos de lectura intensivos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📊 Informe generado automáticamente | MLP Classificador Project</p>
+            <p>🗓️ Fecha: 29 de Septiembre, 2025</p>
+            <p>🏫 Universidad Peruana Unión</p>
+        </div>
+    </div>
+</body>
+</html>

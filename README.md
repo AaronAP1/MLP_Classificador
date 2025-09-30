@@ -67,21 +67,7 @@ Cambia `config_*` y `paths_*` por `adultos` o `jovenes` para otras corridas.
 - Curvas de entrenamiento: `outputs/models/<run_id>/metrics_by_epoch.csv` y gráficos en `outputs/plots/<run_id>/`.
 
 ## Gráficos de rendimiento (mejor época actual, ejemplos)
-- MLP_MA Niños (run 20250811_124724):
-  - Matriz de confusión:
-    ![CM Niños](outputs/plots/20250811_124724/confusion_matrix.png)
-  - Curva ROC:
-    ![ROC Niños](outputs/plots/20250811_124724/roc_curve.png)
-  - Curvas de entrenamiento:
-    ![Train Niños](outputs/plots/20250811_124724/training_metrics.png)
 
-- MLP_MA Jóvenes (run 20250811_131019):
-  - Matriz de confusión:
-    ![CM Jóvenes](outputs/plots/20250811_131019/confusion_matrix.png)
-  - Curva ROC:
-    ![ROC Jóvenes](outputs/plots/20250811_131019/roc_curve.png)
-  - Curvas de entrenamiento:
-    ![Train Jóvenes](outputs/plots/20250811_131019/training_metrics.png)
 
 Nota: si alguna corrida dejó el test con una sola clase, las curvas ROC/PR pueden ser NaN o no informativas; vuelve a ejecutar con otro random_state.
 

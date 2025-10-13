@@ -1,10 +1,29 @@
 # 📚 Clasificador de Hábitos de Lectura
 
+> **⚡ ESTADO:** ETL Completado ✅ | Datos procesados y listos para entrenar
+
 ## Sistema de Clasificación Basado en Redes Neuronales Profundas para el Análisis del Comportamiento Lector en Perú
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-ETL%20Completado-success.svg)]()
+
+---
+
+## 📊 Estado Actual del Proyecto
+
+| Componente | Estado | Detalles |
+|------------|--------|----------|
+| 🏗️ Estructura | ✅ Completado | 27 carpetas, 45+ elementos |
+| 📊 ETL Pipeline | ✅ Completado | 64,968 registros procesados |
+| 🧠 Algoritmo Copeland | ✅ Completado | Comparación científica funcionando |
+| 🔧 Utils (seeds, config, logger) | ⏳ Pendiente | Base para entrenamiento |
+| 📝 Configs YAML | ⏳ Pendiente | Definir hiperparámetros |
+| 🧠 Arquitecturas | ⏳ Pendiente | MLP-MA, TabNet, FT-Transformer |
+| 🚀 Scripts entrenamiento | ⏳ Pendiente | 9 modelos por entrenar |
+
+**Próximo paso:** Ver `QUE_HACER_AHORA.md` para continuar
 
 ---
 

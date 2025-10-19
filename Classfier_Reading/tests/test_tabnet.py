@@ -10,7 +10,7 @@ root_dir = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(root_dir))
 
 try:
-    from src.models.tabnet_classifier import TabNetClassifier, create_tabnet_for_ninos
+    from Classfier_Reading.src.models.tabnet_classifier import TabNetClassifier, create_tabnet_for_ninos
     
     print("\n" + "="*80)
     print("✅ TABNET CLASSIFIER - IMPORTACIÓN EXITOSA")

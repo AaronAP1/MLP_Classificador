@@ -1,18 +1,50 @@
 """
-Módulo de modelos de clasificación.
+Módulo de modelos de clasificación - Organizados por Grupo Etario
 
-Contiene las 3 arquitecturas principales:
-- TabNet: Para clasificación de Niños
-- MLP + Multi-Head Attention: Para clasificación de Jóvenes  
-- FT-Transformer: Para clasificación de Adultos
+Estructura:
+├── Ninos/     - Modelos para niños (0-11 años)
+│   └── TabNet Classifier (131 features)
+├── Jovenes/   - Modelos para jóvenes (12-17 años)
+│   └── MLP + Multi-Head Attention (139 features)
+└── Adultos/   - Modelos para adultos (18+ años)
+    └── FT-Transformer (71 features)
+
+Uso:
+    # Importar modelos para niños
+    from src.models.Ninos import TabNetClassifier, create_tabnet_for_ninos
+    
+    # Importar modelos para jóvenes
+    from src.models.Jovenes import MLPWithAttention, create_mlp_attention_for_jovenes
+    
+    # Importar modelos para adultos
+    from src.models.Adultos import FTTransformerClassifier, create_ft_transformer_for_adultos
 """
 
-from .tabnet_classifier import TabNetClassifier
-from .mlp_attention import MLPWithAttention
-from .ft_transformer import FTTransformerClassifier
+# Importar todos los modelos para acceso directo
+from .Ninos import TabNetClassifier, create_tabnet_for_ninos
+from .Jovenes import (
+    MLPWithAttention, 
+    MLPWithAttentionTrainer,
+    create_mlp_attention_for_jovenes
+)
+from .Adultos import (
+    FTTransformerClassifier,
+    FTTransformerTrainer,
+    create_ft_transformer_for_adultos
+)
 
 __all__ = [
+    # Niños
     'TabNetClassifier',
+    'create_tabnet_for_ninos',
+    
+    # Jóvenes
     'MLPWithAttention',
-    'FTTransformerClassifier'
+    'MLPWithAttentionTrainer',
+    'create_mlp_attention_for_jovenes',
+    
+    # Adultos
+    'FTTransformerClassifier',
+    'FTTransformerTrainer',
+    'create_ft_transformer_for_adultos',
 ]

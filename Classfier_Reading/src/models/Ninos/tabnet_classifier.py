@@ -172,12 +172,34 @@ class TabNetClassifier:
         )
         
         # Guardar historial
+        # El objeto History de pytorch_tabnet tiene atributos, no es un dict
         self.history['train_loss'] = self.model.history['loss']
-        self.history['val_loss'] = self.model.history['val_0_loss']
+        
+        # Buscar métrica de validación
+        # Intentar diferentes nombres posibles
+        val_loss = None
+        possible_keys = ['val_0_loss', 'val_loss', 'validation_0_loss', 'valid_loss']
+        
+        for key in possible_keys:
+            try:
+                val_loss = self.model.history[key]
+                break
+            except (KeyError, AttributeError):
+                continue
+        
+        if val_loss is not None:
+            self.history['val_loss'] = val_loss
+        else:
+            # Si no hay validación, usar train loss como fallback
+            self.history['val_loss'] = self.model.history['loss']
+            print("   ⚠️  No se encontró historial de validación, usando train loss")
         
         print(f"\n✅ Entrenamiento completado")
         print(f"   Mejor época: {self.model.best_epoch}")
-        print(f"   Mejor val loss: {min(self.history['val_loss']):.4f}\n")
+        if 'val_loss' in self.history and len(self.history['val_loss']) > 0:
+            print(f"   Mejor val loss: {min(self.history['val_loss']):.4f}\n")
+        else:
+            print(f"   Train loss final: {self.history['train_loss'][-1]:.4f}\n")
     
     def predict(self, X: np.ndarray) -> np.ndarray:
         """

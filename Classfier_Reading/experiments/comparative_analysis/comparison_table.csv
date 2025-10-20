@@ -1,0 +1,4 @@
+Grupo,Muestras,Features,Balance,DT10 Acc,Top3 Feat,Dificultad,Weights
+NINOS,"7,270",131,74%,100.0%,69%,TRIVIAL,✅
+JOVENES,"9,814",139,80%,99.9%,29%,TRIVIAL,✅
+ADULTOS,"28,391",71,80%,100.0%,42%,TRIVIAL,✅

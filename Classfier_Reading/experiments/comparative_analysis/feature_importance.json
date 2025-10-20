@@ -1,0 +1,173 @@
+{
+    "ninos": {
+        "top_10": [
+            {
+                "rank": 1,
+                "feature_idx": 124,
+                "importance": 0.2772666661006467
+            },
+            {
+                "rank": 2,
+                "feature_idx": 121,
+                "importance": 0.2450029949764897
+            },
+            {
+                "rank": 3,
+                "feature_idx": 122,
+                "importance": 0.17134486679022928
+            },
+            {
+                "rank": 4,
+                "feature_idx": 125,
+                "importance": 0.12706351673509403
+            },
+            {
+                "rank": 5,
+                "feature_idx": 123,
+                "importance": 0.08620473467978033
+            },
+            {
+                "rank": 6,
+                "feature_idx": 128,
+                "importance": 0.010841695520431186
+            },
+            {
+                "rank": 7,
+                "feature_idx": 126,
+                "importance": 0.0062111046114833165
+            },
+            {
+                "rank": 8,
+                "feature_idx": 118,
+                "importance": 0.004329860446807111
+            },
+            {
+                "rank": 9,
+                "feature_idx": 96,
+                "importance": 0.0034311576901776865
+            },
+            {
+                "rank": 10,
+                "feature_idx": 94,
+                "importance": 0.002484482582109927
+            }
+        ],
+        "top_3_sum": 0.6936145278673658,
+        "top_5_sum": 0.90688277928224,
+        "top_10_sum": 0.9341810801332494
+    },
+    "jovenes": {
+        "top_10": [
+            {
+                "rank": 1,
+                "feature_idx": 78,
+                "importance": 0.12707299097656255
+            },
+            {
+                "rank": 2,
+                "feature_idx": 100,
+                "importance": 0.08917695775458567
+            },
+            {
+                "rank": 3,
+                "feature_idx": 37,
+                "importance": 0.07771159901932657
+            },
+            {
+                "rank": 4,
+                "feature_idx": 63,
+                "importance": 0.0766242459398048
+            },
+            {
+                "rank": 5,
+                "feature_idx": 11,
+                "importance": 0.06932049397308496
+            },
+            {
+                "rank": 6,
+                "feature_idx": 24,
+                "importance": 0.06373281674883283
+            },
+            {
+                "rank": 7,
+                "feature_idx": 47,
+                "importance": 0.0494506720743371
+            },
+            {
+                "rank": 8,
+                "feature_idx": 26,
+                "importance": 0.049323643448866236
+            },
+            {
+                "rank": 9,
+                "feature_idx": 81,
+                "importance": 0.045651173713874636
+            },
+            {
+                "rank": 10,
+                "feature_idx": 93,
+                "importance": 0.04162501408844187
+            }
+        ],
+        "top_3_sum": 0.2939615477504748,
+        "top_5_sum": 0.4399062876633645,
+        "top_10_sum": 0.689689607737717
+    },
+    "adultos": {
+        "top_10": [
+            {
+                "rank": 1,
+                "feature_idx": 51,
+                "importance": 0.16352266487437855
+            },
+            {
+                "rank": 2,
+                "feature_idx": 33,
+                "importance": 0.14378959991727458
+            },
+            {
+                "rank": 3,
+                "feature_idx": 36,
+                "importance": 0.11118048670900572
+            },
+            {
+                "rank": 4,
+                "feature_idx": 53,
+                "importance": 0.09919959733196773
+            },
+            {
+                "rank": 5,
+                "feature_idx": 42,
+                "importance": 0.07786662905022253
+            },
+            {
+                "rank": 6,
+                "feature_idx": 45,
+                "importance": 0.07758549331807027
+            },
+            {
+                "rank": 7,
+                "feature_idx": 48,
+                "importance": 0.06106282663359396
+            },
+            {
+                "rank": 8,
+                "feature_idx": 39,
+                "importance": 0.056542300007531736
+            },
+            {
+                "rank": 9,
+                "feature_idx": 38,
+                "importance": 0.05572353677236789
+            },
+            {
+                "rank": 10,
+                "feature_idx": 44,
+                "importance": 0.040426590554691354
+            }
+        ],
+        "top_3_sum": 0.41849275150065884,
+        "top_5_sum": 0.5955589778828492,
+        "top_10_sum": 0.8868997251691043
+    }
+}

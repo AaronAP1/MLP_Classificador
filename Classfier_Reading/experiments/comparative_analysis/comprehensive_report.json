@@ -1,0 +1,53 @@
+{
+    "fecha": "2025-10-19T17:03:30.440247",
+    "grupos": {
+        "ninos": {
+            "n_muestras": 7270,
+            "n_features": 131,
+            "balance_metric": 73.57634112792297,
+            "clase_0_pct": 7.015130674002751,
+            "clase_1_pct": 80.59147180192572,
+            "clase_2_pct": 12.393397524071526,
+            "dt1_accuracy": 0.8851828094932649,
+            "logreg_accuracy": 1.0,
+            "dt10_accuracy": 1.0,
+            "top3_feature_importance": 0.6936145278673658,
+            "top10_feature_importance": 0.9341810801332494,
+            "dificultad": "TRIVIAL",
+            "class_weights_needed": true,
+            "recomendacion": "Problema muy simple. Deep learning innecesario."
+        },
+        "jovenes": {
+            "n_muestras": 9814,
+            "n_features": 139,
+            "balance_metric": 80.1202363969839,
+            "clase_0_pct": 80.33421642551457,
+            "clase_1_pct": 0.21398002853067047,
+            "clase_2_pct": 19.451803545954757,
+            "dt1_accuracy": 0.9980988593155894,
+            "logreg_accuracy": 0.998574144486692,
+            "dt10_accuracy": 0.998574144486692,
+            "top3_feature_importance": 0.2939615477504748,
+            "top10_feature_importance": 0.689689607737717,
+            "dificultad": "TRIVIAL",
+            "class_weights_needed": true,
+            "recomendacion": "Problema muy simple. Deep learning innecesario."
+        },
+        "adultos": {
+            "n_muestras": 28391,
+            "n_features": 71,
+            "balance_metric": 79.60973547955338,
+            "clase_0_pct": 20.340953118946146,
+            "clase_1_pct": 0.024655700750237753,
+            "clase_2_pct": 79.63439118030362,
+            "dt1_accuracy": 0.9998356344510191,
+            "logreg_accuracy": 1.0,
+            "dt10_accuracy": 1.0,
+            "top3_feature_importance": 0.41849275150065884,
+            "top10_feature_importance": 0.8868997251691043,
+            "dificultad": "TRIVIAL",
+            "class_weights_needed": true,
+            "recomendacion": "Problema muy simple. Deep learning innecesario."
+        }
+    }
+}

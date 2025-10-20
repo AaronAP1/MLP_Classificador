@@ -1,0 +1,16 @@
+{
+    "seed_strategy": "single",
+    "seed_variability_cv": 0.0,
+    "recommended_epochs": 50,
+    "recommended_patience": 30,
+    "expected_f1": 1.0,
+    "time_per_model_seconds": 104.19269037246704,
+    "total_models": 9,
+    "total_time_hours": 0.2604817259311676,
+    "recommendations": {
+        "seed": "Usar seed=42",
+        "epochs": "50 épocas con patience=30",
+        "class_weights": "Aplicar en jóvenes y adultos (imbalance)",
+        "metrics": "Priorizar F1-Macro en datasets desbalanceados"
+    }
+}

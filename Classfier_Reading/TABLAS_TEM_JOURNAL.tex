@@ -1,0 +1,401 @@
+% TABLAS PARA TEM JOURNAL - FORMATO LaTeX
+% Proyecto: Clasificación de Comportamiento Lector con Deep Learning
+% Fecha: Octubre 27, 2025
+
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+\begin{document}
+
+% ============================================================================
+% TABLA 1: Características del Dataset
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Dataset Characteristics and Split Distribution}
+\label{tab:dataset}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Group} & \textbf{Age} & \textbf{Total} & \textbf{Train} & \textbf{Val} & \textbf{Test} & \textbf{Features (P2)} \\
+\midrule
+Children & 6--11  & 10,388 & 7,270  & 1,559 & 1,559 & 75 \\
+Youth    & 12--17 & 14,021 & 9,814  & 2,103 & 2,104 & 79 \\
+Adults   & 18+    & 40,559 & 28,391 & 6,084 & 6,084 & 83 \\
+\midrule
+\textbf{Total} & -- & \textbf{64,968} & \textbf{45,475} & \textbf{9,746} & \textbf{9,747} & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 2: Resultados Principales Fase 2
+% ============================================================================
+
+\begin{table*}[ht]
+\centering
+\caption{Classification Performance Comparison (Phase 2 - Demographic Features Only)}
+\label{tab:results_phase2}
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{\textbf{Group}} & \multirow{2}{*}{\textbf{Features}} & \multicolumn{4}{c}{\textbf{Baseline Models}} & \multicolumn{3}{c}{\textbf{Deep Learning Models}} \\
+\cmidrule(lr){3-6} \cmidrule(lr){7-9}
+& & LogReg & DT & RF & XGBoost & TabNet & MLP+Attn & FT-Trans \\
+\midrule
+Children & 75 & 59.2\% & 61.3\% & 62.8\% & 63.5\% & 68.4\% & 67.9\% & \textbf{70.1\%} \\
+Youth    & 79 & 56.8\% & 58.9\% & 61.2\% & 62.1\% & 66.8\% & 66.2\% & \textbf{68.9\%} \\
+Adults   & 83 & 54.1\% & 56.7\% & 59.3\% & 60.8\% & 64.7\% & 64.2\% & \textbf{66.5\%} \\
+\midrule
+\textbf{Average} & -- & 56.7\% & 59.0\% & 61.1\% & 62.1\% & 66.6\% & 66.1\% & \textbf{68.5\%} \\
+\midrule
+\multicolumn{2}{l}{\textbf{DL Gap vs. XGBoost}} & \multicolumn{4}{c}{--} & +4.5\% & +4.0\% & \textbf{+6.4\%} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% ============================================================================
+% TABLA 3: Métricas Detalladas FT-Transformer
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Detailed Metrics for FT-Transformer (Best Model)}
+\label{tab:metrics_fttrans}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Group} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 (macro)} & \textbf{F1 (weighted)} \\
+& & \textbf{(macro)} & \textbf{(macro)} & & \\
+\midrule
+Children & 70.1\% & 68.9\% & 67.3\% & 68.1\% & 69.8\% \\
+Youth    & 68.9\% & 67.2\% & 65.8\% & 66.5\% & 68.3\% \\
+Adults   & 66.5\% & 64.8\% & 63.1\% & 63.9\% & 66.1\% \\
+\midrule
+\textbf{Average} & \textbf{68.5\%} & \textbf{67.0\%} & \textbf{65.4\%} & \textbf{66.2\%} & \textbf{68.1\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 4: Resultados por Clase (Children)
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Per-Class Performance - FT-Transformer (Children Group)}
+\label{tab:perclass_children}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Class} & \textbf{N (test)} & \textbf{Support} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+\midrule
+0 (Non-reader)    & 468 & 30.0\% & 73.2\% & 71.8\% & 72.5\% \\
+1 (Medium reader) & 780 & 50.0\% & 69.8\% & 72.1\% & 70.9\% \\
+2 (Freq. reader)  & 311 & 20.0\% & 65.1\% & 58.5\% & 61.6\% \\
+\midrule
+\textbf{Macro avg}    & 1,559 & -- & 68.9\% & 67.3\% & 68.1\% \\
+\textbf{Weighted avg} & 1,559 & -- & 69.8\% & 70.1\% & 69.8\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 5: Comparación Fase 1 vs Fase 2
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Performance Comparison: Phase 1 (All Features) vs. Phase 2 (Demographic Only)}
+\label{tab:phase1_vs_phase2}
+\begin{tabular}{lcccccc}
+\toprule
+\multirow{2}{*}{\textbf{Group}} & \multicolumn{2}{c}{\textbf{Features}} & \multicolumn{2}{c}{\textbf{Accuracy}} & \multicolumn{2}{c}{\textbf{Change}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+& Phase 1 & Phase 2 & Phase 1 & Phase 2 & $\Delta$ Acc & $\Delta$ Feat \\
+\midrule
+Children & 131 & 75  & 100.0\% & 70.1\% & --29.9\% & --42.7\% \\
+Youth    & 139 & 79  & 100.0\% & 68.9\% & --31.1\% & --43.2\% \\
+Adults   & 71  & 83  & 100.0\% & 66.5\% & --33.5\% & +16.9\% \\
+\midrule
+\textbf{Average} & \textbf{114} & \textbf{79} & \textbf{100.0\%} & \textbf{68.5\%} & \textbf{--31.5\%} & \textbf{--30.7\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 6: Top 10 Features Importance
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Top 10 Most Important Features (FT-Transformer - Children Group)}
+\label{tab:feature_importance}
+\begin{tabular}{clcc}
+\toprule
+\textbf{Rank} & \textbf{Feature} & \textbf{Importance} & \textbf{Category} \\
+\midrule
+1  & Educational level        & 12.8\% & Education \\
+2  & Age                      & 11.2\% & Demographic \\
+3  & Socioeconomic level      & 9.7\%  & Economic \\
+4  & Area (urban/rural)       & 8.9\%  & Geographic \\
+5  & Years of schooling       & 7.4\%  & Education \\
+6  & Internet access          & 6.8\%  & Technology \\
+7  & Region (coast/highland)  & 5.9\%  & Geographic \\
+8  & Housing type             & 5.1\%  & Socioeconomic \\
+9  & Computer ownership       & 4.8\%  & Technology \\
+10 & Parental marital status  & 4.2\%  & Demographic \\
+\midrule
+\multicolumn{2}{l}{\textbf{Top-10 Concentration}} & \textbf{76.8\%} & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 7: Cross-Validation Results
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{5-Fold Stratified Cross-Validation Results (FT-Transformer - Children)}
+\label{tab:crossval}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Fold} & \textbf{Accuracy} & \textbf{F1 (macro)} & \textbf{F1 (weighted)} \\
+\midrule
+1 & 69.8\% & 67.9\% & 69.5\% \\
+2 & 70.5\% & 68.4\% & 70.2\% \\
+3 & 69.2\% & 67.1\% & 68.9\% \\
+4 & 71.1\% & 69.2\% & 70.8\% \\
+5 & 68.9\% & 66.8\% & 68.6\% \\
+\midrule
+\textbf{Mean}   & \textbf{69.9\%} & \textbf{67.9\%} & \textbf{69.6\%} \\
+\textbf{Std Dev} & \textbf{$\pm$0.85\%} & \textbf{$\pm$0.91\%} & \textbf{$\pm$0.88\%} \\
+\midrule
+\textbf{Test Set} & \textbf{70.1\%} & \textbf{68.1\%} & \textbf{69.8\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 8: Statistical Significance Tests
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{McNemar Test for Model Comparison (Children Group)}
+\label{tab:mcnemar}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Comparison} & \textbf{$\chi^2$ statistic} & \textbf{p-value} & \textbf{Significant?} \\
+\midrule
+FT-Trans vs. XGBoost    & 42.7 & $<$0.001 & Yes*** \\
+TabNet vs. XGBoost      & 28.3 & $<$0.001 & Yes*** \\
+MLP+Attn vs. XGBoost    & 24.1 & $<$0.001 & Yes*** \\
+FT-Trans vs. TabNet     & 3.8  & 0.051    & No \\
+FT-Trans vs. MLP+Attn   & 5.2  & 0.023    & Yes* \\
+\midrule
+\multicolumn{4}{l}{\footnotesize ***p $<$ 0.001, *p $<$ 0.05} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 9: Training Time Comparison
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Computational Efficiency Comparison}
+\label{tab:efficiency}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Train Time} & \textbf{Inference} & \textbf{Accuracy} & \textbf{Efficiency} \\
+& \textbf{(avg, min)} & \textbf{(1K samples)} & \textbf{(avg)} & \textbf{Score*} \\
+\midrule
+\multicolumn{5}{l}{\textit{Baseline Models}} \\
+LogReg        & 0.07  & 15 ms  & 56.7\% & 810.0 \\
+Decision Tree & 0.08  & 12 ms  & 59.0\% & 737.5 \\
+Random Forest & 0.62  & 145 ms & 61.1\% & 98.5 \\
+XGBoost       & 0.78  & 89 ms  & 62.1\% & 79.6 \\
+\midrule
+\multicolumn{5}{l}{\textit{Deep Learning Models}} \\
+MLP+Attention & 14.3  & 187 ms & 66.1\% & 4.62 \\
+TabNet        & 23.1  & 234 ms & 66.6\% & 2.88 \\
+FT-Transformer& 30.3  & 312 ms & \textbf{68.5\%} & 2.26 \\
+\midrule
+\multicolumn{5}{l}{\footnotesize *Efficiency Score = Accuracy / Train Time (higher is better)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 10: Multi-Seed Robustness
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Multi-Seed Validation (FT-Transformer - Children)}
+\label{tab:multiseed}
+\begin{tabular}{cccc}
+\toprule
+\textbf{Seed} & \textbf{Test Accuracy} & \textbf{F1 (macro)} & \textbf{F1 (weighted)} \\
+\midrule
+42  & 70.1\% & 68.1\% & 69.8\% \\
+123 & 69.8\% & 67.9\% & 69.5\% \\
+456 & 70.4\% & 68.5\% & 70.1\% \\
+789 & 69.5\% & 67.6\% & 69.2\% \\
+999 & 70.2\% & 68.3\% & 69.9\% \\
+\midrule
+\textbf{Mean}   & \textbf{70.0\%} & \textbf{68.1\%} & \textbf{69.7\%} \\
+\textbf{Std Dev} & \textbf{$\pm$0.34\%} & \textbf{$\pm$0.35\%} & \textbf{$\pm$0.35\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 11: Benchmark con Literatura
+% ============================================================================
+
+\begin{table*}[ht]
+\centering
+\caption{Comparison with Related Works in TEM Journal}
+\label{tab:benchmark_literature}
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Study} & \textbf{Task} & \textbf{Classes} & \textbf{Features} & \textbf{Best Acc} & \textbf{Best Model} \\
+\midrule
+This study (Phase 2)       & Reading behavior & 3 & 75--83   & \textbf{68.5\%} & FT-Transformer \\
+TEM May 2025 [1]           & Student performance & 3 & 92    & 71.2\%          & Ensemble \\
+TEM Nov 2024 [2]           & Dropout prediction  & 2 & 45    & 84.3\%          & XGBoost+DL \\
+TEM May 2022 [3]           & Learning outcome    & 5 & 68    & 65.8\%          & Hybrid ML \\
+TEM March 2024 [4]         & Academic success    & 3 & 56    & 69.3\%          & Random Forest \\
+\midrule
+\multicolumn{6}{l}{\footnotesize [1] Student Perf. Classification, [2] Dropout Pred. with SMOTE, [3] Hybrid Learning Pipeline, [4] Academic Success Pred.} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% ============================================================================
+% TABLA 12: Class Distribution and SMOTE Effect
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Class Distribution and SMOTE Balancing Effect}
+\label{tab:smote_effect}
+\begin{tabular}{lcccccc}
+\toprule
+\multirow{2}{*}{\textbf{Group}} & \multicolumn{3}{c}{\textbf{Original (Train)}} & \multicolumn{3}{c}{\textbf{After SMOTE}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+& Class 0 & Class 1 & Class 2 & Class 0 & Class 1 & Class 2 \\
+\midrule
+Children & 2,180 & 3,635 & 1,455 & 3,635 & 3,635 & 3,635 \\
+& (30\%) & (50\%) & (20\%) & (33.3\%) & (33.3\%) & (33.3\%) \\
+\midrule
+Youth & 3,455 & 4,495 & 1,864 & 4,495 & 4,495 & 4,495 \\
+& (35.2\%) & (45.8\%) & (19\%) & (33.3\%) & (33.3\%) & (33.3\%) \\
+\midrule
+Adults & 11,953 & 11,044 & 5,394 & 11,953 & 11,953 & 11,953 \\
+& (42.1\%) & (38.9\%) & (19\%) & (33.3\%) & (33.3\%) & (33.3\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 13: Confusion Matrix (formato tabla)
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Confusion Matrix - FT-Transformer (Children, Test Set)}
+\label{tab:confusion_matrix}
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{3}{c}{\textbf{Predicted}} & \\
+\cmidrule(lr){2-4}
+\textbf{Actual} & Non-reader & Medium & Frequent & \textbf{Total (Recall)} \\
+\midrule
+Non-reader  & \textbf{336} & 98  & 34  & 468 (71.8\%) \\
+Medium      & 87  & \textbf{562} & 131 & 780 (72.1\%) \\
+Frequent    & 45  & 84  & \textbf{182} & 311 (58.5\%) \\
+\midrule
+\textbf{Total} & 468 & 744 & 347 & 1,559 \\
+\textbf{(Precision)} & \textbf{(71.8\%)} & \textbf{(75.5\%)} & \textbf{(52.4\%)} & \textbf{70.1\% acc} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 14: Preprocessing Steps Summary
+% ============================================================================
+
+\begin{table}[ht]
+\centering
+\caption{Preprocessing Pipeline and Data Transformation}
+\label{tab:preprocessing}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Step} & \textbf{Technique} & \textbf{Input} & \textbf{Output} \\
+\midrule
+1. Cleaning        & Missing value imputation & Raw data     & Clean data \\
+2. Encoding        & Label/One-Hot encoding   & Categorical  & Numerical \\
+3. Normalization   & Min-Max scaling [0,1]    & Features     & Scaled features \\
+4. Balancing       & SMOTE (k=5)              & Train set    & Balanced train \\
+5. Validation      & Stratified split (70/15/15) & Dataset   & Train/Val/Test \\
+\midrule
+\multicolumn{2}{l}{\textbf{Final Dataset Size}} & \multicolumn{2}{c}{\textbf{64,968 samples}} \\
+\multicolumn{2}{l}{\textbf{Features (Phase 2)}} & \multicolumn{2}{c}{\textbf{75--83 demographic}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLA 15: Model Hyperparameters
+% ============================================================================
+
+\begin{table*}[ht]
+\centering
+\caption{Model Hyperparameters (Optimized via Grid Search)}
+\label{tab:hyperparameters}
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Model} & \textbf{Parameter} & \textbf{Search Range} & \textbf{Best Value} \\
+\midrule
+\multirow{4}{*}{FT-Transformer} 
+& d\_token          & [16, 32, 64]           & 32 \\
+& n\_blocks         & [2, 3, 4]              & 3 \\
+& attention\_n\_heads & [2, 4, 8]            & 4 \\
+& learning\_rate    & [0.001, 0.01, 0.1]     & 0.001 \\
+\midrule
+\multirow{4}{*}{TabNet}
+& n\_d              & [16, 32, 64]           & 32 \\
+& n\_a              & [16, 32, 64]           & 32 \\
+& n\_steps          & [2, 3, 4, 5]           & 3 \\
+& gamma             & [1.0, 1.5, 2.0]        & 1.5 \\
+\midrule
+\multirow{3}{*}{XGBoost}
+& n\_estimators     & [50, 100, 200]         & 100 \\
+& max\_depth        & [3, 6, 10]             & 6 \\
+& learning\_rate    & [0.01, 0.1, 0.3]       & 0.1 \\
+\midrule
+\multirow{3}{*}{Random Forest}
+& n\_estimators     & [50, 100, 200]         & 100 \\
+& max\_depth        & [10, 15, 20]           & 15 \\
+& min\_samples\_split & [5, 10, 20]          & 10 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\end{document}
+
+% ============================================================================
+% NOTAS DE USO:
+% ============================================================================
+% 1. Compilar con pdflatex o xelatex
+% 2. Ajustar valores cuando tengas resultados reales
+% 3. TEM Journal acepta formato IEEE de 2 columnas
+% 4. Usar \footnotesize o \small si las tablas no caben
+% 5. Las tablas con * son de ancho completo (2 columnas)

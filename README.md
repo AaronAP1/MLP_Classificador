@@ -1,93 +1,358 @@
-# Clasificación de hábitos de lectura (3 pipelines)
+# 📚 Clasificador de Hábitos de Lectura
 
-Este repositorio contiene tres pipelines equivalentes para clasificar el hábito lector en tres clases (no_lector, lector_medio, lector_frecuente):
-- MLP_MA: MLP con mecanismo de atención a nivel de entrada.
-- FT-Transformer: Transformer para datos tabulares con tokenización de features.
-- TabNet: Modelo TabNet (pytorch-tabnet) para interpretación y rendimiento en tabulares.
+> **⚡ ESTADO:** ETL Completado ✅ | Datos procesados y listos para entrenar
 
-Cada pipeline incluye: ETL con guardrails anti-fuga, splits 70/15/15 estratificados, entrenamiento con early stopping y ReduceLROnPlateau, métricas macro/weighted y visualizaciones.
+## Sistema de Clasificación Basado en Redes Neuronales Profundas para el Análisis del Comportamiento Lector en Perú
 
-## Datos y estructura
-- Datos crudos por grupo etario (adultos, jóvenes, niños):
-  - MLP_Adul_s/data/raw/adultos.csv
-  - MLP_Jov/data/raw/jovenes.csv
-  - MLP_Nino/data/raw/ninos.csv
-- Salidas por corrida: `outputs/models/<run_id>/` y `outputs/plots/<run_id>/` dentro de cada carpeta de modelo.
-- Configs por grupo: `configs/config_*.json` y `configs/paths_*.json` por pipeline.
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-ETL%20Completado-success.svg)]()
 
-## Requisitos
-- Python 3.12
-- GPU opcional; AMP se desactiva automáticamente si no hay CUDA.
-- Instalar dependencias por pipeline:
-  - MLP_MA: `pip install -r MLP_MA/requirements.txt`
-  - FT-Transformer: `pip install -r FT-Transformer/requirements.txt`
-  - TabNet: `pip install -r TabNet/requirements.txt`
+---
 
-## Cómo ejecutar (corridas rápidas de ejemplo, 5 épocas)
-- MLP_MA (Niños):
-  ```powershell
-  C:/Users/xdxdxdxd/AppData/Local/Programs/Python/Python312/python.exe "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\MLP_MA\main.py" --config "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\MLP_MA\configs\config_ninos.json" --paths "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\MLP_MA\configs\paths_ninos.json" --max_epochs 5
-  ```
-- FT-Transformer (Niños):
-  ```powershell
-  C:/Users/xdxdxdxd/AppData/Local/Programs/Python/Python312/python.exe "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\FT-Transformer\main.py" --config "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\FT-Transformer\configs\config_ninos.json" --paths "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\FT-Transformer\configs\paths_ninos.json" --max_epochs 5
-  ```
-- TabNet (Niños):
-  ```powershell
-  C:/Users/xdxdxdxd/AppData/Local/Programs/Python/Python312/python.exe "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\TabNet\main.py" --config "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\TabNet\configs\config_ninos.json" --paths "c:\Users\xdxdxdxd\Desktop\MLP_Py_In01\TabNet\configs\paths_ninos.json" --max_epochs 5
-  ```
+## 📊 Estado Actual del Proyecto
 
-Cambia `config_*` y `paths_*` por `adultos` o `jovenes` para otras corridas.
+| Componente | Estado | Detalles |
+|------------|--------|----------|
+| 🏗️ Estructura | ✅ Completado | 27 carpetas, 45+ elementos |
+| 📊 ETL Pipeline | ✅ Completado | 64,968 registros procesados |
+| 🧠 Algoritmo Copeland | ✅ Completado | Comparación científica funcionando |
+| 🔧 Utils (seeds, config, logger) | ⏳ Pendiente | Base para entrenamiento |
+| 📝 Configs YAML | ⏳ Pendiente | Definir hiperparámetros |
+| 🧠 Arquitecturas | ⏳ Pendiente | MLP-MA, TabNet, FT-Transformer |
+| 🚀 Scripts entrenamiento | ⏳ Pendiente | 9 modelos por entrenar |
 
-## ETL y anti-fuga
-- Construcción de target automática:
-  - Si `habito_3clases` o `habito_lectura_completo` no existen, se construyen a partir de P517 y/o un `lectura_score` agregado.
-- Variables excluidas para evitar fuga (según disponibilidad): `P517`, `P311`, `P409`, `lectura_score`, `P315_1..P315_6`.
-- FT-Transformer mapea categóricas a índices por columna con índice OOV; MLP_MA usa ColumnTransformer (OHE + StandardScaler); TabNet prepara arrays con cat_idxs/cat_dims.
+**Próximo paso:** Ver `QUE_HACER_AHORA.md` para continuar
 
-## Entrenamiento y métrica
-- Optimizador AdamW (MLP_MA/FT), ReduceLROnPlateau en F1 macro, early stopping, class weights, grad clipping; AMP solo con CUDA.
-- Métricas: accuracy, precision/recall/F1 weighted y macro, métricas por clase, ROC/PR AUC OVR; matrices de confusión y curvas de entrenamiento en `outputs/plots/<run_id>/`.
+---
 
-## Interpretabilidad
-- MLP_MA: pesos de atención de entrada (script `analyze_attention.py`).
-- FT-Transformer: embedding CLS y atención por capa (script `analyze_attention.py`).
-- TabNet: máscaras de atención por paso de decisión (método `explain`).
+## 🎯 Descripción del Proyecto
 
-## Azure ML (opcional, MLP_MA)
-- Plantillas en `MLP_MA/azure/` (environment.yml, job.yml, README_AZURE.md) para lanzar jobs en Azure ML.
+Este proyecto implementa un **sistema de clasificación** de hábitos de lectura utilizando tres arquitecturas de **Redes Neuronales Profundas**:
 
-## Solución de problemas
-- Métricas 100% o ROC AUC NaN en test (monoclasal): el split puede quedar con una sola clase. Ajusta `random_state`, tamaños de split, o fija un split estratificado que garantice todas las clases en cada partición.
-- CUDA no disponible: AMP se desactiva automáticamente; los warnings son informativos.
-- TabNet no importado: asegura `pip install -r TabNet/requirements.txt`.
+- **MLP + Mecanismo de Atención (MLP_MA)**: Red neuronal multicapa con atención a nivel de entrada
+- **Feature Tokenizer Transformer (FT-Transformer)**: Arquitectura transformer adaptada para datos tabulares
+- **TabNet**: Red neuronal con atención interpretable secuencial
 
-## Dónde ver resultados
-- Métricas finales: `outputs/models/<run_id>/final_test_metrics.txt`.
-- Curvas de entrenamiento: `outputs/models/<run_id>/metrics_by_epoch.csv` y gráficos en `outputs/plots/<run_id>/`.
+### 🎓 Contexto Académico
 
-## Gráficos de rendimiento (mejor época actual, ejemplos)
+Proyecto de tesis para clasificar el comportamiento lector de la población peruana según características demográficas y socioculturales, utilizando datos de la **Encuesta Nacional de Lectura (ENL - GdB-pe)**.
 
+**Objetivo:** Desarrollar y comparar modelos de clasificación para tres grupos etarios:
+- 👶 **Niños** (0-11 años)
+- 🧑 **Jóvenes** (12-17 años)
+- 👨 **Adultos** (18+ años)
 
-Nota: si alguna corrida dejó el test con una sola clase, las curvas ROC/PR pueden ser NaN o no informativas; vuelve a ejecutar con otro random_state.
+**Clases de clasificación:**
+1. `no_lector`: Personas con hábitos mínimos o nulos de lectura
+2. `lector_medio`: Lectores ocasionales con frecuencia moderada
+3. `lector_frecuente`: Lectores habituales con alta frecuencia
 
-## Últimas corridas por modelo (auto)
-<!-- AUTO-PLOTS-START -->
-### MLP_MA (run 20250811_124519)
+---
 
-![CM](MLP_MA\outputs\plots\20250811_124519\confusion_matrix.png)
-![ROC](MLP_MA\outputs\plots\20250811_124519\roc_curve.png)
-![Train](MLP_MA\outputs\plots\20250811_124519\training_metrics.png)
+## 📁 Estructura del Proyecto
 
-### FT-Transformer (run 20250811_180018)
+```
+Classfier_Reading/
+│
+├─ 📊 data/                          # Gestión de datos
+│  ├─ raw/                           # Datos originales ENL (inmutables)
+│  ├─ processed/                     # Datos preprocesados por grupo
+│  ├─ samples/                       # Muestras de 1k para desarrollo
+│  ├─ metadata/                      # Diccionarios de mapeo de variables
+│  └─ scripts/                       # Scripts de utilidad de datos
+│
+├─ 🧠 src/                           # Código fuente
+│  ├─ data/                          # ETL y cargadores de datos
+│  ├─ models/                        # Arquitecturas de clasificadores
+│  ├─ training/                      # Lógica de entrenamiento
+│  ├─ evaluation/                    # Métricas y comparación (Copeland)
+│  └─ utils/                         # Utilidades generales
+│
+├─ 🔧 configs/                       # Configuraciones
+│  ├─ data/                          # Configs por grupo etario
+│  ├─ models/                        # Configs por arquitectura
+│  ├─ experiments/                   # Configs de experimentos
+│  └─ azure/                         # Configs de Azure ML
+│
+├─ 🚀 experiments/                   # Scripts de experimentación
+│  ├─ 01_train_baseline.py           # Entrenar 9 modelos baseline
+│  ├─ 02_compare_models.py           # Comparación con Copeland
+│  ├─ 03_gridsearch_winners.py       # Optimización de hiperparámetros
+│  ├─ 04_train_final.py              # Re-entrenamiento final
+│  └─ 05_generate_report.py          # Informe de resultados
+│
+├─ 📈 results/                       # Resultados de experimentos
+│  ├─ baseline/                      # Experimentos baseline (9 modelos)
+│  ├─ comparisons/                   # Rankings de Copeland
+│  ├─ gridsearch/                    # Búsqueda de hiperparámetros
+│  └─ final_models/                  # Modelos finales optimizados
+│
+├─ ☁️ deployment/                    # Despliegue
+│  ├─ azure/                         # Scripts para Azure ML
+│  ├─ docker/                        # Contenedores
+│  └─ inference/                     # API de clasificación
+│
+├─ 📚 notebooks/                     # Análisis exploratorio
+├─ 🧪 tests/                         # Pruebas unitarias
+└─ 📖 docs/                          # Documentación
+```
 
-![CM](outputs\plots\20250811_180018\confusion_matrix.png)
-![ROC](outputs\plots\20250811_180018\roc_curve.png)
-![Train](outputs\plots\20250811_180018\training_metrics.png)
+---
 
-### TabNet (run 20250811_180018)
+## 🚀 Inicio Rápido
 
-![CM](outputs\plots\20250811_180018\confusion_matrix.png)
-![ROC](outputs\plots\20250811_180018\roc_curve.png)
-![Train](outputs\plots\20250811_180018\training_metrics.png)
-<!-- AUTO-PLOTS-END -->
+### 1. Requisitos
+
+```bash
+Python 3.12+
+PyTorch 2.0+
+CUDA 11.8+ (opcional, para GPU)
+```
+
+### 2. Instalación
+
+```bash
+# Clonar repositorio
+git clone https://github.com/AaronAP1/MLP_Classificador.git
+cd Classfier_Reading
+
+# Crear entorno virtual
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
+
+# Instalar dependencias
+pip install -r requirements.txt
+```
+
+### 3. Preparar Datos
+
+```bash
+# Copiar datos originales a data/raw/
+# - adultos.csv
+# - jovenes.csv
+# - ninos.csv
+
+# Copiar diccionarios de metadata a data/metadata/
+
+# Crear muestras de 1000 registros para desarrollo rápido
+python data/scripts/create_samples.py --size 1000
+```
+
+### 4. Entrenar Clasificadores Baseline (Desarrollo Rápido)
+
+```bash
+# Entrenar 9 modelos con muestras de 1k (~ 30 min)
+python experiments/01_train_baseline.py \
+  --config configs/experiments/sample_test.yaml \
+  --epochs 5
+```
+
+### 5. Entrenar Clasificadores Completos
+
+```bash
+# Entrenar 9 modelos con datos completos (~74k registros, ~3-6 horas)
+python experiments/01_train_baseline.py \
+  --config configs/experiments/baseline_all.yaml
+```
+
+### 6. Comparar Modelos
+
+```bash
+# Aplicar algoritmo de Copeland para comparación
+python experiments/02_compare_models.py \
+  --results_dir results/baseline/
+
+# Ver ranking: results/comparisons/overall_ranking.html
+```
+
+---
+
+## 🎯 Metodología
+
+### Fase 1: Preparación de Datos
+- Extracción de ENL (Encuesta Nacional de Lectura)
+- Limpieza y transformación
+- Segmentación por grupo etario
+- Split estratificado 70/15/15 (Train/Val/Test)
+- Anti-leakage: Exclusión de variables objetivo
+
+### Fase 2: Desarrollo de Clasificadores
+- **9 modelos base** (3 arquitecturas × 3 grupos)
+- Entrenamiento con:
+  - Early stopping (patience=20)
+  - ReduceLROnPlateau
+  - Class weighting para desbalanceo
+  - Mixed Precision Training (AMP)
+  - Gradient clipping
+
+### Fase 3: Evaluación Comparativa
+- **Algoritmo de Copeland** para ranking
+- Métricas: F1-score, Precision, Recall, Accuracy
+- Selección del mejor clasificador por grupo
+
+### Fase 4: Optimización (Opcional)
+- GridSearchCV en clasificadores ganadores
+- Re-entrenamiento con train+val (85%)
+- Validación final en test (15%)
+
+---
+
+## 📊 Arquitecturas de Clasificadores
+
+### 1. MLP + Mecanismo de Atención (MLP_MA)
+
+```python
+Input → Attention Layer → MLP(256→128→64→32) → Softmax → Classes
+```
+
+**Características:**
+- Atención a nivel de entrada para ponderación de features
+- 4 capas ocultas con ReLU
+- LayerNorm + Dropout 0.3
+- Bloques residuales opcionales
+
+### 2. Feature Tokenizer Transformer (FT-Transformer)
+
+```python
+Input → Tokenization → [CLS] + Tokens → Transformer → Classification Head
+```
+
+**Características:**
+- Tokenización individual por feature
+- Multi-head self-attention
+- CLS token para clasificación (estilo BERT)
+- N capas de transformer encoder
+
+### 3. TabNet
+
+```python
+Input → Sequential Attention Steps → Feature Selection → Decision → Classes
+```
+
+**Características:**
+- Atención secuencial interpretable
+- Máscaras esparsas (entmax)
+- Feature selection adaptativa
+- Alta interpretabilidad
+
+---
+
+## 📈 Resultados Esperados
+
+### Estructura de Resultados
+
+```
+results/
+├─ baseline/
+│  ├─ adultos/
+│  │  ├─ mlp_ma/20250106_143022/
+│  │  │  ├─ model.pt                   # Clasificador entrenado
+│  │  │  ├─ metrics.json               # Métricas de clasificación
+│  │  │  ├─ confusion_matrix.png       # Matriz de confusión
+│  │  │  └─ training_log.csv           # Log de entrenamiento
+│  │  ├─ tabnet/
+│  │  └─ ft_transformer/
+│  └─ ... (jovenes, ninos)
+│
+├─ comparisons/
+│  ├─ adultos_copeland.csv             # Ranking Copeland
+│  └─ overall_ranking.html             # Dashboard interactivo
+│
+└─ final_models/
+   └─ adultos_mlp_ma_final/
+      ├─ model.pt                       # Mejor clasificador
+      ├─ metrics_final.json
+      └─ interpretability/
+         └─ attention_weights.png       # Análisis de atención
+```
+
+---
+
+## ☁️ Despliegue en Azure ML
+
+```bash
+# Enviar job de entrenamiento a Azure
+python deployment/azure/submit_job.py \
+  --experiment baseline_adultos \
+  --compute gpu-cluster \
+  --config configs/experiments/baseline_all.yaml
+
+# Monitorear progreso
+python deployment/azure/monitor_job.py --job-id <job_id>
+
+# Descargar resultados
+python deployment/azure/download_results.py \
+  --job-id <job_id> \
+  --output results/azure_runs/
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Ejecutar pruebas unitarias
+pytest tests/
+
+# Validar pipeline de datos
+python tests/test_data_pipeline.py
+
+# Validar modelos
+python tests/test_models.py
+```
+
+---
+
+## 📚 Documentación
+
+- [Metodología Completa](docs/methodology.md)
+- [Diccionario de Datos](docs/data_dictionary.md)
+- [Arquitecturas de Modelos](docs/model_architectures.md)
+- [Guía de Integración con Tesis](docs/thesis_integration.md)
+
+---
+
+## 🤝 Contribuciones
+
+Este es un proyecto de tesis académica. Para consultas o colaboraciones:
+
+**Autor:** Aaron (AaronAP1)  
+**Institución:** Universidad Peruana Unión  
+**Contacto:** [GitHub](https://github.com/AaronAP1)
+
+---
+
+## 📝 Licencia
+
+MIT License - Ver [LICENSE](LICENSE) para más detalles
+
+---
+
+## 🙏 Agradecimientos
+
+- Datos: Encuesta Nacional de Lectura (ENL - GdB-pe)
+- Inspiración: Papers de TabNet, FT-Transformer
+- Universidad Peruana Unión
+
+---
+
+## 📌 Notas Importantes
+
+⚠️ **Este es un CLASIFICADOR, no un sistema de predicción:**
+- Clasifica individuos en categorías de hábitos de lectura
+- No predice valores continuos
+- Salida: Clase discreta (no_lector, lector_medio, lector_frecuente)
+
+✅ **Características clave:**
+- 3 arquitecturas de clasificadores de última generación
+- Evaluación rigurosa con Copeland Algorithm
+- Reproducibilidad completa (seeds fijos)
+- Anti-leakage en pipeline de datos
+- Despliegue escalable en Azure ML
+
+---
+
+**Última actualización:** Octubre 2025

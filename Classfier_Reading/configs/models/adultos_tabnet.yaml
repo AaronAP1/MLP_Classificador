@@ -1,0 +1,39 @@
+# Configuración TabNet para Adultos
+seed: 42
+
+data:
+  group: "adultos"
+  data_path: "data/processed/adultos"
+  train_file: "train.parquet"
+  val_file: "val.parquet"
+  test_file: "test.parquet"
+  batch_size: 256
+  num_workers: 4
+
+model:
+  type: "tabnet"
+  n_d: 64
+  n_a: 64
+  n_steps: 5
+  gamma: 1.5
+  n_independent: 2
+  n_shared: 2
+  lambda_sparse: 0.001
+  momentum: 0.3
+  mask_type: "entmax"
+
+training:
+  epochs: 200
+  lr: 0.02
+  optimizer: "adam"
+  weight_decay: 0.0001
+  scheduler: "step"
+  scheduler_step_size: 50
+  scheduler_gamma: 0.9
+  early_stopping_patience: 20
+  gradient_clip: 1.0
+
+output:
+  save_dir: "results/baseline/adultos_tabnet"
+  log_file: "results/baseline/adultos_tabnet/training.log"
+  save_best_only: true

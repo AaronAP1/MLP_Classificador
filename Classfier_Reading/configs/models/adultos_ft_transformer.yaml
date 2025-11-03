@@ -1,0 +1,36 @@
+# Configuración FT-Transformer para Adultos
+seed: 42
+
+data:
+  group: "adultos"
+  data_path: "data/processed/adultos"
+  train_file: "train.parquet"
+  val_file: "val.parquet"
+  test_file: "test.parquet"
+  batch_size: 128
+  num_workers: 4
+
+model:
+  type: "ft_transformer"
+  d_token: 192
+  n_blocks: 3
+  attention_n_heads: 8
+  attention_dropout: 0.2
+  ffn_d_hidden: 512
+  ffn_dropout: 0.1
+  residual_dropout: 0.0
+
+training:
+  epochs: 200
+  lr: 0.0001
+  optimizer: "adamw"
+  weight_decay: 0.00001
+  scheduler: "cosine"
+  early_stopping_patience: 20
+  use_amp: true
+  gradient_clip: 1.0
+
+output:
+  save_dir: "results/baseline/adultos_ft_transformer"
+  log_file: "results/baseline/adultos_ft_transformer/training.log"
+  save_best_only: true

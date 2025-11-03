@@ -1,0 +1,33 @@
+# Configuración MLP-MA para Niños
+seed: 42
+
+data:
+  group: "ninos"
+  data_path: "data/processed/ninos"
+  train_file: "train.parquet"
+  val_file: "val.parquet"
+  test_file: "test.parquet"
+  batch_size: 128
+  num_workers: 4
+
+model:
+  type: "mlp_ma"
+  hidden_dims: [256, 128, 64, 32]
+  attn_dim: 32
+  dropout: 0.3
+  activation: "relu"
+
+training:
+  epochs: 200
+  lr: 0.001
+  optimizer: "adam"
+  weight_decay: 0.0001
+  scheduler: "cosine"
+  early_stopping_patience: 20
+  use_amp: true
+  gradient_clip: 1.0
+
+output:
+  save_dir: "results/baseline/ninos_mlp_ma"
+  log_file: "results/baseline/ninos_mlp_ma/training.log"
+  save_best_only: true

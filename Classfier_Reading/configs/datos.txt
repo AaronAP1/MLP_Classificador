@@ -1,6 +1,0 @@
-Conteo.
-
-
-Datos Jovenes = 14021
-Datos Niños   = 21652
-Datos Adultos = 40559

@@ -1,5 +1,0 @@
-METRICAS TEST
-Accuracy: 0.8063
-Precision (weighted): 0.6501
-Recall (weighted): 0.8063
-F1 (weighted): 0.7198

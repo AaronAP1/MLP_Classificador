@@ -1,6 +1,0 @@
-{
-  "raw_data_dir": "MLP_Jov/data/raw",
-  "processed_data_dir": "MLP_Jov/data/processed",
-  "model_dir": "outputs/models",
-  "plots_dir": "outputs/plots"
-}

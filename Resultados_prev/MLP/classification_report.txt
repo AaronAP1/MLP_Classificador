@@ -1,9 +1,0 @@
-                  precision    recall  f1-score   support
-
-       no_lector      0.878     0.863     0.870      1343
-    lector_medio      0.887     0.873     0.880      1347
-lector_frecuente      0.856     0.885     0.870      1310
-
-        accuracy                          0.874      4000
-       macro avg      0.874     0.874     0.873      4000
-    weighted avg      0.874     0.874     0.874      4000

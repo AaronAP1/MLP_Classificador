@@ -1,0 +1,185 @@
+# =====================================================================
+# CONFIGURACION UNICA DE VERDAD  -  Pipeline alineado al manuscrito
+# "Modelos de red neuronal profunda para clasificar el comportamiento
+#  lector de los peruanos segun caracteristicas demograficas y
+#  socioculturales"
+#
+# Cada valor de este archivo corresponde a una afirmacion explicita del
+# articulo. La seccion del articulo se indica en el comentario.
+# NINGUN hiperparametro debe quedar incrustado en el codigo.
+# =====================================================================
+
+seed: 42                       # III-D  reproducibilidad
+n_classes: 3                   # III  No Lector / Lector Medio / Lector Frecuente
+
+class_names:
+  - "No Lector"
+  - "Lector Medio"
+  - "Lector Frecuente"
+
+# ---------------------------------------------------------------------
+# 1. SEGMENTACION ETARIA  (Seccion IV del articulo)
+#    El articulo define: Ninos 3-13, Jovenes 14-17, Adultos 18+
+#    Los CSV originales usaban bandas distintas (0-15 / 16-27 / 28-99),
+#    por eso la segmentacion se rehace aqui desde `edad_total`.
+# ---------------------------------------------------------------------
+groups:
+  ninos:
+    edad_min: 3
+    edad_max: 13
+    target_source: "chapter_500"     # P506
+  jovenes:
+    edad_min: 14
+    edad_max: 17
+    target_source: "chapter_500"     # P506
+  adultos:
+    edad_min: 18
+    edad_max: 120
+    target_source: "chapter_300_400" # P402 + P403
+
+# ---------------------------------------------------------------------
+# 2. PREPROCESAMIENTO  (Seccion III-A)
+# ---------------------------------------------------------------------
+preprocessing:
+  max_missing_row_ratio: 0.20    # III-A "se eliminaron registros con mas del 20% de valores faltantes"
+  categorical_encoding: "label"  # III-A "Label Encoding"
+  numeric_scaling: "minmax"      # III-A "Min-Max Scaling"
+  missing_numeric_strategy: "median"
+  missing_categorical_fill: -1   # categoria explicita "sin dato" antes del Label Encoding
+
+# ---------------------------------------------------------------------
+# 3. FEATURE ENGINEERING Y SELECCION  (Seccion III-B)
+#    Objetivo declarado: matriz final de 71 variables por individuo.
+# ---------------------------------------------------------------------
+features:
+  target_n_features: 71          # III-B "matriz final de 71 variables"
+  variance_threshold: 0.005      # III-B "umbral de varianza (Variance Threshold)"
+  correlation_threshold: 0.95    # III-B "inspeccion de correlacion"
+  build_derived_indicators: true # III-B indicadores derivados
+  ranking_method: "mutual_info"  # criterio para recortar a exactamente 71
+
+# ---------------------------------------------------------------------
+# 4. PARTICION Y BALANCEO  (Seccion III-B / III-E-1)
+# ---------------------------------------------------------------------
+split:
+  train_size: 0.70               # III-B "70% para entrenamiento"
+  val_size: 0.15                 # III-B "15% para validacion"
+  test_size: 0.15                # III-B "15% para prueba"
+  stratify: true                 # III-B "muestreo estratificado"
+
+balancing:
+  method: "smote"                # Abstract / III "SMOTE"
+  apply_to: "train_only"         # nunca sobre val ni test
+  k_neighbors: 5
+  min_class_count: 6             # si una clase tiene menos, se degrada a class_weights
+
+# ---------------------------------------------------------------------
+# 5. ENTRENAMIENTO  (Seccion III-E-2 / III-E-3 / IV)
+# ---------------------------------------------------------------------
+training:
+  optimizer: "adamw"             # III-E-2 "La optimizacion se realizo mediante AdamW"
+  loss: "cross_entropy"          # III-E-2 "Cross-Entropy Loss"
+  final_epochs: 200              # IV "entrenados durante 200 epocas"
+  early_stopping_patience: 20    # III-E-3 "Early Stopping con paciencia de 20 epocas"
+  gradient_clip: 1.0
+  scheduler: "reduce_on_plateau"
+  scheduler_patience: 10
+  scheduler_factor: 0.5
+  num_workers: 0                 # >0 solo si la GPU se queda esperando datos
+  use_class_weights: true        # complemento a SMOTE para la clase minoritaria
+  device: "auto"                 # auto | cuda | cpu
+  amp: "auto"                    # precision mixta: auto (=cuda) | true | false        # complemento a SMOTE para la clase minoritaria
+
+# ---------------------------------------------------------------------
+# 6. BUSQUEDA DE HIPERPARAMETROS  (Seccion III-E-4, Tabla 2)
+#    Grid Search + validacion cruzada estratificada 5-Fold sobre el 70%.
+#    Al terminar: reentrenamiento sobre 70%+15% = 85% con la mejor config.
+# ---------------------------------------------------------------------
+gridsearch:
+  enabled: true
+  cv_folds: 5                    # III-E-4 "Validacion cruzada estratificada 5-Fold"
+  cv_epochs: 60                  # epocas reducidas durante CV; el modelo final usa 200
+  cv_patience: 12
+  refit_on: 0.85                 # III-E-5 "reentrenado sobre el 85% del dataset"
+  scoring: "f1_macro"            # metrica de seleccion (robusta al desbalance)
+  preset: "standard"             # fast | standard | paper
+
+  # ---- Tabla 2 del articulo, en su forma completa ----
+  presets:
+    paper:
+      lr:           [0.001, 0.0005, 0.0001]
+      batch_size:   [32, 64, 128]
+      dropout:      [0.1, 0.2, 0.3, 0.4]
+      weight_decay: [0.000001, 0.00001, 0.0001]
+      depth:        [3, 4, 5]        # MLP: n capas | TabNet: n_steps (2,3,4) | FT: fijo 4
+    standard:
+      lr:           [0.001, 0.0001]
+      batch_size:   [64, 128]
+      dropout:      [0.2, 0.3]
+      weight_decay: [0.00001, 0.0001]
+      depth:        [4]
+    fast:
+      lr:           [0.001]
+      batch_size:   [128]
+      dropout:      [0.3]
+      weight_decay: [0.0001]
+      depth:        [4]
+
+# ---------------------------------------------------------------------
+# 7. ARQUITECTURAS  (Seccion III-C)
+#    Los valores marcados FIJO son estructurales y no entran al grid.
+# ---------------------------------------------------------------------
+models:
+  mlp_ma:
+    hidden_dims: [256, 128, 64, 32]  # III-C-1 "256 -> 128 -> 64 -> 32"  FIJO
+    n_heads: 4                       # III-C-1 atencion multi-cabeza real
+    attn_dim: 64                     # dimension del espacio de atencion
+    activation: "relu"               # III-C-1 "todas con activacion ReLU"
+
+  tabnet:
+    n_steps: 3                       # III-C-2 "se utilizaron 3 decision steps"  FIJO
+    mask_type: "sparsemax"           # III-C-2 "mascaras sparsemax"  FIJO
+    n_d: 32
+    n_a: 32
+    gamma: 1.3
+    n_independent: 2
+    n_shared: 2
+    lambda_sparse: 0.001
+    virtual_batch_size: 128
+
+  ft_transformer:
+    emb_dim: 64                      # III-C-3 "embedding de 64 dimensiones"  FIJO
+    n_layers: 4                      # III-C-3 "4 capas encoder"  FIJO
+    n_heads: 8
+    dim_feedforward: 256
+    use_cls_token: true              # III-C-3 token [CLS]
+
+# ---------------------------------------------------------------------
+# 8. EVALUACION  (Seccion III-E-5 / III-F)
+# ---------------------------------------------------------------------
+evaluation:
+  metrics:                           # III-E-5
+    - accuracy
+    - f1_weighted
+    - f1_macro
+    - precision_weighted
+    - recall_weighted
+    - roc_auc_ovr
+  copeland_metrics:                  # III-F-3 metricas que entran al ranking
+    - accuracy
+    - f1_weighted
+    - precision_weighted
+  stability:                         # III-F-4 "evaluacion de estabilidad"
+    multiseed: true
+    seeds: [42, 123, 456, 789, 2024] # "Cinco ejecuciones con diferentes semillas"
+  interpretability: true             # III-G  mascaras TabNet + atencion FT / MLP-MA
+
+# ---------------------------------------------------------------------
+# 9. RUTAS
+# ---------------------------------------------------------------------
+paths:
+  raw_dir: "data/unprocessed"
+  processed_dir: "data/aligned"
+  results_dir: "results/aligned"
+  figures_dir: "outputs/aligned"
+  metadata_dir: "data/metadata"

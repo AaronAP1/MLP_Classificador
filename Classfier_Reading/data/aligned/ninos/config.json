@@ -1,0 +1,170 @@
+{
+  "grupo": "ninos",
+  "seed": 42,
+  "segmentacion": {
+    "rango_edad": [
+      3,
+      13
+    ],
+    "n_registros": 15528,
+    "procedencia_csv": {
+      "ninos": 15528
+    }
+  },
+  "target": {
+    "fuente": "chapter_500",
+    "n_valid": 15333,
+    "n_discarded": 195,
+    "counts": {
+      "No Lector": 2632,
+      "Lector Medio": 4095,
+      "Lector Frecuente": 8606
+    },
+    "ratios": {
+      "No Lector": 0.171656,
+      "Lector Medio": 0.267071,
+      "Lector Frecuente": 0.561273
+    },
+    "imbalance_ratio": 3.27,
+    "min_class_count": 2632
+  },
+  "indicadores_derivados": {
+    "indicadores_construidos": [
+      "idx_acceso_digital",
+      "idx_nivel_educativo",
+      "idx_lengua_materna_tipo",
+      "idx_n_lenguas_habladas"
+    ],
+    "nivel_educativo_fuente": "P306 (ultimo nivel aprobado, escala 1-12) con respaldo en P310_N y P514_1.",
+    "nivel_educativo_familiar": "Se construye en el bloque de contexto del hogar como hh_nivel_educ_mean / _max / _jefe.",
+    "acceso_digital_exacto": false,
+    "acceso_digital_nota": "APROXIMADO: el capitulo 600 no esta en data/unprocessed/. Se usan estrato socioeconomico, grado de urbanidad y modalidad educativa como proxies.",
+    "frecuencia_lectora_semanal": "NO incorporada a X: se deriva del target y provocaria fuga. Ver docstring de features.py.",
+    "contexto_hogar": {
+      "columnas": [
+        "hh_nivel_educ_max",
+        "hh_nivel_educ_mean",
+        "hh_alfabetismo",
+        "hh_lengua_indigena",
+        "hh_pueblo_indigena",
+        "hh_etnia_jefe",
+        "hh_tasa_ocupacion",
+        "hh_ingreso_mean",
+        "hh_ingreso_max",
+        "hh_estudia",
+        "hh_limitacion",
+        "hh_n_adultos",
+        "hh_nivel_educ_jefe",
+        "hh_tamano",
+        "hh_n_menores",
+        "hh_ratio_menores"
+      ],
+      "clave_hogar": [
+        "UBIGEO",
+        "CONG",
+        "VIVIENDA",
+        "HOGAR"
+      ],
+      "motivo": "La ENL solo aplica el capitulo 300 (lengua materna, etnia, nivel educativo alcanzado, ocupacion, ingreso) a personas de 18+. Sin este bloque los grupos de 3-17 quedan sin variables socioculturales propias.",
+      "cobertura": 1.0
+    }
+  },
+  "limpieza": {
+    "umbral_faltantes_fila": 0.2,
+    "n_antes": 15333,
+    "n_despues": 15331,
+    "n_removidos": 2
+  },
+  "seleccion_features": {
+    "universo_inicial": 105,
+    "descartadas_varianza": 67,
+    "descartadas_correlacion": 4,
+    "objetivo_articulo": 71,
+    "n_final": 34,
+    "coincide_con_articulo": false,
+    "features": [
+      "FACTORFINAL_HOGAR",
+      "P210_A",
+      "P514_2",
+      "idx_acceso_digital",
+      "idx_nivel_educativo",
+      "idx_lengua_materna_tipo",
+      "hh_nivel_educ_max",
+      "hh_nivel_educ_mean",
+      "hh_alfabetismo",
+      "hh_lengua_indigena",
+      "hh_pueblo_indigena",
+      "hh_etnia_jefe",
+      "hh_tasa_ocupacion",
+      "hh_estudia",
+      "hh_limitacion",
+      "hh_n_adultos",
+      "hh_nivel_educ_jefe",
+      "hh_tamano",
+      "hh_n_menores",
+      "hh_ratio_menores",
+      "DOMINIO",
+      "ESTRATO",
+      "ESTRATOSOCIO",
+      "CCDD",
+      "P201",
+      "P203",
+      "P204",
+      "P205",
+      "P209",
+      "P211",
+      "P212",
+      "P513A",
+      "P514_1",
+      "P514_3"
+    ],
+    "dimensiones": {
+      "otro": 17,
+      "demografico": 8,
+      "geografico": 5,
+      "educativo": 3,
+      "linguistico": 1
+    }
+  },
+  "balanceo": {
+    "applied": true,
+    "k_neighbors": 5,
+    "before": {
+      "2": 6023,
+      "1": 2866,
+      "0": 1842
+    },
+    "after": {
+      "2": 6023,
+      "1": 6023,
+      "0": 6023
+    }
+  },
+  "splits": {
+    "train": {
+      "n": 18069,
+      "dist": {
+        "0": 6023,
+        "1": 6023,
+        "2": 6023
+      }
+    },
+    "val": {
+      "n": 2300,
+      "dist": {
+        "0": 394,
+        "1": 615,
+        "2": 1291
+      }
+    },
+    "test": {
+      "n": 2300,
+      "dist": {
+        "0": 395,
+        "1": 614,
+        "2": 1291
+      }
+    }
+  },
+  "n_features": 34
+}

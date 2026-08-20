@@ -164,3 +164,7 @@ outputs/
 # ============================================================================
 site/
 docs/_build/
+
+# Pipeline alineado
+bench_out.txt
+results/_smoke/

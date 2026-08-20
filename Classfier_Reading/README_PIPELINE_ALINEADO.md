@@ -4,6 +4,11 @@ Reemplaza al conjunto de scripts auditado. Cubre el ciclo completo: datos
 crudos de la ENL 2022 → matriz de predictores → Grid Search con validación
 cruzada → reentrenamiento → evaluación → tablas y figuras del artículo.
 
+> **¿Solo quieres lanzar el entrenamiento?**
+> Ve a [README_ENTRENAMIENTO.md](README_ENTRENAMIENTO.md): instalación con CUDA,
+> qué configurar, qué se ve mientras corre y qué queda al final.
+> Este documento explica el *diseño*; aquel explica la *operación*.
+
 ---
 
 ## Puesta en marcha en otra máquina

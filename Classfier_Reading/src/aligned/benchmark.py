@@ -2,11 +2,13 @@
 Estimacion del coste de entrenamiento.
 
 Mide el tiempo real de unas pocas epocas por combinacion (grupo, modelo)
-sobre los datos ya procesados y extrapola el coste total del pipeline:
+sobre los datos ya procesados y extrapola el coste total del pipeline
+(peor caso: sin early stopping):
 
     Grid Search   = n_configs x cv_folds x cv_epochs x t_epoca(80% del train)
-    Reentreno     = final_epochs x t_epoca(85%)
-    Multi-semilla = n_seeds x Reentreno
+    Etapa A       = final_epochs x t_epoca(70%)            train vs. validacion
+    Etapa B       = final_epochs x t_epoca(85%)            reentrenamiento
+    Multi-semilla = n_seeds x Etapa B
 
 No guarda modelos ni metricas: es solo un cronometro. Los pesos que se
 crean aqui se descartan.
@@ -47,8 +49,8 @@ def _time_epochs(cfg: dict, model_name: str, X: np.ndarray, y: np.ndarray,
     set_seed(cfg["seed"])
     weights = compute_class_weights(y, cfg["n_classes"])
 
-    # El train viene balanceado por SMOTE y agrupado por clase: cortar la
-    # cola sin mezclar deja un "val" de una sola clase y rompe las metricas.
+    # Particion estratificada para que el "val" del cronometro tenga las
+    # tres clases, como en el entrenamiento real.
     from sklearn.model_selection import train_test_split
     X_tr, X_va, y_tr, y_va = train_test_split(
         X, y, test_size=0.15, random_state=cfg["seed"], stratify=y)
@@ -139,26 +141,30 @@ def run_benchmark(cfg: dict, root: Path, groups: Optional[List[str]] = None,
 
             # CV: cada fold entrena sobre 4/5 del train.
             t_cv = n_configs * gs_cfg["cv_folds"] * gs_cfg["cv_epochs"] * t_epoch * 0.8
-            # Reentreno final sobre el 85%, escalado por tamaño.
+            # Etapa A sobre el 70% y etapa B sobre el 85%, escalada por tamaño.
             scale = sizes[group] / max(n_train[group], 1)
+            t_stage_a = tr_cfg["final_epochs"] * t_epoch
             t_refit = tr_cfg["final_epochs"] * t_epoch * scale
             t_seeds = n_seeds * t_refit
-            sub = t_cv + t_refit + t_seeds
+            sub = t_cv + t_stage_a + t_refit + t_seeds
             detail[key] = {"n_configs": n_configs, "grid_search_s": t_cv,
-                           "refit_s": t_refit, "multiseed_s": t_seeds, "total_s": sub}
+                           "stage_a_s": t_stage_a, "refit_s": t_refit,
+                           "multiseed_s": t_seeds, "total_s": sub}
             total += sub
 
         estimates[preset] = {"total_s": total, "detail": detail}
         n_fits = sum(d["n_configs"] for d in detail.values()) * gs_cfg["cv_folds"]
         print(f"\n  preset '{preset}'  ({n_fits:,} ajustes de CV en total)")
         print(f"    Grid Search + CV : {_fmt(sum(d['grid_search_s'] for d in detail.values()))}")
-        print(f"    Reentreno 85%    : {_fmt(sum(d['refit_s'] for d in detail.values()))}")
+        print(f"    Etapa A (70/15)  : {_fmt(sum(d['stage_a_s'] for d in detail.values()))}")
+        print(f"    Etapa B (85%)    : {_fmt(sum(d['refit_s'] for d in detail.values()))}")
         print(f"    Multi-semilla    : {_fmt(sum(d['multiseed_s'] for d in detail.values()))}")
         print(f"    TOTAL            : {_fmt(total)}")
 
     print(f"\n{'-' * 70}")
-    print("  Nota: el early stopping (paciencia 20) suele recortar entre un 30% y")
-    print("  un 60% del tiempo estimado, que asume que se agotan todas las epocas.")
+    print("  Nota: estimacion de peor caso. El early stopping (paciencia 20) de la")
+    print("  etapa A fija cuantas epocas usan la etapa B y las semillas; en la")
+    print("  practica suele recortar entre un 30% y un 60% del tiempo estimado.")
     print("  Una GPU reduce el tiempo de MLP+MA y FT-Transformer entre 5x y 15x")
     print("  frente a CPU; TabNet mejora menos porque su cuello de botella es el")
     print("  preprocesamiento por lotes.")

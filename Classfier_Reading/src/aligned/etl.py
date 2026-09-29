@@ -2,7 +2,8 @@
 ETL alineado al manuscrito (seccion III-A y III-B).
 
 Flujo:
-    1. Consolidacion de los tres CSV crudos en un unico marco.
+    1. Consolidacion de los tres CSV crudos en un unico marco, con
+       armonizacion de su codificacion (ver `harmonize_source`).
     2. Segmentacion etaria segun el articulo (Ninos 3-13, Jovenes 14-17,
        Adultos 18+), recalculada desde `edad_total`.
     3. Construccion del target y descarte de filas sin target.
@@ -12,9 +13,14 @@ Flujo:
     7. Split estratificado 70 / 15 / 15.
     8. Ajuste SOLO sobre train de: imputacion, Label Encoding,
        Min-Max Scaling, umbral de varianza, correlacion y recorte a 71.
-    9. SMOTE unicamente sobre train.
-   10. Verificaciones duras: sin fuga, y esquema identico en los tres
+    9. Verificaciones duras: sin fuga, y esquema identico en los tres
        splits (el bug de 398 vs 387 columnas que detecto la auditoria).
+
+El balanceo de clases YA NO se aplica aqui. Aplicar SMOTE al 70% antes de
+la validacion cruzada deja muestras sinteticas en los folds de
+validacion, fabricadas a partir de los folds de entrenamiento, y la CV
+sale optimista. Ahora se hace dentro de cada ajuste, solo sobre la parte
+de entrenamiento (`pipeline.balance_training_set`).
 
 Todos los artefactos quedan en `data/aligned/<grupo>/`.
 """
@@ -22,6 +28,7 @@ Todos los artefactos quedan en `data/aligned/<grupo>/`.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -37,8 +44,52 @@ from .target import build_target, target_report
 # =====================================================================
 # Carga y consolidacion
 # =====================================================================
-def load_raw(raw_dir: Path) -> pd.DataFrame:
-    """Concatena los CSV crudos y normaliza los nombres de columna."""
+def harmonize_source(df: pd.DataFrame, blank_means_not_applicable: bool
+                     ) -> Tuple[pd.DataFrame, Dict[str, object]]:
+    """
+    Unifica la codificacion de un CSV crudo con la de los demas.
+
+    Dos defectos de `jovenes.csv` (16-27 años) que, sin esta correccion,
+    hacian que el filtro de ">20 % de faltantes" descartara el 100 % de
+    sus filas, de modo que ningun joven de 16-17 ni adulto de 18-27
+    llegaba al modelo:
+
+      a) Columnas duplicadas por un merge de capitulos (`P201_x`,
+         `P201_y`, ...): el valor real quedo repartido entre la columna
+         base y sus sufijos. Se unifican en la columna base.
+      b) "No aplica" codificado como celda vacia, mientras `ninos.csv` y
+         `adultos.csv` usan 0, la convencion de la ENL. Se verifico sobre
+         edades vecinas (16-17 vs 14-15; 18-27 vs 28-35): la proporcion de
+         vacios en jovenes.csv coincide con la de ceros en los otros
+         archivos (P208, P506, P513: 100 % vs 100 %; P402/P408/P301/P306:
+         10-11 % vs 9-10 %). Los vacios se convierten en 0.
+    """
+    info: Dict[str, object] = {}
+
+    suffixed = [c for c in df.columns if re.search(r"_(x|y)$", c)]
+    bases = sorted({c[:-2] for c in suffixed})
+    for base in bases:
+        parts = [c for c in (base, f"{base}_x", f"{base}_y") if c in df.columns]
+        merged = df[parts[0]]
+        for extra in parts[1:]:
+            merged = merged.combine_first(df[extra])
+        df[base] = merged
+    df = df.drop(columns=suffixed)
+    info["columnas_merge_unificadas"] = bases
+
+    if blank_means_not_applicable:
+        numeric = [c for c in df.columns
+                   if c not in ("edad_total", "_src")
+                   and pd.api.types.is_numeric_dtype(df[c])]
+        info["celdas_vacias_convertidas_a_0"] = int(df[numeric].isna().sum().sum())
+        df[numeric] = df[numeric].fillna(0)
+    return df, info
+
+
+def load_raw(raw_dir: Path, blank_sources: Optional[List[str]] = None,
+             report: Optional[Dict[str, object]] = None) -> pd.DataFrame:
+    """Concatena los CSV crudos, armoniza su codificacion y normaliza nombres."""
+    blank_sources = list(blank_sources or [])
     frames = []
     for name in ("ninos", "jovenes", "adultos"):
         path = raw_dir / f"{name}.csv"
@@ -46,8 +97,10 @@ def load_raw(raw_dir: Path) -> pd.DataFrame:
             raise FileNotFoundError(f"No se encontro {path}")
         df = pd.read_csv(path, low_memory=False)
         df.columns = [c.replace("﻿", "").strip() for c in df.columns]
-        df["_src"] = name
-        frames.append(df)
+        df, info = harmonize_source(df, name in blank_sources)
+        if report is not None:
+            report[name] = {"filas": int(len(df)), **info}
+        frames.append(df.assign(_src=name))
 
     consolidated = pd.concat(frames, ignore_index=True, sort=False)
     if "edad_total" not in consolidated.columns:
@@ -121,45 +174,6 @@ class AlignedPreprocessor:
 
 
 # =====================================================================
-# Balanceo
-# =====================================================================
-def apply_smote(
-    X: pd.DataFrame, y: pd.Series, k_neighbors: int, min_class_count: int, seed: int
-) -> Tuple[pd.DataFrame, pd.Series, Dict[str, object]]:
-    """SMOTE solo sobre train. Degrada con elegancia si una clase es minuscula."""
-    counts = y.value_counts()
-    smallest = int(counts.min())
-
-    if smallest < min_class_count:
-        return X, y, {
-            "applied": False,
-            "reason": (
-                f"La clase minoritaria tiene {smallest} muestras "
-                f"(< min_class_count={min_class_count}). Se omite SMOTE y "
-                f"el entrenamiento se apoya en class_weights."
-            ),
-            "before": counts.to_dict(),
-        }
-
-    try:
-        from imblearn.over_sampling import SMOTE
-    except ImportError:
-        return X, y, {"applied": False, "reason": "imbalanced-learn no instalado."}
-
-    k = min(k_neighbors, smallest - 1)
-    sm = SMOTE(random_state=seed, k_neighbors=k)
-    Xr, yr = sm.fit_resample(X, y)
-    Xr = pd.DataFrame(Xr, columns=X.columns)
-    yr = pd.Series(yr, name=y.name)
-    return Xr, yr, {
-        "applied": True,
-        "k_neighbors": int(k),
-        "before": counts.to_dict(),
-        "after": yr.value_counts().to_dict(),
-    }
-
-
-# =====================================================================
 # Pipeline por grupo
 # =====================================================================
 def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
@@ -168,7 +182,6 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
     pre = cfg["preprocessing"]
     fcfg = cfg["features"]
     scfg = cfg["split"]
-    bcfg = cfg["balancing"]
     seed = cfg["seed"]
     class_names = cfg["class_names"]
 
@@ -179,8 +192,10 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
 
     # --- 2. Segmentacion etaria ------------------------------------
     df = segment_by_age(raw, gcfg["edad_min"], gcfg["edad_max"])
+    edades = pd.to_numeric(df["edad_total"], errors="coerce")
     report["segmentacion"] = {
         "rango_edad": [gcfg["edad_min"], gcfg["edad_max"]],
+        "edad_observada": [int(edades.min()), int(edades.max())],
         "n_registros": int(len(df)),
         "procedencia_csv": df["_src"].value_counts().to_dict(),
     }
@@ -295,15 +310,17 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
         if part.isna().any().any():
             raise AssertionError(f"Quedaron NaN en {name} tras el preprocesamiento.")
 
-    # --- 9. SMOTE solo en train -------------------------------------
-    Xtr_bal, ytr_bal, smote_report = apply_smote(
-        Xtr, y_tr, bcfg["k_neighbors"], bcfg["min_class_count"], seed
-    )
-    report["balanceo"] = smote_report
+    # --- 9. Balanceo: se difiere al entrenamiento ------------------
+    report["balanceo"] = {
+        "metodo": cfg["balancing"]["method"],
+        "donde": ("Dentro de cada ajuste, solo sobre la parte de entrenamiento "
+                  "(cada fold de la CV y el reentrenamiento). Los splits "
+                  "guardados conservan la distribucion natural de clases."),
+    }
 
     # --- 10. Persistencia -------------------------------------------
     for name, Xp, yp in (
-        ("train", Xtr_bal, ytr_bal),
+        ("train", Xtr, y_tr),
         ("val", Xval, y_val),
         ("test", Xte, y_te),
     ):
@@ -318,7 +335,7 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
     )
 
     report["splits"] = {
-        "train": {"n": int(len(Xtr_bal)), "dist": pd.Series(ytr_bal).value_counts().sort_index().to_dict()},
+        "train": {"n": int(len(Xtr)), "dist": y_tr.value_counts().sort_index().to_dict()},
         "val": {"n": int(len(Xval)), "dist": y_val.value_counts().sort_index().to_dict()},
         "test": {"n": int(len(Xte)), "dist": y_te.value_counts().sort_index().to_dict()},
     }
@@ -332,17 +349,35 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
 
 def run_etl(cfg: dict, root: Path) -> Dict[str, dict]:
     """Ejecuta el ETL para los tres grupos etarios."""
-    raw = load_raw(root / cfg["paths"]["raw_dir"])
+    harm = cfg.get("raw_harmonization", {})
+    raw_report: Dict[str, object] = {}
+    raw = load_raw(root / cfg["paths"]["raw_dir"],
+                   blank_sources=harm.get("blank_means_not_applicable", []),
+                   report=raw_report)
+    for name, info in raw_report.items():
+        extra = []
+        if info.get("columnas_merge_unificadas"):
+            extra.append(f"{len(info['columnas_merge_unificadas'])} columnas _x/_y unificadas")
+        if info.get("celdas_vacias_convertidas_a_0"):
+            extra.append(f"{info['celdas_vacias_convertidas_a_0']:,} vacios -> 0 (no aplica)")
+        print(f"  {name}.csv: {info['filas']:,} filas" + (f" · {' · '.join(extra)}" if extra else ""))
+
     reports = {}
     for group in cfg["groups"]:
         print(f"\n{'=' * 66}\nETL · {group.upper()}\n{'=' * 66}")
         rep = run_group(cfg, group, raw, root, raw_all=raw)
+        rep["armonizacion_csv"] = raw_report
+        with open(root / cfg["paths"]["processed_dir"] / group / "config.json",
+                  "w", encoding="utf-8") as fh:
+            json.dump(rep, fh, indent=2, ensure_ascii=False, default=str)
         reports[group] = rep
-        sel = rep["seleccion_features"]
+        sel, seg = rep["seleccion_features"], rep["segmentacion"]
+        print(f"  edades incluidas            : {seg['edad_observada'][0]}-{seg['edad_observada'][1]} "
+              f"· origen {seg['procedencia_csv']}")
         print(f"  registros con target valido : {rep['target']['n_valid']:,}")
         print(f"  distribucion                : {rep['target']['counts']}")
+        print(f"  eliminados por >20% faltante: {rep['limpieza']['n_removidos']:,}")
         print(f"  universo -> final           : {sel['universo_inicial']} -> {sel['n_final']} features")
         print(f"  train/val/test              : "
               f"{rep['splits']['train']['n']:,} / {rep['splits']['val']['n']:,} / {rep['splits']['test']['n']:,}")
-        print(f"  SMOTE                       : {rep['balanceo'].get('applied')}")
     return reports

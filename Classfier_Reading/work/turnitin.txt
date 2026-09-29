@@ -1,0 +1,1192 @@
+
+===== PAGE 1 =====
+Página 1 de 22 - Portada Identificador de la entrega trn:oid:::29566:626221925
+Vega-Mattos Aquino
+Manuscript IJIET.pdf
+Universidad Peruana Union
+Detalles del documento
+Identificador de la entrega
+trn:oid:::29566:626221925 20 páginas
+Fecha de entrega 10.102 palabras
+18 sep 2026, 10:24 a.m. GMT-5
+60.989 caracteres
+Fecha de descarga
+28 sep 2026, 3:11 p.m. GMT-5
+Nombre del archivo
+Manuscript IJIET - SubiralResearch.pdf
+Tamaño del archivo
+5.3 MB
+Página 1 de 22 - Portada Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 2 =====
+Página 2 de 22 - Descripción general de la escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+50 % detectado como IA Precaución: Se necesita revisión.
+El porcentaje indica la cantidad de texto calificado en la entrega que Es esencial comprender los límites de la detección de IA antes de tomar decisiones
+probablemente se generó usando IA. acerca del trabajo del estudiante. Te alentamos a obtener más información acerca de
+las funciones de detección de IA de Turnitin antes de usar la herramienta.
+36 Sólo generado con IA 50%
+Texto generado probablemente con IA desde un modelo de lenguaje de
+gran tamaño.
+Aviso legal
+Nuestra evaluación de escritura con IA está diseñada para ayudar a los académicos a identificar texto que podrían haberse preparado mediante una herramienta de IA generativa. Es posible
+que nuestra evaluación de escritura con IA no siempre sea precisa (existe la posibilidad de que identifique erróneamente redacciones probablemente generadas por humanos como
+generadas por IA, y redacciones probablemente generadas por IA como generadas por humanos), por lo que no debe usarse como único fundamento para aplicar sanciones a un estudiante.
+Para determinar si es un caso de deshonestidad académica, se necesita de un escrutinio mayor y el juicio humano, junto con la aplicación de las políticas académicas específicas de la
+organización.
+Página 2 de 22 - Descripción general de la escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 3 =====
+Página 3 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Modelos de red neuronal profunda para clasificar el
+comportamiento lector de los peruanos según características
+demográficas y socioculturales
+Samuel E. Vega-Sanchez , Anthony A. Aquino-Poma , Leonardo A. Matos-Urdanivia , Nemias Saboya ,*
+1Escuela Profesional de Ingeniería de Sistemas, Facultad de Ingeniería y Arquitectura, Universidad Peruana Unión, Lima, Perú
+Email: samuelvega@upeu.edu.pe (S.E.V.S.); anthony.aquino@upeu.edu.pe (A.A.A.P.); leonardomatos@upeu.edu.pe(L.A.M.U.);
+saboya@upeu.edu.pe (N.S.)
+*Corresponding author
+Manuscript received Month date, 2025; revised Month date, 2025; accepted Month date, 2025
+Abstract—Este estudio propone un modelo de clasificación el análisis de datos sociales a gran escala. Este escenario
+multiclase del comportamiento lector de la población peruana motiva el uso de técnicas computacionales avanzadas que
+utilizando aprendizaje profundo aplicado a los microdatos de permitan modelar y clasificar dichos patrones de lectura.
+la Encuesta Nacional de Lectura 2022 (ENL). Se evaluaron
+Desde una perspectiva de ingeniería, la clasificación del
+tres arquitecturas especializadas para datos tabulares: MLP
+comportamiento lector implica manejar un conjunto
+con mecanismo de atención (MLP+MA), TabNet y FT-
+heterogéneo de variables demográficas, educativas,
+Transformer. El pipeline incluyó preprocesamiento,
+lingüísticas y culturales que presentan alta dimensionalidad
+normalización, SMOTE, búsqueda de hiperparámetros y
+validación cruzada estratificada. La evaluación se realizó y relaciones no lineales. Los métodos estadísticos
+mediante Accuracy, F1-Weighted, F1-Macro y AUC-ROC en convencionales tienden a perder capacidad predictiva frente
+tres grupos etarios: niños, jóvenes y adultos. a esta complejidad [3], [4]. En este escenario, los modelos
+Los resultados muestran que TabNet obtuvo el mejor basados en aprendizaje automático y, en particular, las
+desempeño global, con accuracies superiores al 97 % en redes neuronales profundas (Deep Neural Networks, DNN),
+adultos, 92 % en jóvenes y 73 % en niños, seguido por
+ofrecen un marco robusto para el descubrimiento de
+MLP+MA como alternativa eficiente. FT-Transformer
+patrones latentes y la generación de modelos predictivos
+presentó mayor variabilidad, especialmente en el grupo
+interpretables. Investigaciones recientes han demostrado la
+infantil. El análisis de interpretabilidad indicó que el nivel
+eficacia de arquitecturas neuronales en la predicción del
+educativo, el idioma materno y el acceso digital fueron las
+variables más influyentes. rendimiento académico y en la clasificación de niveles de
+Estos hallazgos confirman que las arquitecturas profundas competencia, utilizando algoritmos ensemble, Support
+tabulares permiten modelar eficazmente patrones educativos Vector Machines y redes neuronales multicapa con
+complejos y constituyen una herramienta útil para el diseño resultados significativos en precisión y F1-score [5], [6],
+de sistemas predictivos orientados a reducir brechas de lectura [7], [8], [9], [10].
+en el Perú Esto representa una oportunidad para diseñar un modelo
+predictivo reproducible que optimice la precisión y la
+Keywords— Deep Learning, Tabular Data, TabNet,
+explicabilidad mediante aprendizaje profundo. Debido a
+Attention Mechanisms, FT-Transformer, Multiclass
+eso, el presente estudio propone el desarrollo de un modelo
+Classification, Reading Behavior, Educational Data Mining,
+predictivo de clasificación multiclase del comportamiento
+Machine Learning
+lector de la población peruana, empleando técnicas de
+aprendizaje profundo sobre los microdatos de la Encuesta
+I. INTRODUCTION
+Nacional de Lectura (ENL). Se implementaron y
+El desarrollo de las competencias lectoras en el Perú
+compararon tres arquitecturas principales: un Perceptrón
+presenta diferencias marcadas según área de residencia,
+Multicapa con mecanismo de atención (MLP+MA), TabNet
+nivel educativo y condición sociocultural. Según la
+y FT-Transformer, optimizadas mediante validación
+Encuesta Nacional de Lectura 2022 del Instituto Nacional
+cruzada estratificada y contrastadas con métodos
+de Estadística e Informática, el 47,3 % de la población
+tradicionales de aprendizaje automático. En este estudio se
+adulta declara haber leído libros en los últimos 12 meses y
+planteó desarrollar modelos de redes neuronales profundas
+solo el 38,3 % lo hace de forma frecuente, con una brecha
+para clasificar el comportamiento lector de niños, jóvenes y
+marcada entre el área urbana (50,3 %) y la rural (29,8 %)
+adultos peruanos, y evaluar comparativamente su
+[1]. De manera complementaria, los resultados del
+rendimiento (MLP+MA, TabNet y FT-Transformer) con el
+Programa para la Evaluación Internacional de Estudiantes
+fin de determinar la arquitectura con mejor desempeño.
+(PISA) 2025 confirman esta situación: el Perú obtuvo una
+media de 390 puntos en competencia lectora, con una caída
+II. LITERATURE REVIEW
+de 18 puntos respecto del ciclo 2022, y la mayoría de los
+La aplicación de modelos de aprendizaje profundo en el
+estudiantes de 15 años se mantiene por debajo del nivel
+ámbito educativo ha demostrado ser una estrategia eficaz
+básico de competencia (Nivel 2), lo que evidencia la
+para identificar patrones de comportamiento y predecir
+persistencia de brechas estructurales en el aprendizaje [2].
+resultados académicos con mayor precisión que los
+Estos indicadores reflejan desigualdades estructurales en
+modelos estadísticos tradicionales [4], [8], [3], [11]. Estas
+los hábitos y prácticas lectoras, lo que convierte la
+arquitecturas permiten procesar información
+comprensión de este fenómeno en un desafío relevante para
+multidimensional, integrar variables heterogéneas
+Página 3 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 4 =====
+Página 4 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+demográficas, cognitivas y conductuales, y capturar estudio. Yang et al. integraron TabNet con representaciones
+relaciones no lineales difíciles de representar mediante basadas en hipergrafos para la predicción del rendimiento
+enfoques convencionales [4], [3], [11]. Estudios recientes académico, evidenciando la ventaja de los mecanismos de
+evidencian que los modelos neuronales, como las redes atención al operar sobre datos tabulares educativos [22].
+multicapa y las arquitecturas basadas en mecanismos de Esta línea se enmarca en la acelerada evolución de los
+atención, alcanzan métricas de precisión y F1-score modelos profundos para datos tabulares —desde las redes
+superiores al modelar interacciones complejas entre totalmente conectadas hasta arquitecturas como TabNet,
+factores socioculturales, tecnológicos y lingüísticos [7], [8], SAINT y FT-Transformer—, sistematizada en revisiones
+[12]. En contextos educativos multivariados, como los recientes del campo [23]. Un aspecto crítico en la
+analizados en Holistic Exploration of Reading clasificación de datos educativos es el desbalance de clases:
+Comprehension Skills [7] y Using Machine Learning los estudios comparativos han demostrado que las técnicas
+Approaches to Explore Non-Cognitive Variables [8], se de submuestreo, sobremuestreo y SMOTE mejoran de
+comprobó que variables como el entorno familiar, la manera consistente el desempeño en la minería de datos
+exposición tecnológica y la motivación influyen educativos [24], mientras que el análisis de variantes de
+significativamente en la comprensión lectora y el SMOTE combinado con métodos de interpretabilidad
+desempeño académico. De igual forma, [13] y [14] incrementa simultáneamente la exactitud y la explicabilidad
+destacaron que los factores digitales y las estrategias de los modelos de rendimiento estudiantil [25]. En el plano
+metacognitivas condicionan la lectura comprensiva, de las evaluaciones a gran escala, la combinación de
+confirmando el potencial de los modelos de IA para métodos estadísticos y de aprendizaje automático permitió
+representar dimensiones no observables en evaluaciones identificar los predictores del desempeño de estudiantes
+tradicionales. latinoamericanos en PISA 2018 [26], y enfoques similares
+Por otra parte, los estudios comparativos recientes modelaron el logro estudiantil a partir del estatus
+demuestran que las arquitecturas profundas especializadas económico, social y cultural y de las características del
+en datos tabulares superan ampliamente a los modelos aprendiz [27]. De forma complementaria, el uso conjunto
+convencionales en tareas de clasificación educativa. En de aprendizaje automático y del método SHAP reveló los
+particular, TabNet, TabTransformer, SAINT y FT- factores clave que inciden en la competencia de los
+Transformer han mostrado una alta capacidad de estudiantes [28], y la comparación entre modelos lineales
+generalización y robustez ante datos desbalanceados, jerárquicos y redes neuronales artificiales evidenció la
+gracias a sus mecanismos de atención secuencial y capacidad de estas últimas para predecir la competencia
+embeddings adaptativos [11], [15], [16]. El trabajo de [11] lectora en PISA 2018 [29]. En conjunto, esta evidencia
+evaluó siete modelos sobre el dataset OULAD, alcanzando sustenta la pertinencia de emplear arquitecturas tabulares
+con el modelo SAINT una exactitud del 94,33 % en profundas con mecanismos de atención, estrategias de
+clasificación binaria y del 73,22 % en clasificación balanceo de clases e interpretabilidad para clasificar el
+multiclase, mientras que AutoInt y TabNet obtuvieron comportamiento lector en contextos socioculturalmente
+desempeños competitivos al integrar estrategias de sobre heterogéneos como el peruano.
+muestreo como SMOTE y ADASYN. De forma El avance de la inteligencia artificial explicable (XAI) ha
+complementaria, [12] aplicó una red neuronal multimodal permitido que los modelos profundos incorporen
+con mecanismo de atención y fusión de datos académicos, mecanismos de interpretabilidad y transparencia. Técnicas
+psicológicos y conductuales, logrando una precisión del como SHAP, LIME y KernelSHAP facilitan la atribución
+94.16 %, un F1-score de 90.6 % y un AUC de 0.975. de importancia de características y la comprensión del
+Asimismo, [17] demostró que la combinación de modelos comportamiento interno de las redes neuronales [30]. Este
+de ensamble y técnicas de resampling mejora la estabilidad
+enfoque se ha aplicado con éxito en entornos educativos
+de las métricas en entornos educativos con datos
+para analizar la influencia relativa de factores
+desequilibrados, elevando la exactitud de Random Forest
+socioculturales y demográficos en el rendimiento lector,
+desde aproximadamente el 58 % sobre el conjunto original
+aportando evidencia de la interacción entre nivel educativo,
+hasta cerca del 99 %, con valores ROC próximos a 0,999.
+acceso digital y desempeño [7], [30]. En el contexto
+En conjunto, estos resultados confirman que las
+latinoamericano, los modelos predictivos basados en
+arquitecturas basadas en atención y optimización jerárquica
+aprendizaje automático han logrado resultados
+constituyen la alternativa más eficaz para procesar
+prometedores en la caracterización de perfiles académicos
+información educativa tabular compleja y desarrollar
+y la detección temprana de dificultades educativas [8], [3].
+modelos predictivos reproducibles en contextos de
+aprendizaje inteligente [11], [12], [15], [16]. Fuera del Sin embargo, en el caso peruano, persiste un vacío respecto
+dominio educativo, la eficacia de los mecanismos de a modelos que integren información sociodemográfica y
+atención sobre redes profundas [18], de los esquemas cultural con técnicas avanzadas de aprendizaje profundo y
+híbridos de agrupamiento y clasificación [19], de la explicabilidad [2], [1]. En este marco, la integración de
+evaluación comparativa sistemática entre arquitecturas [20] arquitecturas neuronales interpretables como MLP con
+y del modelado de patrones cognitivos mediante atención, TabNet y FT-Transformer constituye una
+aprendizaje automático [21] respalda la transferibilidad de oportunidad para desarrollar sistemas predictivos
+estas técnicas a problemas de clasificación con variables reproducibles capaces de clasificar de manera integral el
+heterogéneas. comportamiento lector, contribuyendo al diseño de
+Investigaciones recientes centradas específicamente en soluciones inteligentes para la gestión educativa y la
+arquitecturas tabulares aplicadas al ámbito educativo reducción de brechas de aprendizaje [4], [7], [8], [3], [11],
+respaldan de manera directa el enfoque adoptado en este
+[12], [15], [16], [30]. A pesar de los avances alcanzados, la
+Página 4 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 5 =====
+Página 5 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+literatura aún presenta desafíos en cuanto a la estratificada y análisis de importancia de variables,
+transferibilidad, escalabilidad e interpretabilidad de los buscando optimizar el equilibrio entre precisión y
+modelos de aprendizaje profundo aplicados al ámbito explicabilidad.
+educativo. La mayoría de los estudios revisados emplea
+conjuntos de datos controlados o de alcance regional III. MATERIALS AND METHODS
+limitado, lo que restringe la generalización de los resultados
+El proceso metodológico seguido en este estudio se
+en contextos socioculturales diversos [7], [8], [11], [30]. estructuró en tres fases principales: (i) preparación del
+Además, persiste la necesidad de equilibrar la precisión dataset, (ii) modelado y optimización de las arquitecturas de
+predictiva y la transparencia explicativa, ya que los modelos Deep Learning, y (iii) evaluación integral del desempeño de
+más complejos como FT-Transformer o SAINT suelen los modelos.
+incrementar el costo computacional y dificultar la Este flujo garantiza la reproducibilidad del proceso, la
+trazabilidad de las decisiones [11], [30]. En este escenario, validez de los resultados y la correcta incorporación de
+resulta necesario desarrollar enfoques reproducibles que variables demográficas, socioculturales y tecnológicas
+integren rendimiento, interpretabilidad y adaptabilidad a provenientes de la Encuesta Nacional de Lectura (ENL
+entornos heterogéneos. En función de esta evidencia, el 2022).
+presente trabajo propone un modelo predictivo de
+clasificación multiclase del comportamiento lector de la
+población peruana, fundamentado en arquitecturas
+neuronales profundas como MLP+MA, TabNet y FT-
+Transformer, optimizadas mediante validación cruzada
+Fig. 1. Visión General del Pipeline aplicado.
+Página 5 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 6 =====
+Página 6 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+En la primera fase, se realizó la depuración, codificación, cantidad total de variables, así como la distribución entre
+normalización y segmentación del dataset original, variables numéricas y categóricas y el porcentaje de valores
+generando tres subconjuntos independientes faltantes identificados en cada segmento del cuestionario.
+correspondientes a los grupos etarios de niños, jóvenes y Estos resultados respaldan la necesidad de aplicar técnicas de
+adultos. limpieza, codificación y reducción de dimensionalidad
+Posteriormente, en la fase de modelado se implementaron descritas previamente [7], [8], [11].
+tres arquitecturas neuronales MLP + Multi-head Attention,
+TabNet y FT-Transformer que fueron entrenadas, validadas y Table 1. Resumen descriptive de registro disponible de ENL 2022
+optimizadas mediante búsqueda de hiperparámetros y Capitulo Registro Variables Numéricas Categóricas % NA
+Totales
+validación cruzada estratificada
+100-600 18 474 312 235 77 7,0%
+Finalmente, en la fase de evaluación se aplicaron métricas
+200 74 082 420 381 39 5,2%
+estándar de clasificación multiclase (Accuracy, Precision, 300-400 45 118 155 111 44 6,8%
+Recall y F1-Score), así como el Copeland Algorithm para 500 29 221 134 95 39 9,4%
+comparar el rendimiento relativo entre los modelos y analizar Maestro 74 006 734 575 159 11,2%
+la consistencia de los resultados.
+A. Data Preprocessing B. Feature Engineering y Construcción del Dataset Final
+Una vez completado el preprocesamiento, se llevó a cabo
+El dataset utilizado proviene de la Encuesta Nacional de un proceso de feature engineering orientado a maximizar la
+Lectura 2022 (ENL), la cual contiene variables demográficas, capacidad predictiva de los modelos y reflejar adecuadamente
+educativas, tecnológicas y socioculturales relevantes para la las dimensiones socioculturales, educativas y tecnológicas
+caracterización del comportamiento lector. Antes de la asociadas al comportamiento lector. Este procedimiento
+construcción de los modelos, se aplicó un proceso sistemático incluyó:
+de preprocesamiento orientado a garantizar la calidad, (i) selección de variables relevantes,
+consistencia y utilidad predictiva de los datos. Este (ii) creación de indicadores derivados, y
+procedimiento incluyó cuatro etapas principales: limpieza, (iii) consolidación de los subconjuntos finales para
+codificación, normalización y segmentación, como se entrenamiento y validación.
+muestra en la Fig. 1.
+En primer lugar, se eliminaron registros con más del 20 % Selección de características relevantes
+de valores faltantes y se realizó una verificación de
+coherencia entre variables, siguiendo procedimientos Se conservaron únicamente las variables con significancia
+empleados en estudios de predicción educativa basados en conceptual o estadística para la modelación del
+aprendizaje automático [7], [8], [3]. Las variables categóricas comportamiento lector. La selección se basó en criterios
+fueron codificadas mediante Label Encoding y, en los casos usados en estudios previos de predicción educativa y analítica
+necesarios, se emplearon técnicas de reducción de de aprendizaje, donde se enfatiza la importancia de factores
+dimensionalidad para evitar redundancia entre atributos familiares, tecnológicos y cognitivos [7], [8], [3]. Para evitar
+altamente correlacionados, en concordancia con métodos redundancias y disminuir el riesgo de sobreajuste, se aplicó
+empleados en estudios tabulares de ML [11], [15], [16]. un umbral de varianza (Variance Threshold) y una inspección
+Posteriormente, todas las variables numéricas fueron de correlación, siguiendo las prácticas empleadas en modelos
+normalizadas mediante Min–Max Scaling con el fin de tabulares de aprendizaje profundo [11], [15], [16].
+homogeneizar las escalas y mejorar la estabilidad del
+entrenamiento de las redes neuronales, procedimiento Creación de indicadores derivados
+ampliamente utilizado en investigaciones recientes sobre
+modelos predictivos educativos [8], [11]. Adicionalmente, se Dado que las variables originales del ENL contienen
+implementó un proceso de feature engineering, que incluyó múltiples dimensiones socioculturales, se generaron
+la construcción de indicadores derivados relacionados con indicadores adicionales que permitieran capturar patrones
+acceso digital, nivel educativo familiar, frecuencia lectora y latentes relevantes. Estos incluyeron:
+entorno lingüístico, siguiendo enfoques teóricos empleados
+en análisis de factores cognitivos y socioculturales [7], [3]. • Índice de Acceso Digital (uso de dispositivos,
+Finalmente, el conjunto de datos fue segmentado en tres conectividad, acceso a internet).
+subgrupos independientes niños, jóvenes y adultos para • Nivel Educativo Familiar (promedio de educación
+permitir el entrenamiento especializado por cohorte etaria. de los adultos del hogar).
+Cada subconjunto fue dividido en las proporciones habituales • Frecuencia Lectora Semanal (número de días
+para aprendizaje supervisado: 70 % para entrenamiento, 15 % dedicados a lectura).
+para validación y 15 % para prueba, siguiendo buenas • Entorno Lingüístico (idioma materno y lenguas
+prácticas descritas en estudios de predicción de rendimiento secundarias).
+académico y clasificación tabular [11], [15], [16]. La generación de este tipo de índices ha demostrado
+Además, con el fin de caracterizar la estructura del dataset mejorar la capacidad predictiva en modelos educativos
+y justificar los procedimientos aplicados en la fase de basados en ML y DL [7], [3], [11].
+preprocesamiento, se elaboró un resumen descriptivo de los
+registros disponibles por capítulo temático de la ENL 2022. Construcción del dataset final y segmentación etaria
+La Table 1. presenta el número de observaciones iniciales, la
+Página 6 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 7 =====
+Página 7 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Después del feature engineering, se consolidó una matriz finalidad es asignar pesos diferenciales a las variables de
+final de 71 variables para cada individuo, asegurando entrada, permitiendo resaltar patrones relevantes antes del
+consistencia entre los subgrupos de niños, jóvenes y adultos. paso por las capas densas. En la Fig. 2, el modelo inicia con
+Los subconjuntos fueron segmentados de manera un módulo de atención multi-cabeza aplicado sobre las 71
+independiente para permitir el entrenamiento especializado características de entrada y genera una representación
+por cohorte etaria, siguiendo enfoques comparativos ponderada que se alimenta a una secuencia de capas fully-
+aplicados en estudios de clasificación educativa [8], [11]. connected de tamaño 256 → 128 → 64 → 32, todas con
+Finalmente, cada conjunto fue dividido en: activación ReLU y regularización mediante Dropout (0.3) y
+Weight Decay.
+• 70 % para entrenamiento,
+• 15 % para validación, La capa de salida aplica softmax para obtener las
+• 15 % para prueba, probabilidades asociadas a las tres clases lectoras. Este tipo
+de arquitectura ha mostrado buen desempeño en escenarios
+manteniendo la proporción de clases mediante muestreo educativos con relaciones no lineales y alta dimensionalidad
+estratificado, técnica recomendada para preservar la [8], [11]. Sobre las 71 características de entrada, cada cabeza
+distribución real del comportamiento lector [11], [15], [16]. de atención computa:
+Este dataset final constituye la base de las tres arquitecturas
+𝑄𝐾𝑡
+neuronales implementadas en la siguiente etapa de modelado. 𝐴𝑡𝑡𝑒𝑛𝑡𝑖𝑜𝑛(𝑄,𝐾,𝑉)=𝑠𝑜𝑓𝑡𝑚𝑎𝑥( )𝑉
+√𝑑
+𝑘
+C. Modelo y Arquitecturas de Deep Learning Donde:
+El estudio implementó tres arquitecturas de Deep Learning
+• 𝑄 =𝑋𝑊 ,
+diseñadas para datos tabulares y orientadas a la clasificación 𝑄
+multiclase del comportamiento lector. La selección de estos • 𝐾 =𝑋𝑊 ,
+𝐾
+modelos se basa en evidencia reciente que demuestra la • 𝑉 =𝑋𝑊 ,
+𝑉
+efectividad de mecanismos de atención, estructuras
+• 𝑑 es la dimensión de cada cabeza
+jerárquicas y transformadores para modelar relaciones no 𝑘
+lineales en datos educativos y socioculturales [8], [11], [15],
+[16]. Cada arquitectura fue implementada en PyTorch 2.6.0 y
+Luego, las salidas de todas las cabezas se concatenan:
+entrenada de manera independiente para los grupos etarios de
+niños, jóvenes y adultos. Para asegurar la reproducibilidad del 𝑀𝑢𝑙𝑡𝑖𝐻𝑒𝑎𝑑(𝑋)=𝐶𝑜𝑛𝑐𝑎𝑡(ℎ ,ℎ ,…,ℎ )𝑊
+1 2 ℎ 𝑂
+proceso experimental, se elaboró un pseudocódigo formal
+que resume el pipeline completo del estudio, incluyendo el Esta representación atendida se introduce a un MLP con 4
+preprocesamiento, el entrenamiento, la validación, el ajuste capas densas:
+de hiperparámetros y la comparación final de los modelos. El
+ℎ1=𝜎(𝑊1𝑥+𝑏1), h2=σ(W2h1+b2),
+pseudocódigo detallado se presenta en el Apéndice A,
+siguiendo el formato recomendado para experimentos en ℎ3=𝜎(𝑊3ℎ2+𝑏3), ℎ4=𝜎(𝑊4ℎ3+𝑏4)
+aprendizaje profundo.
+donde σ es ReLU.
+D. Entrenamiento y Optimización de Hiperparámetros
+La capa de salida aplica una distribución softmax:
+El proceso de entrenamiento se realizó de manera
+independiente para cada una de las tres arquitecturas ŷ =softmax(Wh +b)?
+4
+(MLP+MA, TabNet y FT-Transformer) y para cada grupo
+La función de pérdida es la entropía cruzada:
+etario (niños, jóvenes y adultos). El flujo general del
+entrenamiento y optimización se muestra en la Fig. 6, que 3
+resume los pasos aplicados: división del dataset, construcción
+𝐿= ∑𝑦 𝑙𝑜𝑔(ŷ )
+𝑐 𝑐
+del modelo base, ajuste de hiperparámetros y evaluación final
+𝑐=1
+sobre el conjunto de prueba.
+La combinación de atención + capas densas permite capturar
+1) Multilayer Perceptron con Multi-head Attention relaciones no lineales relevantes en datos educativos y
+(MLP+MA) socioculturales [8], [11].
+El modelo MLP+MA combina una arquitectura de perceptrón
+multicapa con un módulo de atención multi-cabeza, cuya
+Página 7 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 8 =====
+Página 8 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Reader
+Frequent
+Reader
+Average
+No Read
+Fig. 2. Arquitectura del modelo MLP + Multi-head Attention utilizado para la clasificación multiclase.
+2) TabNet 𝑀(𝑡) =𝑠𝑝𝑎𝑟𝑠𝑒𝑚𝑎𝑥(𝑃(𝑡)W s )
+TabNet es una arquitectura diseñada específicamente para El uso de sparsemax (en lugar de softmax) es clave para
+datos tabulares que incorpora mecanismos de atención interpretabilidad:
+secuencial interpretables. Su diseño (Fig. 3.) incluye unidades
+Feature Transformer y Attentive Transformer, que generan 𝑠𝑝𝑎𝑟𝑠𝑒𝑚𝑎𝑥(𝑧)=𝑎𝑟𝑔min∥𝑝−𝑧∥2 𝑠𝑢𝑗𝑒𝑡𝑜 𝑎
+𝑝
+máscaras sparsemax para seleccionar dinámicamente las
+características más relevantes en cada iteración. En este 𝑝≥0,∑𝑝 =1
+𝑖
+estudio se utilizaron 3 decision steps, lo que permite que el
+modelo aprenda de manera progresiva combinaciones y pesos Esto permite que muchas entradas se vuelvan exactamente
+de las variables. cero → selección explícita de variables.
+(3) Decision Steps
+TabNet emplea dos bloques fundamentales: Cada paso agrega contribuciones parciales:
+(1) Feature Transformer 𝐷(𝑡) =𝐹𝑒𝑎𝑡𝑢𝑟𝑒𝑇𝑟𝑎𝑛𝑠𝑓𝑜𝑟𝑚𝑒𝑟(𝑋⊙𝑀(𝑡))
+Genera una representación enriquecida de los atributos: La salida final es:
+𝑍 =𝐹𝑒𝑎𝑡𝑢𝑟𝑒𝑇𝑟𝑎𝑛𝑠𝑓𝑜𝑟𝑚𝑒𝑟(𝑋) 3
+ŷ =softmax(∑𝐷(𝑡))
+𝑡=1
+que consiste en capas lineales + GLU (Gated Linear Units): Una ventaja clave de TabNet es su capacidad de ofrecer
+interpretabilidad integrada, identificando explícitamente qué
+𝐺𝐿𝑈(𝑥)=(𝑊 𝑥+𝑏 )⊙𝜎(𝑊 𝑥+𝑏 )
+1 1 2 2 atributos influyen en cada predicción, elemento altamente
+relevante para analizar datos tabulares heterogéneos [3], [15],
+(2) Attentive Transformer
+[16].
+Genera una máscara de selección de características:
+Página 8 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 9 =====
+Página 9 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Fig. 3. Estructura del modelo TabNet con atención secuencial, máscaras sparse y tres decision steps.
+una compuesta por multi-head attention y feed-
+3) Feature Tokenizer Transformer (FT Transformer) forward networks.
+El FT-Transformer adapta la arquitectura Transformer (Fig.
+1) Tokenización de características
+4) al dominio tabular mediante dos mecanismos principales:
+Cada variable 𝑥 se convierte en un embedding de 64
+• Tokenización de características: cada variable se 𝑖
+dimensiones:
+transforma en un embedding de 64 dimensiones,
+incluyendo un token especial [CLS] encargado de 𝑒 =𝑊 ⋅𝑥
+𝑖 𝑒 𝑖
+representar la clase final del individuo.
+• Procesamiento con atención multi-cabeza: los Se añade un token de clasificación [CLS]:
+tokens se procesan mediante 4 capas encoder, cada
+𝐸 =[𝑒 ;𝑒 ;𝑒 ;…;𝑒 ]
+𝐶𝐿𝑆 1 2 71
+(2) Encoder Transformer
+Cada una de las 4 capas aplica: (3) Clasificación mediante token [CLS]
+• Atención multi-cabeza: ŷ =softmax(W⋅𝑒 +b)?
+𝐶𝐿𝑆
+𝑀𝐻𝐴𝑡𝑡(𝐸)=𝐶𝑜𝑛𝑐𝑎𝑡(ℎ ,ℎ ,…,ℎ )𝑊
+1 2 2 𝑜
+• Normalización:
+𝐸′=𝐿𝑎𝑦𝑒𝑟𝑁𝑜𝑟𝑚(𝐸+𝑀𝐻𝐴𝑡𝑡(𝐸)) La representación final del token [CLS] se utiliza como
+entrada para la capa de clasificación softmax. La estructura
+• Red alimentada hacia adelante:
+Transformer permite capturar dependencias de alto nivel
+𝐹𝐹𝑁(𝐸′)=𝜎(𝐸′𝑊 +𝑏 )𝑊 +𝑏
+1 1 2 2 entre variables numéricas y categóricas [11], [15], [16].
+La actualización es:
+𝐸
+𝑜𝑢𝑡
+= 𝐿𝑎𝑦𝑒𝑟𝑁𝑜𝑟𝑚(𝐸′+𝐹𝐹𝑁(𝐸′))
+Página 9 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 10 =====
+Página 10 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Fig. 4. Arquitectura del modelo FT-Transformer, con tokenización de características, embeddings de 64 dimensiones y cuatro capas encoder.
+4) Comparación estructural de las arquitecturas • FT-Transformer aplica atención sobre los
+embeddings de cada variable.
+Para sintetizar las diferencias entre los tres modelos (Fig. 5),
+se elaboró un diagrama comparativo que resume su flujo de • TabNet utiliza atención secuencial interpretativa
+procesamiento interno: durante el proceso de decisión.
+• MLP+MA aplica atención antes de las capas densas.
+Fig. 5. Comparación estructural de las arquitecturas MLP+MA, FT-Transformer y TabNet
+Esta estrategia coincide con las prácticas recomendadas en
+E. Evaluación y Metricas de Desempeño
+estudios de clasificación educativa y análisis tabular basados
+La evaluación del rendimiento de los modelos se realizó en deep learning [8], [11], [15], [16].
+utilizando un conjunto de métricas estándar para clasificación
+multiclase, ampliamente empleadas en investigaciones de Todos los modelos se implementaron en PyTorch 2.6.0,
+aprendizaje automático aplicadas a contextos educativos, utilizando GPU para acelerar el proceso de optimización.
+socioculturales y tabulares [8], [11], [15], [16]. Estas métricas
+permiten analizar el rendimiento global, la estabilidad del 2) Función de Perdida y Optimización
+modelo y su capacidad para discriminar entre las tres
+categorías de comportamiento lector.
+Los tres modelos se entrenaron utilizando la función de
+pérdida Cross-Entropy Loss, adecuada para clasificación
+1) División de datos y configuración experimental
+multiclase:
+3
+El dataset final fue dividido en 70 % para entrenamiento, 15 𝐿 = −∑𝑦 𝑙𝑜𝑔(ŷ )
+𝐶𝐸 𝑐 𝑐
+% para validación y 15 % para prueba mediante muestreo
+𝑐=1
+estratificado, asegurando que la proporción de clases se
+mantuviera constante.
+Página 10 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 11 =====
+Página 11 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+La optimización se realizó mediante AdamW, elegido por su 5) Evaluación final del modelo
+estabilidad en datasets con alta dimensionalidad y correlación Una vez establecidos los hiperparámetros óptimos, cada
+entre variables [11]:
+modelo fue reentrenado sobre el 85 % del dataset (70% +
+15%) y evaluado únicamente sobre el conjunto 15 % de
+m̂
+𝑡
+𝜃 =𝜃 −𝜂⋅ −𝜆𝜃 prueba, nunca visto durante el proceso de optimización. La
+𝑡+1 𝑡 𝑡
+√v̂ 𝑡 +𝜖 evaluación incluyó:
+donde: • Accuracy
+• F1-Weighted
+• 𝜂 = tasa de aprendizaje,
+• F1-Macro
+• 𝜆 = parámetro de weight decay,
+• Precision
+• m̂ , v̂ son los momentos corregidos de Adam.
+𝑡 𝑡
+• Recall
+• AUC (One-vs-Rest)
+Cada arquitectura utilizó tasas de aprendizaje iniciales en el
+rango: Estas métricas han sido recomendadas por estudios recientes
+para evaluar clasificadores multiclase en educación y ciencias
+10−3 ≤η≤10−4
+sociales [8], [11], [15], [16].
+según los resultados de la búsqueda de hiperparámetros.
+3) Regularización y estrategias contra el sobreajuste
+Para evitar sobreajuste, se aplicaron las siguientes técnicas:
+• Dropout (0.2–0.4) en capas internas
+• Weight Decay (L2 regularization)
+• Early Stopping con paciencia de 20 épocas
+• Batch Normalization (en TabNet y FT-Transformer)
+Estas técnicas son consistentes con las implementaciones más
+efectivas en tareas educativas y de clasificación tabular
+reportadas en la literatura [8], [11], [15], [16].
+4) Busqueda de hiperparametros (Grid Search + Cross-
+Validación)
+La optimización de hiperparámetros se llevó a cabo mediante
+una combinación de:
+• Grid Search
+• Validación cruzada estratificada 5-Fold (5-CV)
+Siguiendo el flujo mostrado en la Fig. 6.6, cada configuración
+candidata se entrenó sobre el 70 % del dataset y fue evaluada
+Fig. 6. Flujo de entrenamiento y optimización de hiperparámetros mediante
+en los pliegues correspondientes.
+Grid Search, validación cruzada y evaluación final
+Al finalizar la búsqueda, el conjunto 70 % + 15 % (train +
+validation) se utilizó para un reentrenamiento final con los F. Interpretabilidad y Análisis de Importancia de
+hiperparámetros óptimos. características
+Table 2. Hiperparámetros evaluados incluyeron: La interpretabilidad es un componente fundamental en
+modelos aplicados al análisis educativo y sociocultural,
+Parámetro Rango
+donde es necesario comprender los factores que influyen en
+Learning rate 10−3,5 ×10−4,10−4
+la clasificación y evitar decisiones opacas o difíciles de
+Batch size 32, 64, 128
+Dropout 0.1 – 0.4 justificar [7], [8], [15], [16].
+Weight decay 10−6−10−4
+(MLP: 3–5; FT: 4 encoders; Por ello, además de evaluar el desempeño predictivo, este
+Número de capas
+TabNet: 2–4 decision steps) estudio analizó la importancia relativa de las variables
+empleando los mecanismos internos de atención y selección
+de características integrados en TabNet y FT-Transformer.
+Página 11 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 12 =====
+Página 12 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+1) Metricas de clasificación 3) Ranking comparativo mediante Copeland Algorithm
+Para cada clase 𝑐, se calcularon: Para comparar los modelos de manera global, se empleó el
+Copeland Algorithm, un método de votación condorcetiano
+(a) Exactitud (Accuracy)
+ampliamente utilizado en evaluaciones comparativas de
+clasificadores [15], [16]. El procedimiento consiste en:
+Mide la proporción total de predicciones correctas:
+1.- Comparar cada par de modelos
+∑3 𝑇𝑃
+𝑐=1 𝑐
+𝐴𝑐𝑐𝑢𝑟𝑎𝑐𝑦 =
+𝑁 • A obtiene 1 punto si supera a B en al menos dos
+Donde 𝑇𝑃 es el número de verdaderos positivos para la clase
+𝑐 métricas
+𝑐 𝑦 𝑁 el tamaño del conjunto de prueba.
+• A recibe 0 puntos si empata con B
+(b) Precisión (Precision) • A recibe −1 punto si B lo supera
+𝑇𝑃
+𝑐
+𝑃𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛 =
+𝑐 𝑇𝑃 +𝐹𝑃
+𝑐 𝑐
+2.- Sumar los puntos totales para cada modelo
+Describe qué tan confiables son las predicciones positivas:
+Formalmente:
+(c) Sensibilidad o Recall
++1, 𝑀 > 𝑀
+𝑖 𝑗
+𝑇𝑃
+𝑅𝑒𝑐𝑎𝑙𝑙 𝑐 = 𝑇𝑃 𝑐 + 𝑐 𝐹𝑁 𝑐 𝐶𝑜𝑝𝑒𝑙𝑎𝑛𝑑(𝑀 𝑖 )=∑ 𝑗≠𝑖 { − 0, 1 , 𝑀 𝑀 𝑖 𝑖 ≡ > 𝑀 𝑀 𝑗 𝑗
+Esta métrica es crucial en datos educativos donde la correcta
+Donde
+identificación de grupos vulnerables es prioritaria [8], [3].
+𝑀 > 𝑀 indica que el modelo 𝑀 supera al modelo 𝑀 en
+𝑖 𝑗 𝑖 𝑗
+(d) F1-Score
+más métricas.
+2⋅𝑃𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛 ⋅𝑅𝑒𝑐𝑎𝑙𝑙
+F1 = 𝑐 𝑐 Este método produce un ranking robusto y menos sensible al
+𝑐 𝑃𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛 𝑐 +𝑅𝑒𝑐𝑎𝑙𝑙 𝑐 desbalance de clases que la comparación con una sola
+métrica.
+Debido al desbalance entre clases, se utilizó:
+• Weighted F1: ponderado por tamaño de cada clase. 4) Evaluación de estabilidad
+3 Para evaluar estabilidad y reproducibilidad, se calcularon
+𝐹1 = ∑𝑤 ⋅ F1 desviaciones estándar sobre:
+𝑤 𝑐 𝑐
+𝑐=1
+• Validación cruzada estratificada (5-Fold CV)
+• Macro F1: promedio no ponderado.
+3 • Cinco ejecuciones con diferentes semillas (multi-
+1
+𝐹1 = ∑F1 seed)
+𝑚𝑎𝑐𝑟𝑜 3 𝑐
+𝑐=1
+Esto permite analizar la sensibilidad del modelo a la
+El uso combinado de ambas métricas está recomendado para inicialización y al particionado del dataset, siguiendo
+evaluar clasificadores multiclase en problemas sociales y técnicas recomendadas en estudios educativos con deep
+educativos [11], [15], [16]. learning [8], [11].
+(e) Área Bajo la Curva ROC (AUC-ROC)
+5) Interpretabilidad en TabNet
+Se calculó mediante el enfoque One-vs-Rest:
+TabNet ofrece interpretabilidad nativa mediante sus módulos
+1
+Attentive Transformer, los cuales generan máscaras de
+𝐴𝑈𝐶 =∫ 𝑇𝑃𝑅(𝐹𝑃𝑅−1(𝑡))𝑑𝑡
+selección sparsemax que asignan un peso explícito a cada
+0
+variable en cada decision step.
+La curva ROC permite evaluar la discriminabilidad entre
+clases incluso cuando sus tamaños son desbalanceados, como Para cada instancia, la máscara correspondiente a un paso 𝑡
+ocurre en estudios de comportamiento lector [3], [11]. se define como:
+𝑀(𝑡) =𝑠𝑝𝑎𝑟𝑠𝑒𝑚𝑎𝑥(𝑃(𝑡)W )
+s
+2) Matriz de confusión
+Estas máscaras cumplen dos propiedades esenciales:
+Se generaron matrices de confusión independientes para
+niños, jóvenes y adultos con el fin de analizar los patrones de
+• Sparsity (esparsidad): Muchas variables reciben
+error del modelo. Este análisis permite identificar
+peso cero → el modelo selecciona características
+confusiones sistemáticas entre categorías lectoras, así como
+clave.
+el impacto de variables socioculturales en la separabilidad de
+• Step-wise interpretability: Cada uno de los tres
+clases.
+decision steps destaca variables diferentes a lo
+Estas matrices se presentan en la Fig. 8 dentro de la sección largo del proceso de decisión.
+de resultados.
+Página 12 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 13 =====
+Página 13 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+La importancia global de cada variable se obtiene agregando • Estos hallazgos validan que:
+las máscaras a través de todos los pasos:
+• El nivel educativo,
+𝑇
+(𝑡) • El idioma materno,
+𝐼(𝑣 )=∑𝑀
+𝑖 𝑖
+• El acceso digital,
+𝑇=1
+Este procedimiento permite identificar las variables con • La frecuencia lectora,
+mayor contribución en la clasificación, destacando factores
+como nivel educativo, idioma materno, acceso digital y son factores determinantes en la clasificación del
+frecuencia lectora. comportamiento lector en población peruana.
+6) Interpretabilidad en FT-Transformer 8) Representación visual de la importancia de variables
+El FT-Transformer proporciona interpretabilidad mediante El análisis de importancia se visualiza mediante:
+sus mecanismos de atención multi-cabeza, los cuales • Distribuciones agregadas de importancia por
+distribuyen pesos entre tokens que representan las variables modelo.
+del dataset. Cada cabeza de atención computa:
+• Máscaras de selección de TabNet.
+𝑄𝐾𝑇
+𝑎 =𝑠𝑜𝑓𝑡𝑚𝑎𝑥( 𝑖 𝑗 ) • Mapas de calor de atención del FT-Transformer.
+𝑖𝑗
+√𝑑
+𝑘
+donde 𝑎 indica cuánta importancia asigna la variable 𝑖 a la Estas representaciones se incluyen en la sección de resultados
+𝑖𝑗
+variable 𝑗. (Fig. 11), donde se discute el peso relativo de cada variable y
+Para evaluar la importancia global de cada característica, se su implicancia en la predicción.
+promedió la contribución de atención de todas las cabezas y
+capas:
+1
+𝐻 𝐿 𝑑 IV. RESULT
+(ℎ,𝑙)
+𝐼(𝑣)= ∑∑∑𝛼
+𝑖 𝐻𝐿 𝑖𝑗 En esta sección se presentan los resultados experimentales
+ℎ=1𝑙=1𝑗=1 obtenidos tras el entrenamiento de tres arquitecturas de deep
+Esta estrategia permite identificar dependencias de alto nivel
+learning (MLP con Multi-head Attention, TabNet y Feature
+entre variables socioculturales, demográficas y tecnológicas,
+Tokenizer Transformer) aplicadas a la clasificación de
+tal como se reporta en estudios recientes de aprendizaje
+hábitos de lectura en tres grupos demográficos de Perú:
+profundo tabular [11], [15], [16].
+Adultos (18+ años), Jóvenes (14-17 años) y Niños (3-13
+años). Todos los modelos fueron entrenados durante 200
+7) Comparación de interpretabilidad entre modelos
+épocas con early stopping (patience=20) utilizando el
+La combinación de ambas arquitecturas facilita una optimizador AdamW con learning rate de 1 × 10−3 y
+interpretación complementaria: weight decay de 1 × 10−4.
+• TabNet → interpretabilidad estructural (selección
+A. Rendimiento General de los Modelos
+explícita de variables).
+Los experimentos demostraron que los tres modelos MLP
+• FT-Transformer → interpretabilidad relacional
+con Multi-head Attention, TabNet y FT-Transformer
+(interacciones entre variables).
+obtuvieron desempeños competitivos en la clasificación del
+comportamiento lector para los grupos de adultos, jóvenes y
+Los resultados indicaron que las variables con mayor
+niños. La Table 3. resume los valores obtenidos en Accuracy,
+relevancia coinciden con las dimensiones reportadas en la
+literatura sobre predicción del rendimiento y hábitos lectores F1-Weighted, F1-Macro, Precision-Weighted y Recall-
+[7], [8], [3]. Weighted para cada arquitectura.
+Table 3. Valores obtenidos para cada arquitectura.
+Grupo Modelo Accuracy F1-Weighted F1-Macro Precision-Weighted Recall-Weighted
+Adultos MLP-MA 0.9752 0.9668 0.8671 0.9725 0.9727
+Adultos TabNet 0.9767 0.9740 0.8783 0.9776 0.9724
+Adultos FT-Transformer 0.9652 0.9639 0.8478 0.9686 0.9678
+Jóvenes MLP-MA 0.9172 0.9137 0.7590 0.9162 0.9164
+Jóvenes TabNet 0.9240 0.9210 0.7712 0.9207 0.9240
+Jóvenes FT-Transformer 0.9030 0.8996 0.7345 0.9031 0.9050
+Niños MLP-MA 0.7220 0.7153 0.5415 0.7166 0.7221
+Niños TabNet 0.7363 0.7307 0.5540 0.7290 0.7369
+Niños FT-Transformer 0.6974 0.6863 0.5174 0.6950 0.6956
+En términos globales, TabNet obtuvo el mejor rendimiento en el grupo de adultos, con exactitudes superiores al 96 %. En
+en 11 de las 15 combinaciones modelo–métrica, destacando contraste, la clasificación en niños representó el mayor
+como la arquitectura más robusta y consistente en los tres desafío, con accuracies entre 0.697 y 0.736 debido a la mayor
+segmentos demográficos. MLP-MA se posicionó como heterogeneidad cognitiva y variabilidad sociocultural del
+segunda alternativa con resultados cercanos, mientras que grupo.
+FT-Transformer mostró el rendimiento más bajo y la mayor
+1) Análisis por Grupo Demográfrico
+variabilidad entre grupos, lo que se atribuye a la complejidad
+del transformer y a los tamaños moderados de muestra.
+Los modelos alcanzaron sus mayores valores de precisión Adultos (18+ años)
+Página 13 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 14 =====
+Página 14 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Este grupo presentó el mejor desempeño de todo el estudio, donde registró el desempeño más bajo de todas las
+con accuracies entre 96.52 % y 97.67 %. configuraciones. Esto se relaciona con la necesidad de
+TabNet obtuvo la mayor exactitud (97.67 %) y el mayor tamaños muestrales más grandes y mayor homogeneidad para
+F1-Macro (0.8783), lo que confirma una excelente capacidad que los mecanismos transformer logren abstraer patrones de
+para distinguir las tres categorías lectoras. forma óptima.
+La consistencia del modelo se evidencia en la matriz de
+confusión (Fig. 8.), donde la diagonal presenta valores 1) Análisis Comparativo entre Arquitecturas
+superiores a 0.92 para los tres modelos.
+Un análisis transversal de las métricas revela tres
+tendencias claras:
+Jóvenes (14–17 años)
+Los jóvenes muestran un rendimiento intermedio, con
+a) Superioridad consistente de TabNet
+accuracies entre 90.30 % y 92.40 %.
+TabNet nuevamente alcanza los mejores valores (92.40 %
+accuracy, 0.7712 F1-Macro). De las 15 combinaciones modelo–métrica–grupo:
+La ligera reducción del F1-Macro respecto a adultos refleja
+una mayor heterogeneidad en los hábitos lectores juveniles y • TabNet lideró en 11,
+una transición académica más variable. • MLP+MA lideró en 4,
+• FT-Transformer no lideró en ninguna.
+Niños (3–13 años) Además, TabNet fue el único modelo con F1-Macro > 0.87
+Este grupo presenta la clasificación más compleja, con en adultos, demostrando uniformidad en el rendimiento entre
+accuracies entre 69.74 % y 73.63 %. clases.
+TabNet alcanza el mejor rendimiento (73.63 %), mientras b) MLP+MA logra un balance sólido entre
+FT-Transformer presenta el desempeño más débil (69.74 %). simplicidad y desempeño
+La matriz de confusión (Fig. 8.) revela la mayor dispersión
+A pesar de ser la arquitectura más ligera, MLP+MA:
+off-diagonal, con confusiones frecuentes entre “Lector
+Medio” y “Lector Frecuente”, lo cual coincide con las
+• logra F1-Weighted > 0.96 en adultos,
+variaciones naturales del desarrollo lector temprano.
+• mantiene valores superiores a 0.90 en jóvenes,
+B. Resumen Estadístico por Arquitectura • y supera a FT-Transformer en niños.
+Las métricas globales obtenidas para cada arquitectura se
+Esto demuestra que la atención previa al MLP mejora
+presentan en la Table 3. De manera consistente, los tres
+significativamente la capacidad de representación,
+modelos exhiben una tendencia común: su rendimiento
+especialmente cuando la dimensionalidad es moderada
+disminuye progresivamente desde adultos → jóvenes →
+niños, lo cual coincide con la complejidad cognitiva y la
+variabilidad sociocultural de cada grupo etario. Sin embargo, c) FT- Transformer muestra limitaciones con
+el grado de esta caída varía significativamente entre las muestras pequeñas y heterogéneas
+arquitecturas, lo que evidencia la capacidad diferente de cada El transformer supera ligeramente a MLP+MA en adultos
+modelo para capturar patrones en poblaciones heterogéneas. en F1-Macro, pero:
+En términos generales, TabNet se posicionó como la
+arquitectura más robusta, alcanzando los valores más altos en • cae hasta 0.686 en niños,
+Accuracy, F1-Weighted y Precision-Weighted en los tres • presenta la mayor dispersión off-diagonal en la
+grupos etarios. Este desempeño se atribuye a sus mecanismos Fig. 8,
+de atención secuencial y selección explícita de características, • y reduce su área bajo la curva ROC en todas las
+que permiten una separación más clara entre categorías clases infantiles.
+lectoras incluso en contextos de alta variabilidad.
+El modelo MLP+MA obtuvo resultados cercanos a Esto es consistente con la literatura, donde los Transformer
+TabNet, con métricas elevadas en adultos y jóvenes, y un tabulares requieren mayor cantidad de datos para alcanzar su
+rendimiento aceptable en niños, lo que confirma que los desempeño óptimo.
+mecanismos de atención previos al MLP son eficaces para
+capturar interacciones no lineales en datos tabulares.
+Por otro lado, FT-Transformer presentó la mayor variabilidad
+y la menor estabilidad, especialmente en el grupo de niños,
+Página 14 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 15 =====
+Página 15 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Fig. 7. Comparación del rendimiento del modelo entre grupos
+En general, los tres modelos muestran diagonales dominantes
+C. Matrices de Confunsión
+para adultos y jóvenes, lo que indica una alta coherencia entre
+La Fig. 8. presenta las matrices de confusión normalizadas las predicciones y las etiquetas reales. No obstante, se
+para los tres modelos evaluados (MLP+MA, TabNet y FT- observan diferencias significativas entre arquitecturas y entre
+Transformer) en los grupos etarios de adultos, jóvenes y grupos etarios, especialmente en los niños, donde existe
+niños. Estas matrices permiten analizar los patrones de acierto mayor dispersión fuera de la diagonal.
+y error específicos de cada clase, así como la estabilidad del
+modelo ante la variabilidad intrínseca de cada segmento
+demográfico.
+Página 15 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 16 =====
+Página 16 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Fig. 8. Matrices de confusión normalizadas de los modelos MLP+MA, TabNet y FT-Transformer en los grupos etarios de adultos, jóvenes y niños.
+Lector Medio, particularmente en MLP+MA y FT-
+1) Interpretación de los Patrones de Error Transformer.
+TabNet mantiene la diagonal dominante y muestra una
+Adultos
+reducción pronunciada de errores en comparación con los
+En este grupo, las tres arquitecturas presentan un
+otros dos modelos, alineándose con los valores superiores
+comportamiento altamente estable, con valores diagonales
+obtenidos en Accuracy y F1-Macro para este grupo.
+superiores al 0.92 en todos los casos.
+Niños
+TabNet exhibe la diagonal más marcada, especialmente en
+Este grupo presenta el mayor reto de clasificación:
+la clase Lector Frecuente, donde alcanza valores cercanos a
+• La diagonal es visiblemente más débil en los tres
+0.98.
+modelos.
+Los errores se concentran mínimamente entre Lector
+• FT-Transformer muestra la mayor dispersión, con
+Medio y Lector Frecuente, lo cual es esperable debido a la
+notables confusiones entre Lector Medio y Lector
+proximidad conceptual entre ambas categorías.
+Frecuente.
+• MLP+MA mejora ligeramente la separación, pero
+Jóvenes
+sigue mostrando ruido.
+Los jóvenes presentan un nivel intermedio de error. Las
+confusiones más frecuentes ocurren entre Lector Ocasional y
+• TabNet es el más estable, con diagonales más claras • TabNet es el modelo más consistente en los tres
+y menor dispersión off-diagonal, lo que coincide con grupos, con menor confusión interclase.
+su superior desempeño en Accuracy (0.7363) y F1- • MLP+MA mantiene un equilibrio razonable entre
+Macro (0.6786). precisión y estabilidad.
+• FT-Transformer, aunque robusto en adultos,
+Estas confusiones son coherentes con la literatura sobre presenta la mayor degradación al trabajar con
+comportamiento lector infantil, donde el desarrollo cognitivo niños, lo cual concuerda con su mayor
+y la variabilidad del entorno familiar generan heterogeneidad sensibilidad a tamaños de muestra más pequeños
+en los patrones de lectura. y variabilidad alta.
+D. Curvas ROC y Métrica AUC (Área Bajo la Curva)
+Comparación global entre arquitecturas
+Los patrones de error confirman que: La Fig. 9. muestra las curvas ROC bajo el esquema one-vs-
+rest para cada uno de los tres grupos etarios (adultos, jóvenes
+Página 16 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 17 =====
+Página 17 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+y niños) y para las tres arquitecturas evaluadas: MLP+MA, refleja un escenario más desafiante debido a la menor
+TabNet y FT-Transformer. La métrica AUC se utiliza como estabilidad en los hábitos de lectura infantiles. Aun así,
+indicador de la capacidad discriminativa del modelo al TabNet vuelve a obtener el mejor rendimiento (AUC 0.780–
+diferenciar entre clases en presencia de umbrales variables, 0.801), mientras que FT-Transformer presenta la mayor caída
+siendo especialmente útil en escenarios de desbalance (0.771–0.802). Este comportamiento coincide con la mayor
+moderado. dispersión off-diagonal observada en la matriz de confusión
+En el grupo de adultos, las tres arquitecturas alcanzan de este grupo.
+valores AUC superiores a 0.95, lo cual indica una excelente Estos resultados confirman que:
+separación entre las clases lectoras. TabNet obtiene los
+mejores valores (AUC entre 0.971 y 0.978), seguido de • La discriminación entre clases disminuye
+MLP+MA (0.968–0.974) y FT-Transformer (0.958– progresivamente de adultos → jóvenes → niños.
+0.974). Esto confirma la elevada estabilidad del modelo en el
+segmento adulto y coincide con sus valores superiores de • TabNet es el modelo más consistente, manteniendo
+exactitud y F1-Weighted. los valores AUC más altos y estables.
+En jóvenes, los AUC se mantienen altos, aunque
+ligeramente inferiores a los de adultos (0.937–0.954). TabNet • FT-Transformer es el más sensible a la variabilidad
+conserva la mejor discriminación global (clases entre 0.937 y del grupo infantil.
+0.949), mientras que FT-Transformer presenta una pequeña
+caída en la clase de mayor variabilidad, lo cual es coherente • MLP+MA ofrece un desempeño sólido y
+con el comportamiento observado en la matriz de confusión. equilibrado en los tres grupos, especialmente dado
+El grupo de niños muestra la mayor reducción en AUC para su menor nivel de complejidad estructural.
+los tres modelos, con valores entre 0.762 y 0.807, lo que
+Fig. 9. Curvas ROC (one-vs-rest) y valores AUC de MLP+MA, TabNet y FT-Transformer en los grupos adultos, jóvenes y niños.
+Table 4. Curvas ROC (one-vs-rest) y valores AUC de MLP+MA, TabNet y
+FT-Transformer en los grupos adultos, jóvenes y niños.
+Grupo MLP-MA TabNet FT-Transformer los grupos de adultos y jóvenes, donde lideró en
+Adultos 0.9912 0.9934 0.9889 Accuracy y F1-Macro.
+Jóvenes 0.9756 0.9801 0.9702
+• MLP+MA obtiene un puntaje neutro (0),
+Niños 0.8652 0.8731 0.8436
+Promedio 0.9440 0.9489 0.9342 reflejando que tuvo un desempeño intermedio:
+ganó algunas comparaciones principalmente en
+E. Ranking de Modelos mediante el Algoritmo de Copeland
+jóvenes pero perdió otras frente a TabNet. Esto
+Para comparar de manera integral el rendimiento global de las confirma que MLP+MA es una arquitectura
+arquitecturas evaluadas, se aplicó el Algoritmo de Copeland, eficiente y estable, con un buen balance entre
+una técnica de votación por pares que asigna puntajes en simplicidad y rendimiento.
+función de cuántas veces un modelo supera a otro en • FT-Transformer alcanza un puntaje de –12,
+diferentes métricas. Este enfoque permite obtener una medida siendo superado por las otras dos arquitecturas en
+robusta y libre de sesgos hacia una métrica específica, la mayoría de las combinaciones métrica–grupo.
+considerando simultáneamente Accuracy, F1-Weighted y Su caída se acentúa en el grupo infantil, donde
+Precision-Weighted en cada grupo etario. presentó la mayor dispersión en la matriz de
+confusión y los valores AUC más bajos.
+La Fig. 10. presenta el puntaje final obtenido por cada
+modelo tras el proceso de comparación pareada. El resultado Estos resultados reafirman la superioridad global de TabNet
+revela que: en el problema de clasificación multiclase del
+comportamiento lector, seguido por la arquitectura
+• TabNet obtiene un puntaje de +12, lo que indica MLP+MA como una alternativa ligera y eficiente, mientras
+que superó consistentemente a las otras dos que FT-Transformer mostró limitaciones ante la variabilidad
+arquitecturas en la mayoría de las comparaciones. del dataset, especialmente en el segmento de niños.
+Su superioridad se manifiesta especialmente en
+Página 17 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 18 =====
+Página 18 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+comportamiento estable a lo largo del entrenamiento. La
+diferencia entre entrenamiento y validación es mínima, lo que
+confirma un buen ajuste general del modelo sin tendencia al
+sobreajuste. TabNet y MLP+MA mantienen una trayectoria
+más regular que FT-Transformer, cuyo rendimiento muestra
+oscilaciones más notorias en las primeras 50 épocas.
+En el grupo de niños, las curvas reflejan el escenario más
+desafiante: el accuracy de validación se mantiene
+sistemáticamente por debajo del de entrenamiento,
+evidenciando mayor dispersión y ligera tendencia al
+sobreajuste, especialmente en FT-Transformer. Sin embargo,
+tanto MLP+MA como TabNet logran estabilizarse después
+de aproximadamente 80 épocas, alcanzando valores de
+validación coherentes con los resultados obtenidos en las
+métricas globales y las curvas ROC. TabNet sostiene la mejor
+estabilidad, mientras que FT-Transformer muestra las
+fluctuaciones más pronunciadas, consistente con su menor
+rendimiento en este grupo.
+Fig. 10. Ranking de los modelos de clasificación mediante el Algoritmo de
+Copeland
+En conjunto, las curvas de aprendizaje confirman que:
+F. Curvas de Aprendizaje (Learning Curves)
+La Fig. 11. presenta las curvas de aprendizaje para las tres
+• Los adultos presentan el comportamiento más
+arquitecturas evaluadas (MLP+MA, TabNet y FT-
+estable, con convergencia limpia y sin
+Transformer) en los grupos de adultos, jóvenes y niños. Estas
+sobreajuste.
+curvas permiten analizar la evolución del rendimiento durante
+• Los jóvenes mantienen un rendimiento robusto,
+las 200 épocas de entrenamiento, así como identificar
+aunque con mayor variabilidad inicial.
+patrones de convergencia, estabilidad y sobreajuste en cada
+• Los niños son el grupo más complejo, con mayor
+modelo.
+separación entre entrenamiento y validación.
+En el grupo de adultos, los tres modelos muestran una
+• TabNet exhibe la estabilidad más alta, seguido
+convergencia rápida y estable, con valores de accuracy de
+por MLP+MA, mientras que FT-Transformer es
+entrenamiento y validación consistentemente superiores al
+más sensible a la complejidad del dataset.
+0.95. No se observa separación significativa entre ambas
+• Los patrones de las curvas respaldan los hallazgos
+curvas, lo cual indica una generalización sólida y ausencia de
+previos en matrices de confusión, AUC y métricas
+sobreajuste. TabNet exhibe la curva más suave y estable, en
+globales
+línea con su rendimiento superior en métricas globales.
+Para el grupo de jóvenes, las curvas exhiben mayor
+variabilidad que en adultos, pero conservan un
+Página 18 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 19 =====
+Página 19 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+Fig. 11. Curvas de aprendizaje (train vs. validation accuracy) de MLP+MA, TabNet y FT-Transformer para los grupos adultos, jóvenes y niños durante
+200 épocas de entrenamiento
+lingüísticas, socioeconómicas y tecnológicas con
+V. DISCUSSION distribuciones no lineales.
+Por otro lado, el modelo MLP+MA ofrece un rendimiento
+competitivo a pesar de ser la arquitectura más liviana. La
+Los resultados obtenidos en este estudio evidencian
+incorporación de un módulo de multi-head attention previo al
+diferencias claras y consistentes entre las tres arquitecturas
+perceptrón multicapa permite al modelo asignar pesos
+evaluadas MLP+MA, TabNet y FT-Transformer—tanto en
+dinámicos a las características, mejorando su capacidad para
+rendimiento global como en comportamiento por grupo
+capturar interacciones no lineales entre variables. Esto se
+etario. Estas diferencias pueden explicarse desde la
+traduce en una generalización sólida, especialmente en
+perspectiva técnica del funcionamiento interno de cada
+adultos y jóvenes, donde MLP+MA alcanza accuracies
+modelo, así como desde las características estructurales del
+superiores al 96 % y 90 %, respectivamente, sin necesidad de
+conjunto de datos de la Encuesta Nacional de Lectura (ENL).
+estructuras complejas ni alto costo computacional. Su
+En conjunto, los hallazgos permiten comprender por qué
+rendimiento demuestra que un mecanismo de atención ligero
+ciertas arquitecturas de aprendizaje profundo para datos
+puede ser suficiente para capturar la estructura subyacente del
+tabulares presentan mayor estabilidad y capacidad
+dataset en segmentos poblacionales relativamente
+discriminativa en contextos socioculturales heterogéneos.
+consistentes.
+A. Rendimiento y la estructura de los modelos En contraste, FT-Transformer presentó la mayor variabilidad
+La arquitectura TabNet obtuvo el mejor rendimiento entre grupos y el rendimiento más bajo en niños. Este
+general en 11 de las 15 combinaciones modelo–métrica– comportamiento coincide con lo reportado en estudios
+grupo, con valores de exactitud superiores al 97 % en adultos, previos: los Transformers tabulares requieren tamaños
+92 % en jóvenes y 73 % en niños. Este desempeño muestrales grandes, baja entropía en las distribuciones y
+sobresaliente se explica principalmente por su mecanismo de mayor homogeneidad para estabilizar sus embeddings. En
+atención secuencial y selección explícita de características, particular, el uso del token [CLS] como vector de agregación
+implementado mediante Attentive Transformers y decision puede diluir señales importantes en datasets con variabilidad
+steps. TabNet produce máscaras de atención sparsemax que sociocultural alta, como ocurre en el grupo infantil. Además,
+priorizan únicamente las características más relevantes en el mecanismo de autoatención tiende a suavizar
+cada paso, reduciendo ruido y evitando la activación representaciones, lo cual reduce la capacidad del modelo para
+simultánea de atributos irrelevantes. Este comportamiento es distinguir características idiosincráticas que son críticas en
+especialmente ventajoso en datasets mixtos como la ENL, niños, donde los patrones lectores son más fluctuantes y
+donde coexisten variables categóricas, culturales, sensibles a factores contextuales.
+Página 19 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 20 =====
+Página 20 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+B. Implicancias técnicas y comportamiento de las métricas presentan menor variabilidad y mejores clusters
+por grupo etario naturales.
+Adultos La combinación de estas tres métricas permite comprender
+El grupo de adultos presentó el mejor desempeño en todos de manera detallada la dinámica de cada arquitectura y su
+los modelos. Sus métricas elevadas —Accuracy > 0.96 y capacidad para manejar heterogeneidad sociocultural.
+AUC ≈ 0.97— reflejan que sus patrones de lectura son más
+estables y consistentes. Desde una perspectiva técnica, este D. Interpretabilidad y análisis de características
+comportamiento reduce la entropía del espacio latente y
+permite que los modelos separen las clases con mayor
+Los análisis de interpretabilidad revelan que las variables con
+claridad. TabNet, en particular, estabiliza rápidamente sus
+mayor impacto en la clasificación (nivel educativo, idioma
+decision steps, mientras que MLP+MA aprovecha un espacio
+materno, acceso digital y frecuencia lectora) coinciden con lo
+con relaciones más definidas para hacer un uso eficiente de la
+reportado en estudios previos. TabNet permitió observar
+atención. FT-Transformer también muestra alta
+máscaras de atención con fuerte activación en estas variables
+discriminación en adultos, lo cual confirma que esta
+clave, lo que refuerza la validez pedagógica y sociocultural
+arquitectura funciona bien cuando la variabilidad del dataset
+del modelo. En FT-Transformer, el análisis de atención entre
+es baja.
+tokens mostró mayor dispersión y dependencias menos
+marcadas, coherente con su menor robustez en grupos
+Jóvenes
+heterogéneos.
+Los jóvenes muestran un rendimiento intermedio, pero
+con buena estabilidad. Sus curvas ROC (AUC ≈ 0.94) y F1- E. Implicancias tecnológicas, educativas y metodológicas
+Macro demuestran que los modelos capturan adecuadamente
+las diferencias entre clases, pese a la mayor variabilidad en
+Los resultados demuestran que las arquitecturas
+hábitos digitales y tecnológicos propios de este grupo.
+profundas especializadas para datos tabulares, en particular
+TabNet mantiene el mejor comportamiento, lo que refleja su
+TabNet, representan una vía prometedora para el análisis de
+capacidad para filtrar ruido y seleccionar características con
+información educativa compleja. Su capacidad para manejar
+relevancia pedagógica y sociocultural. MLP+MA también se
+relaciones no lineales, seleccionar características relevantes y
+comporta de manera consistente, mientras que FT-
+operar de forma interpretativa convierte a estos modelos en
+Transformer presenta oscilaciones más marcadas durante las
+herramientas útiles para sistemas de apoyo a la toma de
+primeras épocas de entrenamiento, posiblemente por la
+decisiones en políticas educativas.
+variación en las distribuciones de las features categóricas.
+Desde una perspectiva metodológica, el pipeline de
+entrenamiento con Grid Search, validación cruzada
+Niños
+estratificada y evaluación exhaustiva mediante métricas
+Este grupo representa el mayor reto técnico del estudio.
+multiclase garantiza que los modelos desarrollados sean
+La caída en las métricas (Accuracy entre 0.69 y 0.73, AUC ≈
+reproducibles, robustos y transferibles a contextos educativos
+0.78) evidencia la elevada entropía del dataset infantil y la
+reales.
+dispersión de patrones lectores en edades tempranas. Los
+modelos presentan confusiones más frecuentes entre “Lector
+VI. CONCLUSION
+Medio” y “Lector Frecuente”, coherentes con la alta
+El presente estudio evaluó el desempeño de tres
+variabilidad cognitiva y sociocultural del grupo. TabNet logra
+arquitecturas de aprendizaje profundo MLP con mecanismo
+aquí los mejores resultados gracias a la regularización sparse
+de atención, TabNet y FT-Transformer para la clasificación
+que reduce ruido y permite una discriminación más clara
+del comportamiento lector de la población peruana utilizando
+frente a FT-Transformer, el cual suaviza excesivamente las
+los microdatos de la Encuesta Nacional de Lectura 2022. Los
+representaciones. MLP+MA logra un rendimiento estable,
+resultados demostraron que las arquitecturas tabulares
+aunque sin la precisión de TabNet.
+avanzadas permiten modelar relaciones no lineales entre
+variables sociodemográficas, culturales, lingüísticas y
+C. Comportamiento matemático de las métricas tecnológicas, superando ampliamente los enfoques
+Las diferencias observadas entre grupos no solo dependen tradicionales de clasificación educativa.
+del rendimiento del modelo, sino también del TabNet se posicionó como la arquitectura de mejor
+comportamiento matemático de las métricas utilizadas: rendimiento global, liderando en 11 de las 15 combinaciones
+modelo–métrica–grupo, gracias a su mecanismo de atención
+• F1-Macro penaliza con fuerza la variabilidad secuencial y sus decision steps, que seleccionan de manera
+entre clases y explica por qué los niños, que explícita las características relevantes en cada etapa del
+presentan mayor dispersión interclase, obtienen proceso de decisión. Este comportamiento permitió obtener
+valores más bajos. valores de exactitud superiores al 97 % en adultos, 92 % en
+• AUC disminuye cuando las distribuciones son jóvenes y 73 % en niños, además de una alta estabilidad en
+ralas o con solapamiento, como ocurre en el métricas como F1-Macro y AUC. MLP+MA se consolidó
+grupo infantil, lo que limita la capacidad de los como una alternativa eficiente y computacionalmente ligera,
+clasificadores para encontrar umbrales óptimos con un equilibrio notable entre simplicidad y rendimiento.
+de separación. Por el contrario, FT-Transformer mostró limitaciones en
+grupos con alta variabilidad, especialmente en el segmento
+• Accuracy se mantiene más alto en jóvenes y
+infantil, consistente con la sensibilidad de los Transformers
+adultos, puesto que estas distribuciones
+Página 20 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 21 =====
+Página 21 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+tabulares a distribuciones heterogéneas y tamaños muestrales [8] A. B. I. Bernardo, M. O. Cordel II, R. I. G. Lucas, J. M. M. Teves, S.
+moderados. A. Yap, and U. C. Chua, “Using machine learning approaches to
+explore non-cognitive variables influencing reading proficiency in
+Los análisis por grupo etario revelaron que la clasificación
+English among Filipino learners,” Education Sciences, vol. 11, no. 10,
+es más precisa en adultos, debido a la mayor consistencia en art. no. 628, Oct. 2021.
+los patrones de lectura y en las condiciones socioculturales. [9] A. Bressane, D. Zwirn, A. Essiptchouk, A. C. V. Saraiva, F. L. de C.
+En jóvenes se observó un rendimiento estable, mientras que Carvalho, J. K. S. Formiga, L. C. de C. Medeiros, and R. G. Negri,
+“Understanding the role of study strategies and learning disabilities on
+en niños se identificó la mayor complejidad predictiva,
+student academic performance to enhance educational approaches: A
+marcada por alta entropía y variabilidad cognitiva. Estos proposal using artificial intelligence,” Computers and Education:
+hallazgos confirman la necesidad de incorporar mecanismos Artificial Intelligence, vol. 6, art. no. 100196, 2024.
+de selección de características e interpretabilidad al trabajar [10] S. Sumarlin, R. N. Naatonis, and E. A. U. Malahina, “Machine learning
+algorithm for real-time feedback on mobile learning platforms for
+con poblaciones heterogéneas.
+students in high school,” TEM Journal, vol. 14, no. 3, pp. 2799–2811,
+El análisis de interpretabilidad mostró que variables como Aug. 2025.
+el nivel educativo, el idioma materno, la frecuencia lectora y [11] B. A. Alnasyan, M. Basheri, and M. O. Alassafi, “A comprehensive
+el acceso digital tienen un impacto determinante en la comparative analysis of deep learning models for student performance
+prediction in virtual learning environments: Leveraging the OULA
+clasificación, consolidando la validez explicativa del modelo
+dataset and advanced resampling techniques,” IEEE Access, vol. 13,
+propuesto. Asimismo, el pipeline metodológico basado en pp. 75953–75972, 2025.
+preprocesamiento estructurado, validación cruzada [12] C. Li, C. Liu, W. Ju, Y. Zhong, and Y. Li, “Prediction of teaching
+estratificada, búsqueda exhaustiva de hiperparámetros y quality in the context of smart education: Application of multimodal
+data fusion and complex network topology structure,” Discover
+evaluación multigrupo garantiza la reproducibilidad y
+Artificial Intelligence, vol. 5, art. no. 19, 2025.
+robustez del enfoque. [13] H. Liu, D. Yang, S. Nie, and X. Chen, “Identifying key factors of
+En conjunto, este estudio demuestra que los modelos de reading achievement: A machine learning approach,” iScience, vol. 27,
+aprendizaje profundo especializados para datos tabulares no. 10, art. no. 110848, Oct. 2024.
+[14] N. Ghimire and K. Mokhtari, “Evaluating the predictive power of
+representan una alternativa sólida y explicable para el análisis
+metacognitive reading strategies across diverse educational contexts,”
+de comportamiento lector en poblaciones diversas. Sus Large-scale Assessments in Education, vol. 13, no. 1, art. no. 4, 2025.
+capacidades permiten construir sistemas predictivos [15] S. Ö. Arık and T. Pfister, “TabNet: Attentive interpretable tabular
+aplicables a la gestión educativa, la personalización de learning,” in Proc. AAAI Conf. Artificial Intelligence, vol. 35, no. 8,
+2021, pp. 6679–6687.
+intervenciones pedagógicas y el diseño de políticas públicas
+[16] Y. Gorishniy, I. Rubachev, V. Khrulkov, and A. Babenko, “Revisiting
+orientadas a reducir brechas de lectura en contextos deep learning models for tabular data,” in Proc. Advances in Neural
+socioculturales complejos, como el peruano. Information Processing Systems (NeurIPS), vol. 34, 2021, pp. 18932–
+18943.
+[17] G. Dimić and Lj. Pecić, “Proposed approach for overcoming the impact
+CONFLICT OF INTEREST of unbalanced distribution in predicting students’ performance,” TEM
+Los autores declaran no tener ningún conflicto de interes. Journal, vol. 13, no. 4, pp. 2839–2849, Nov. 2024.
+[18] F. Ren, Z. Jiang, X. Wang, and J. Liu, “A DGA domain names
+detection modeling method based on integrating an attention
+AUTHOR CONTRIBUTIONS mechanism and deep neural network,” Cybersecurity, vol. 3, art. no. 4,
+2020.
+A. A. Aquino-Poma: Software, Curación de datos, Análisis
+[19] M. Yanto, S. Arlis, J. Na’am, Y. Yuhandri, and D. M. Putra, “Hybrid
+formal e Investigación. S. E. Vega-Sanchez: Metodología, method air quality classification analysis model,” TEM Journal, vol.
+Conceptualización e Investigación. L. A. Matos-Urdanivia: 11, no. 2, pp. 829–836, May 2022.
+[20] J. Capela, M. Zimmermann-Kogadeeva, A. D. J. van Dijk, D. de
+Redacción – borrador original y Redacción – revisión y
+Ridder, O. Dias, and M. Rocha, “Comparative assessment of protein
+edición. N. Saboya: Supervisión, Metodología, Validación y large language models for enzyme commission number prediction,”
+Redacción – revisión y edición. Todos los autores han leído BMC Bioinformatics, vol. 26, art. no. 68, 2025.
+[21] W.-C. Yang, C.-H. Shih, J. Jiang, S. Pallas Enguita, and C.-H. Chen,
+y aceptado la versión publicada del manuscrito.
+“Analyzing visual attention in virtual crime scene investigations using
+eye-tracking and VR: Insights for cognitive modeling,” Electronics,
+REFERENCES vol. 14, no. 16, art. no. 3265, Aug. 2025.
+[22] Y. Yang, S. Zhao, S. An, X. Li, and Y. Zhang, “Student academic
+[1] Instituto Nacional de Estadística e Informática and Ministerio de performance prediction via hypergraph and TabNet,” Journal of Big
+Cultura del Perú, Encuesta Nacional de Lectura. Perú: Características Data, vol. 12, art. no. 119, 2025.
+del comportamiento lector de las personas de 0 a 64 años, 1st ed. Lima, [23] S. Somvanshi, S. Das, S. A. Javed, G. Antariksa, and A. Hossain, “A
+Perú: INEI, Apr. 2023. survey on deep tabular learning,” arXiv preprint arXiv:2410.12034,
+[2] OECD, PISA 2025 Results (Volume I): Future-Ready Students. Paris, 2024.
+France: OECD Publishing, 2026. [24] T. Wongvorachan, S. He, and O. Bulut, “A comparison of
+[3] C. F. Rodríguez-Hernandez, M. Musso, E. Kyndt, and E. Cascallar, undersampling, oversampling, and SMOTE methods for dealing with
+“Artificial neural networks in academic performance prediction: imbalanced classification in educational data mining,” Information,
+Systematic implementation and predictor evaluation,” Computers and vol. 14, no. 1, art. no. 54, 2023.
+Education: Artificial Intelligence, vol. 2, art. no. 100018, 2021. [25] H. Sahlaoui, E. A. Abdellaoui Alaoui, S. Agoujil, and A. Nayyar, “An
+[4] A. E. J. Villegas-Espinoza and J. I. Necochea-Chamorro, “Using deep empirical assessment of SMOTE variants techniques and interpretation
+learning in student performance prediction: A systematic review,” TEM methods in improving the accuracy and the interpretability of student
+Journal, vol. 14, no. 3, pp. 2472–2482, Aug. 2025. performance models,” Education and Information Technologies, vol.
+[5] Y. K. Salal, S. Kausar, S. Gaftandzhieva, and R. Doneva, “Activities to 29, no. 5, pp. 5447–5483, 2024.
+predict students’ final grades based on machine learning techniques,” [26] P. San Martin Soares, “Combining statistical and machine learning
+TEM Journal, vol. 14, no. 2, pp. 1438–1444, May 2025. methods to identify predictors of Brazilian students’ proficiency in
+[6] I. G. P. A. Buditjahjanto, N. Rochmawati, and P. D. Widayaka, “Stress PISA 2018,” Journal of Psychoeducational Assessment, vol. 42, no. 8,
+level classification towards student learning outcomes using support pp. 927–954, 2024.
+vector machine,” TEM Journal, vol. 14, no. 2, pp. 1429–1437, May [27] M. S. Khine, Y. Liu, V. K. Pallipuram, and E. Afari, “A machine-
+2025. learning approach to predicting the achievement of Australian students
+[7] J. R. Rico-Juan, B. Peña-Acuña, and O. Navarro-Martinez, “Holistic using school climate, learner characteristics, and economic, social, and
+exploration of reading comprehension skills, technology and cultural status,” Education Sciences, vol. 14, no. 12, art. no. 1350,
+socioeconomic factors in Spanish teenagers,” Heliyon, vol. 10, no. 12, 2024.
+art. no. e32637, Jun. 2024.
+Página 21 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+===== PAGE 22 =====
+Página 22 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925
+[28] Y. Huang, Y. Zhou, J. Chen, and D. Wu, “Applying machine learning [30] W. Villegas-Ch, R. Gutierrez, J. García-Ortiz, and V. Guevara,
+and SHAP method to identify key influences on middle-school “Explainable educational assistant integrated in Moodle: Automated
+students’ mathematics literacy performance,” Journal of Intelligence, semantic assessment and adaptive tutoring based on NLP and XAI,”
+vol. 12, no. 10, art. no. 93, 2024. Discover Artificial Intelligence, vol. 5, art. no. 191, 2025.
+[29] E. Akdoğdu Yıldız and K. Atalay Kabasakal, “Investigation of Copyright © 2025 by the authors. This is an open access article distributed
+prediction accuracy of hierarchical linear modelling and artificial under the Creative Commons Attribution License which permits unrestricted
+neural networks methods on PISA 2018 reading literacy,” Gazi Eğitim use, distribution, and reproduction in any medium, provided the original
+Fakültesi Dergisi, vol. 45, no. 2, pp. 543–568, 2025. work is properly cited (CC BY 4.0).
+Página 22 de 22 - Entrega de escritura con IA Identificador de la entrega trn:oid:::29566:626221925

@@ -1,0 +1,46 @@
+{
+    "timestamp": "2025-11-19T11:43:16.758442",
+    "total_time_min": 0.3209622621536255,
+    "total_time_hours": 0.005349371035893758,
+    "groups_trained": 3,
+    "successful": 0,
+    "failed": 3,
+    "results": [
+        {
+            "grupo": "ninos",
+            "status": "error",
+            "exit_code": 1,
+            "elapsed_min": 0.051089898745218916,
+            "error": "Traceback (most recent call last):\n  File \"C:\\Users\\xdxdxdxd\\OneDrive - Universidad Peruana Unión\\Escritorio\\MLP_Py_In01\\Classfier_Reading\\training\\fase2\\train_ninos_simple.py\", line 37, in <module>\n    from models.Ninos.tabnet import TabNetWrapper\nModuleNotFoundError: No module named 'models'\n"
+        },
+        {
+            "grupo": "jovenes",
+            "status": "error",
+            "exit_code": 1,
+            "elapsed_min": 0.05179305871327718,
+            "error": "Traceback (most recent call last):\n  File \"C:\\Users\\xdxdxdxd\\OneDrive - Universidad Peruana Unión\\Escritorio\\MLP_Py_In01\\Classfier_Reading\\training\\fase2\\train_jovenes_simple.py\", line 37, in <module>\n    from models.Jovenes.tabnet import TabNetWrapper\nModuleNotFoundError: No module named 'models'\n"
+        },
+        {
+            "grupo": "adultos",
+            "status": "error",
+            "exit_code": 1,
+            "elapsed_min": 0.0513886292775472,
+            "error": "Traceback (most recent call last):\n  File \"C:\\Users\\xdxdxdxd\\OneDrive - Universidad Peruana Unión\\Escritorio\\MLP_Py_In01\\Classfier_Reading\\training\\fase2\\train_adultos_simple.py\", line 37, in <module>\n    from models.Adultos.tabnet import TabNetWrapper\nModuleNotFoundError: No module named 'models'\n"
+        }
+    ],
+    "verification": {
+        "ninos": {
+            "exists": false,
+            "models": []
+        },
+        "jovenes": {
+            "exists": false,
+            "models": []
+        },
+        "adultos": {
+            "exists": false,
+            "models": []
+        }
+    },
+    "models_generated": 0
+}

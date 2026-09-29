@@ -52,7 +52,11 @@ def compute_metrics(
     }
 
     # AUC One-vs-Rest (III-F-1-e), con motivo explicito si no se puede.
+    #   roc_auc_ovr        -> promedio MACRO (media simple de las 3 clases);
+    #                         es el que va a la Tabla 4.
+    #   roc_auc_ovr_weighted -> promedio ponderado por soporte, de referencia.
     metrics["roc_auc_ovr"] = None
+    metrics["roc_auc_ovr_weighted"] = None
     metrics["roc_auc_ovr_error"] = None
     metrics["roc_auc_per_class"] = None
     if y_proba is None:
@@ -62,6 +66,9 @@ def compute_metrics(
     else:
         try:
             metrics["roc_auc_ovr"] = float(roc_auc_score(
+                y_true, y_proba, multi_class="ovr", average="macro",
+                labels=list(range(n_classes))))
+            metrics["roc_auc_ovr_weighted"] = float(roc_auc_score(
                 y_true, y_proba, multi_class="ovr", average="weighted",
                 labels=list(range(n_classes))))
             per_class = {}

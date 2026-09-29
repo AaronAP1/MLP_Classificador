@@ -120,13 +120,33 @@ class TorchTrainer:
 
     def fit(self, train_loader, val_loader, epochs: int, patience: int,
             verbose: bool = True) -> Dict[str, list]:
+        """
+        Con `val_loader`: early stopping sobre la perdida de validacion y
+        se restauran los pesos de la mejor epoca.
+
+        Con `val_loader=None`: se entrenan exactamente `epochs` epocas y se
+        conservan los pesos finales. Es el modo del reentrenamiento sobre
+        el 85 %, donde ya no queda ningun dato fuera del ajuste que pueda
+        servir de validacion; el numero de epocas se fija antes, con la
+        mejor epoca de la corrida train/val.
+        """
         stale = 0
+        self.epochs_run = 0
         for epoch in range(epochs):
             tr_loss, tr_acc = self._run_epoch(train_loader, train=True)
-            va_loss, va_acc = self._run_epoch(val_loader, train=False)
-
             self.history["train_loss"].append(tr_loss)
             self.history["train_acc"].append(tr_acc)
+            self.epochs_run = epoch + 1
+
+            if val_loader is None:
+                self.scheduler.step(tr_loss)
+                self.best_epoch = epoch
+                if verbose and (epoch + 1) % 20 == 0:
+                    print(f"    epoca {epoch + 1:3d}/{epochs} | "
+                          f"train {tr_loss:.4f}/{tr_acc:.4f}")
+                continue
+
+            va_loss, va_acc = self._run_epoch(val_loader, train=False)
             self.history["val_loss"].append(va_loss)
             self.history["val_acc"].append(va_acc)
             self.scheduler.step(va_loss)
@@ -149,7 +169,7 @@ class TorchTrainer:
                           f"(mejor: {self.best_epoch + 1})")
                 break
 
-        if self.best_state is not None:
+        if val_loader is not None and self.best_state is not None:
             self.model.load_state_dict(self.best_state)
         return self.history
 

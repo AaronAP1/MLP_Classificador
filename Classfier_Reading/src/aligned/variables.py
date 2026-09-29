@@ -28,7 +28,8 @@ construia el target de adultos a partir de esas variables.
 from __future__ import annotations
 
 import re
-from typing import Dict, Iterable, List, Sequence
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional, Sequence
 
 # ---------------------------------------------------------------------
 # Identificadores y campos administrativos: ni predictores ni target.
@@ -40,6 +41,13 @@ ADMIN_COLUMNS: List[str] = [
     "INF_400", "INF_500", "PERS_NRO", "PERS_300", "PERS_400", "PERS_500",
     "TIPO_ENT", "TIPO_ENT_O", "RES_PER", "NOMBREDD",
     "P213",            # numero de celular: identificador, no atributo
+    "P201",            # numero de orden de la persona en el hogar
+    "P204",            # numero del nucleo familiar
+    "P211_E",          # nacionalidad (texto libre)
+    # Factores de expansion del diseño muestral: corrigen la representatividad
+    # de la muestra, no describen a la persona. Usarlos como predictores
+    # mete el diseño de la encuesta dentro del modelo.
+    "FACTORFINAL_HOGAR", "FACTOR200_FINAL",
     "_src",            # marca interna de procedencia del CSV
 ]
 
@@ -48,7 +56,8 @@ ADMIN_COLUMNS: List[str] = [
 # Son la fuente del target y por tanto NUNCA pueden ser predictores.
 # ---------------------------------------------------------------------
 TARGET_SOURCE_COLUMNS: List[str] = [
-    "P402", "P403",    # adultos: leyo en 12 meses + frecuencia
+    "P402", "P403",    # adultos: leyo cualquier contenido en 12 meses + frecuencia
+    "P408", "P409",    # adultos: leyo libros en 12 meses + frecuencia
     "P506",            # 0-17: frecuencia de lectura de libros
 ]
 
@@ -85,10 +94,9 @@ FREE_TEXT_PATTERN = r"_O$|_O_|_9_O$|_1_O$"
 DIMENSIONS: Dict[str, List[str]] = {
     "geografico": [
         "DOMINIO", "ESTRATO", "ESTRATOSOCIO", "CCDD", "TOT_HOGAR",
-        "FACTORFINAL_HOGAR", "FACTOR200_FINAL",
     ],
     "demografico": [
-        "P201", "P203", "P204", "P205", "P206", "P207", "P208", "P209",
+        "P203", "P205", "P206", "P207", "P208", "P209",
         "P210_A", "P210_M", "P211", "P211_C", "P212", "edad_total",
     ],
     "linguistico": [
@@ -116,9 +124,129 @@ DIMENSIONS: Dict[str, List[str]] = {
 # Variables tratadas como numericas continuas. El resto es categorico y
 # recibe Label Encoding segun la seccion III-A.
 NUMERIC_COLUMNS: List[str] = [
-    "edad_total", "P210_A", "P210_M", "TOT_HOGAR", "FACTORFINAL_HOGAR",
-    "FACTOR200_FINAL", "P314_1", "P306_A", "P310_A", "P514_2", "P513",
+    "edad_total", "P210_A", "P210_M", "TOT_HOGAR",
+    "P314",            # monto del ingreso mensual (soles). P314_1 es solo
+                       # la marca "no sabe / no tuvo ganancia": categorica.
+    "P306_A", "P310_A", "P514_2", "P513",
 ]
+
+# Etiquetas legibles para tablas y figuras. Las variables de la ENL que no
+# esten aqui se rotulan con su descripcion del diccionario de datos
+# (`feature_label`), y si tampoco estan alli, con su codigo.
+FEATURE_LABELS: Dict[str, str] = {
+    "edad_total": "Edad",
+    "P210_A": "Edad (años)",
+    "P210_M": "Edad (meses)",
+    "P203": "Parentesco con jefe/a de hogar",
+    "P205": "Parentesco con jefe/a de núcleo",
+    "P209": "Sexo",
+    "P211": "Nacionalidad",
+    "P212": "Estado civil",
+    "DOMINIO": "Dominio geográfico",
+    "ESTRATO": "Estrato geográfico (tamaño de centro poblado)",
+    "ESTRATOSOCIO": "Estrato socioeconómico",
+    "CCDD": "Departamento",
+    "TOT_HOGAR": "Número de hogares en la vivienda",
+    "P301": "Lengua materna",
+    "P303": "Autoidentificación étnica",
+    "P304": "Pertenencia a pueblo indígena u originario",
+    "P306": "Último nivel educativo aprobado",
+    "P306_A": "Último año aprobado",
+    "P306_G": "Último grado aprobado",
+    "P306_C": "Tipo de centro de estudios",
+    "P307_1": "Sabe leer y escribir (espontánea)",
+    "P307_2": "Sabe leer y escribir (cartilla)",
+    "P308_1": "Lee y escribe en lengua originaria",
+    "P305": "Pueblo indígena u originario",
+    "P309": "Asiste a educación actualmente",
+    "P310_N": "Nivel que cursa actualmente",
+    "P310_A": "Año que cursa actualmente",
+    "P310_G": "Grado que cursa actualmente",
+    "P310_C": "Tipo de centro (estudios actuales)",
+    "P311": "Trabajó la semana pasada",
+    "P313": "Categoría ocupacional",
+    "P314": "Ingreso mensual (ocupación principal)",
+    "P314_1": "Sin ganancia / no sabe su ingreso",
+    "P513A": "Lengua materna (3-17 años)",
+    "P514_1": "Nivel educativo al que asiste",
+    "P514_2": "Año de estudios",
+    "P514_3": "Grado de estudios",
+    "idx_acceso_digital": "Índice de acceso digital (aprox.)",
+    "idx_nivel_educativo": "Nivel educativo (índice)",
+    "idx_lengua_materna_tipo": "Tipo de lengua materna",
+    "idx_n_lenguas_habladas": "N.º de lenguas que habla",
+    "hh_nivel_educ_max": "Hogar: nivel educativo máximo",
+    "hh_nivel_educ_mean": "Hogar: nivel educativo promedio",
+    "hh_nivel_educ_jefe": "Hogar: nivel educativo del jefe/a",
+    "hh_alfabetismo": "Hogar: alfabetismo adulto",
+    "hh_lengua_indigena": "Hogar: adultos con lengua originaria",
+    "hh_pueblo_indigena": "Hogar: adultos de pueblo originario",
+    "hh_etnia_jefe": "Hogar: etnia del jefe/a",
+    "hh_tasa_ocupacion": "Hogar: tasa de ocupación",
+    "hh_ingreso_mean": "Hogar: ingreso promedio",
+    "hh_ingreso_max": "Hogar: ingreso máximo",
+    "hh_estudia": "Hogar: adultos que estudian",
+    "hh_limitacion": "Hogar: alguna limitación permanente",
+    "hh_n_adultos": "Hogar: n.º de adultos",
+    "hh_tamano": "Hogar: tamaño",
+    "hh_n_menores": "Hogar: n.º de menores",
+    "hh_ratio_menores": "Hogar: proporción de menores",
+}
+
+# Preguntas de opcion multiple (una columna por opcion).
+_LENGUAS = {1: "quechua", 2: "aimara", 3: "asháninka", 4: "awajún", 5: "shipibo-konibo",
+            6: "shawi", 7: "matsigenka", 8: "achuar", 9: "otra originaria",
+            10: "castellano", 11: "portugués", 12: "inglés", 13: "otra extranjera",
+            14: "no escucha ni habla", 15: "lengua de señas"}
+_OPTION_FAMILIES = {
+    "P302": ("Habla", _LENGUAS),
+    "P308_2": ("Lee y escribe en", _LENGUAS),
+    "P312": ("Semana pasada", {1: "tenía trabajo sin trabajar", 2: "negocio propio",
+                               3: "trabajo ocasional", 4: "chacra o crianza",
+                               5: "ayudó en negocio familiar", 6: "otra actividad"}),
+    "P315": ("Limitación permanente para", {1: "ver", 2: "oír", 3: "comunicarse",
+                                            4: "moverse o caminar", 5: "entender o aprender",
+                                            6: "relacionarse"}),
+}
+FEATURE_LABELS["P312_7_8"] = "Semana pasada: cuidado del hogar / no trabajó"
+for _prefix, (_stem, _opts) in _OPTION_FAMILIES.items():
+    for _k, _name in _opts.items():
+        FEATURE_LABELS.setdefault(f"{_prefix}_{_k}", f"{_stem}: {_name}")
+
+_DICTIONARY_CACHE: Optional[Dict[str, str]] = None
+
+
+def _load_dictionary_labels() -> Dict[str, str]:
+    """Descripcion corta de cada codigo ENL, leida de data/metadata/*.xlsx."""
+    global _DICTIONARY_CACHE
+    if _DICTIONARY_CACHE is not None:
+        return _DICTIONARY_CACHE
+    labels: Dict[str, str] = {}
+    meta = Path(__file__).resolve().parents[2] / "data" / "metadata"
+    try:
+        import pandas as pd
+        for path in sorted(meta.glob("Diccionario*.xlsx")):
+            frame = pd.read_excel(path, header=None).fillna("")
+            for row in frame.itertuples(index=False):
+                code, desc = str(row[0]).strip(), str(row[1]).strip()
+                if re.fullmatch(r"P\d{3}[A-Z]?(_\w+)?", code) and desc:
+                    # "306. ¿CUAL ES EL ULTIMO ...? 1. Sin nivel ..." -> pregunta sola
+                    text = re.split(r"\?|\n|\s\d\.\s", desc)[0]
+                    text = re.sub(r"^\d+\s*[\.\-]?\s*[A-Z]?\.?\s*", "", text).strip(" ¿:.")
+                    labels.setdefault(code, text.capitalize()[:48])
+    except Exception:                                     # noqa: BLE001
+        pass
+    _DICTIONARY_CACHE = labels
+    return labels
+
+
+def feature_label(column: str) -> str:
+    """Nombre legible de una variable para tablas y figuras."""
+    base = column.split("__")[0]
+    if base in FEATURE_LABELS:
+        return FEATURE_LABELS[base]
+    desc = _load_dictionary_labels().get(base)
+    return f"{desc} ({base})" if desc else base
 
 
 # =====================================================================

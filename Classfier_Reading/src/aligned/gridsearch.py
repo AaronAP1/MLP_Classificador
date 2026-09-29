@@ -31,9 +31,10 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import StratifiedKFold
 
+from .balancing import balance_training_set
 from .models import IS_TORCH, build_model
-from .pipeline import resolve_amp, resolve_device
-from .trainer import TorchTrainer, compute_class_weights, make_loader
+from .pipeline import resolve_amp, resolve_device, set_seed
+from .trainer import TorchTrainer, make_loader
 
 
 def build_grid(cfg: dict, model_name: str) -> List[Dict[str, object]]:
@@ -80,10 +81,11 @@ def _fit_and_score(
     epochs: int, patience: int, seed: int,
 ) -> Dict[str, float]:
     """Entrena una configuracion en un fold y devuelve sus metricas."""
-    n_classes = cfg["n_classes"]
-    weights = (compute_class_weights(y_tr, n_classes)
-               if cfg["training"]["use_class_weights"] else None)
+    # El balanceo se aplica aqui, SOLO a la parte de entrenamiento del fold.
+    # La parte de validacion conserva su distribucion natural.
+    X_tr, y_tr, weights, _ = balance_training_set(X_tr, y_tr, cfg, seed)
 
+    set_seed(seed)
     model = build_model(model_name, X_tr.shape[1], cfg, hp, seed)
 
     if IS_TORCH[model_name]:

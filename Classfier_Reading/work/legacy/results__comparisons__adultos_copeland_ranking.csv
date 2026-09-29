@@ -1,0 +1,4 @@
+rank,classifier,copeland_score,f1_weighted,f1_macro,accuracy,precision_weighted,precision_macro,recall_weighted,recall_macro
+1,FT-Transformer,1.9999999999999996,0.925,0.925,0.925,0.926,0.926,0.925,0.925
+2,TabNet,0.0,0.903,0.903,0.903,0.903,0.903,0.903,0.903
+3,MLP_MA,-1.9999999999999996,0.874,0.873,0.874,0.874,0.874,0.874,0.874

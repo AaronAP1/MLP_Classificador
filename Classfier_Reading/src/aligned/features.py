@@ -219,7 +219,8 @@ def household_context(df_all: pd.DataFrame, index: pd.Index) -> pd.DataFrame:
     base["_pueblo_indigena"] = col("P304", lambda s: (s == 1).astype("float64"))
     base["_etnia"] = col("P303")
     base["_trabaja"] = col("P311", lambda s: (s == 1).astype("float64"))
-    base["_ingreso"] = pd.to_numeric(col("P314_1"), errors="coerce")
+    # P314 es el monto (soles); P314_1 solo marca "no sabe / sin ganancia".
+    base["_ingreso"] = pd.to_numeric(col("P314"), errors="coerce")
     base["_estudia"] = col("P309", lambda s: (s == 1).astype("float64"))
     lim = [c for c in ("P315_1", "P315_2", "P315_3", "P315_4", "P315_5", "P315_6")
            if c in df_all.columns]

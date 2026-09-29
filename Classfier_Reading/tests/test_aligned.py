@@ -268,3 +268,146 @@ def test_copeland_empate():
          "precision_weighted": [0.9, 0.9]}, index=["A", "B"])
     r = copeland_ranking(frame, ["accuracy", "f1_weighted", "precision_weighted"])
     assert set(r["copeland_score"]) == {0}
+
+
+def test_auc_macro_es_la_media_de_las_clases():
+    rng = np.random.default_rng(1)
+    y = rng.integers(0, 3, 300)
+    proba = rng.dirichlet([1, 1, 1], 300)
+    m = compute_metrics(y, proba.argmax(1), proba, n_classes=3,
+                        class_names=["A", "B", "C"])
+    per = m["roc_auc_per_class"]
+    assert m["roc_auc_ovr"] == pytest.approx(np.mean(list(per.values())), abs=1e-9)
+    assert m["roc_auc_ovr_weighted"] is not None
+
+
+# =====================================================================
+# Correcciones de la revision de septiembre
+# =====================================================================
+def test_target_adultos_por_libros():
+    """P408/P409: lectura de libros, misma escala que P506 de menores."""
+    df = pd.DataFrame({"P408": [2.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+                       "P409": [0.0, 1.0, 2.0, 4.0, 5.0, 0.0]})
+    y = build_target(df, "chapter_400_libros")
+    assert y.iloc[0] == 0          # no leyo libros
+    assert y.iloc[1] == 2 and y.iloc[2] == 2
+    assert y.iloc[3] == 1          # una vez al mes
+    assert y.iloc[4] == 0          # cada tres meses
+    assert pd.isna(y.iloc[5])      # capitulo no aplicado
+
+
+def test_config_usa_libros_para_adultos(cfg):
+    assert cfg["groups"]["adultos"]["target_source"] == "chapter_400_libros"
+    assert cfg["groups"]["ninos"]["target_source"] == "chapter_500"
+
+
+def test_config_rechaza_target_desconocido(cfg):
+    from src.aligned.config import validate
+    import copy
+    bad = copy.deepcopy(cfg)
+    bad["groups"]["adultos"]["target_source"] = "P999"
+    with pytest.raises(ValueError, match="target_source"):
+        validate(bad)
+
+
+@pytest.mark.parametrize("col", ["P408", "P409"])
+def test_fuentes_del_target_por_libros_son_fuga(col):
+    assert V.is_leaky(col)
+
+
+def test_factores_de_expansion_no_son_predictores():
+    feats = V.build_feature_list(["FACTORFINAL_HOGAR", "FACTOR200_FINAL",
+                                  "P201", "P204", "P209", "P306"])
+    assert feats == ["P209", "P306"]
+
+
+def test_armonizacion_une_columnas_de_merge_y_vacios():
+    from src.aligned.etl import harmonize_source
+    raw = pd.DataFrame({
+        "P201": [np.nan, 2.0, np.nan],
+        "P201_x": [1.0, np.nan, np.nan],
+        "P201_y": [np.nan, np.nan, 3.0],
+        "P506": [np.nan, 1.0, np.nan],
+        "edad_total": [16.0, np.nan, 20.0],
+    })
+    out, info = harmonize_source(raw.copy(), blank_means_not_applicable=True)
+    assert list(out["P201"]) == [1.0, 2.0, 3.0]
+    assert not any(c.endswith(("_x", "_y")) for c in out.columns)
+    assert list(out["P506"]) == [0.0, 1.0, 0.0]          # vacio -> 0 (no aplica)
+    assert pd.isna(out["edad_total"].iloc[1])            # la edad nunca se rellena
+    assert info["columnas_merge_unificadas"] == ["P201"]
+
+
+def test_armonizacion_no_toca_fuentes_con_ceros():
+    from src.aligned.etl import harmonize_source
+    raw = pd.DataFrame({"P506": [np.nan, 1.0]})
+    out, _ = harmonize_source(raw.copy(), blank_means_not_applicable=False)
+    assert pd.isna(out["P506"].iloc[0])
+
+
+def test_balanceo_por_pesos_no_crea_muestras(cfg):
+    from src.aligned.balancing import balance_training_set
+    X = np.random.default_rng(0).random((60, 4)).astype(np.float32)
+    y = np.array([0] * 10 + [1] * 20 + [2] * 30)
+    Xb, yb, w, info = balance_training_set(X, y, cfg, 42)
+    assert Xb.shape == X.shape and len(yb) == len(y)
+    assert w is not None and w[0] > w[1] > w[2]          # la clase rara pesa mas
+    assert info["metodo"] == "class_weights"
+
+
+def test_balanceo_smote_solo_sobre_lo_que_recibe(cfg):
+    import copy
+    from src.aligned.balancing import balance_training_set
+    c = copy.deepcopy(cfg)
+    c["balancing"]["method"] = "smote"
+    X = np.random.default_rng(0).random((60, 4)).astype(np.float32)
+    y = np.array([0] * 10 + [1] * 20 + [2] * 30)
+    Xb, yb, w, info = balance_training_set(X, y, c, 42)
+    assert w is None
+    assert np.bincount(yb).tolist() == [30, 30, 30]
+
+
+def test_entrenamiento_sin_validacion_corre_epocas_exactas():
+    from src.aligned.trainer import TorchTrainer, make_loader
+    m = MLPMultiHeadAttention(num_features=6, n_heads=2, attn_dim=8)
+    t = TorchTrainer(m, lr=1e-3, weight_decay=1e-4, device="cpu", amp=False)
+    X = np.random.default_rng(0).random((40, 6)).astype(np.float32)
+    y = np.random.default_rng(1).integers(0, 3, 40)
+    h = t.fit(make_loader(X, y, 16, True), None, epochs=3, patience=1, verbose=False)
+    assert len(h["train_acc"]) == 3 and h["val_acc"] == []
+    assert t.epochs_run == 3
+
+
+def test_tabnet_registra_curva_de_entrenamiento():
+    pytest.importorskip("pytorch_tabnet")
+    from src.aligned.models import TabNetModel
+    rng = np.random.default_rng(0)
+    X = rng.random((120, 5)).astype(np.float32)
+    y = np.tile([0, 1, 2], 40)
+    m = TabNetModel(num_features=5, n_d=8, n_a=8, device="cpu")
+    h = m.fit(X[:90], y[:90], X[90:], y[90:], epochs=3, patience=5,
+              batch_size=32, virtual_batch_size=16,
+              class_weights=np.array([1.0, 1.0, 1.0]), track_train=True)
+    assert len(h["train_acc"]) == len(h["val_acc"]) == 3
+    assert 0 <= m.best_epoch < 3
+    assert m.predict_proba(X[:4]).shape == (4, 3)
+
+
+def test_etiquetas_legibles():
+    assert V.feature_label("hh_nivel_educ_mean") == "Hogar: nivel educativo promedio"
+    assert V.feature_label("P306") == "Último nivel educativo aprobado"
+    assert V.feature_label("ZZZ_desconocida") == "ZZZ_desconocida"
+
+
+def test_datos_procesados_sin_smote(cfg):
+    """El train guardado conserva la distribucion natural (el balanceo va en el ajuste)."""
+    base = ROOT / cfg["paths"]["processed_dir"]
+    for group in cfg["groups"]:
+        d = base / group
+        if not (d / "train.parquet").exists():
+            pytest.skip("Ejecuta primero: python run_pipeline.py etl")
+        tr = pd.read_parquet(d / "train.parquet", columns=["target"])["target"]
+        va = pd.read_parquet(d / "val.parquet", columns=["target"])["target"]
+        p_tr = tr.value_counts(normalize=True).sort_index().to_numpy()
+        p_va = va.value_counts(normalize=True).sort_index().to_numpy()
+        assert np.allclose(p_tr, p_va, atol=0.02), f"{group}: train no estratificado/natural"

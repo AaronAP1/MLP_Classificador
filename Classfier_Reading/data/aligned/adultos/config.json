@@ -6,6 +6,10 @@
       18,
       120
     ],
+    "edad_observada": [
+      18,
+      99
+    ],
     "n_registros": 51750,
     "procedencia_csv": {
       "adultos": 40559,
@@ -13,21 +17,21 @@
     }
   },
   "target": {
-    "fuente": "chapter_300_400",
+    "fuente": "chapter_400_libros",
     "n_valid": 40530,
     "n_discarded": 11220,
     "counts": {
-      "No Lector": 3782,
-      "Lector Medio": 9552,
-      "Lector Frecuente": 27196
+      "No Lector": 23216,
+      "Lector Medio": 6539,
+      "Lector Frecuente": 10775
     },
     "ratios": {
-      "No Lector": 0.093314,
-      "Lector Medio": 0.235677,
-      "Lector Frecuente": 0.671009
+      "No Lector": 0.57281,
+      "Lector Medio": 0.161337,
+      "Lector Frecuente": 0.265852
     },
-    "imbalance_ratio": 7.19,
-    "min_class_count": 3782
+    "imbalance_ratio": 3.55,
+    "min_class_count": 6539
   },
   "indicadores_derivados": {
     "indicadores_construidos": [
@@ -73,22 +77,20 @@
   "limpieza": {
     "umbral_faltantes_fila": 0.2,
     "n_antes": 40530,
-    "n_despues": 30617,
-    "n_removidos": 9913
+    "n_despues": 40530,
+    "n_removidos": 0
   },
   "seleccion_features": {
-    "universo_inicial": 121,
-    "descartadas_varianza": 55,
-    "descartadas_correlacion": 7,
+    "universo_inicial": 100,
+    "descartadas_varianza": 41,
+    "descartadas_correlacion": 4,
     "objetivo_articulo": 71,
-    "n_final": 59,
+    "n_final": 55,
     "coincide_con_articulo": false,
     "features": [
-      "FACTORFINAL_HOGAR",
       "P210_A",
       "P306_A",
       "P310_A",
-      "P314_1",
       "idx_acceso_digital",
       "idx_nivel_educativo",
       "idx_lengua_materna_tipo",
@@ -111,9 +113,7 @@
       "ESTRATO",
       "ESTRATOSOCIO",
       "CCDD",
-      "P201",
       "P203",
-      "P204",
       "P205",
       "P209",
       "P211",
@@ -122,7 +122,6 @@
       "P302_2",
       "P302_11",
       "P302_12",
-      "P302_13",
       "P303",
       "P304",
       "P305",
@@ -134,65 +133,82 @@
       "P308_2_1",
       "P308_2_2",
       "P309",
+      "P310_C",
       "P311",
       "P312_1",
       "P312_3",
       "P312_4",
       "P312_7_8",
       "P313",
-      "P314",
+      "P314_1",
       "P315_1",
       "P315_4"
     ],
     "dimensiones": {
       "otro": 18,
-      "linguistico": 11,
-      "demografico": 8,
-      "socioeconomico": 8,
-      "educativo": 7,
-      "geografico": 5,
+      "linguistico": 10,
+      "educativo": 8,
+      "socioeconomico": 7,
+      "demografico": 6,
+      "geografico": 4,
       "salud": 2
     }
   },
   "balanceo": {
-    "applied": true,
-    "k_neighbors": 5,
-    "before": {
-      "2": 13855,
-      "1": 5314,
-      "0": 2262
-    },
-    "after": {
-      "0": 13855,
-      "2": 13855,
-      "1": 13855
-    }
+    "metodo": "class_weights",
+    "donde": "Dentro de cada ajuste, solo sobre la parte de entrenamiento (cada fold de la CV y el reentrenamiento). Los splits guardados conservan la distribucion natural de clases."
   },
   "splits": {
     "train": {
-      "n": 41565,
+      "n": 28371,
       "dist": {
-        "0": 13855,
-        "1": 13855,
-        "2": 13855
+        "0": 16251,
+        "1": 4577,
+        "2": 7543
       }
     },
     "val": {
-      "n": 4593,
+      "n": 6079,
       "dist": {
-        "0": 484,
-        "1": 1139,
-        "2": 2970
+        "0": 3482,
+        "1": 981,
+        "2": 1616
       }
     },
     "test": {
-      "n": 4593,
+      "n": 6080,
       "dist": {
-        "0": 485,
-        "1": 1139,
-        "2": 2969
+        "0": 3483,
+        "1": 981,
+        "2": 1616
       }
     }
   },
-  "n_features": 59
+  "n_features": 55,
+  "armonizacion_csv": {
+    "ninos": {
+      "filas": 21652,
+      "columnas_merge_unificadas": []
+    },
+    "jovenes": {
+      "filas": 14021,
+      "columnas_merge_unificadas": [
+        "FACTOR200_FINAL",
+        "P201",
+        "P203",
+        "P206",
+        "P207",
+        "P208",
+        "PERS_NRO",
+        "RES_PER",
+        "TIPO_ENT",
+        "TIPO_ENT_O"
+      ],
+      "celdas_vacias_convertidas_a_0": 3086580
+    },
+    "adultos": {
+      "filas": 40559,
+      "columnas_merge_unificadas": []
+    }
+  }
 }

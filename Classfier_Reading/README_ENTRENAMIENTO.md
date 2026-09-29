@@ -1,313 +1,200 @@
 # Cómo lanzar el entrenamiento
 
-Guía operativa para correr el pipeline en la máquina con GPU.
-Para el diseño del pipeline y las decisiones metodológicas, ver
+Guía operativa para correr el pipeline en la PC con GPU (**RTX 4060, 8 GB**).
+Para el diseño y las decisiones metodológicas, ver
 [README_PIPELINE_ALINEADO.md](README_PIPELINE_ALINEADO.md).
 
-Hardware de referencia: **RTX 4060 8 GB**. Los modelos usan menos de 2 GB de
-VRAM, así que la tarjeta sobra; el límite es tiempo, no memoria.
+Todo lo que produce este pipeline sale de entrenar modelos con los datos de
+la ENL 2022. **Ninguna tabla ni figura se genera con valores simulados**, y
+si falta una combinación, el reporte la omite en lugar de rellenarla.
 
 ---
 
 ## 1. Instalación (una sola vez)
 
+Traer el código y los datos (los CSV de `data/unprocessed/` están en el
+repositorio):
+
 ```powershell
+git pull                      # o copiar la carpeta Classfier_Reading completa
 cd Classfier_Reading
 python -m venv .venv
 .venv\Scripts\activate
-
-# PRIMERO PyTorch con CUDA. Si instalas requirements.txt antes,
-# arrastra la build +cpu y todo va ~8x más lento sin avisarte.
-pip install torch --index-url https://download.pytorch.org/whl/cu124
-pip install -r requirements.txt
 ```
 
-Los tres CSV de `data/unprocessed/` deben estar presentes (111 MB, no se
-versionan por tamaño).
+**Primero PyTorch con CUDA**, después el resto. Si se invierte el orden, pip
+instala la versión `+cpu` y todo corre en el procesador sin avisar:
 
-### Verificar
+```powershell
+pip install torch --index-url https://download.pytorch.org/whl/cu126
+pip install -r requirements-train.txt
+```
+
+`requirements-train.txt` tiene solo lo necesario. El `requirements.txt`
+completo incluye Azure ML, Jupyter y mkdocs, que no hacen falta y pueden
+fallar al instalarse.
+
+## 2. Verificar
 
 ```powershell
 python run_pipeline.py check
+python -m pytest tests/test_aligned.py -q
 ```
 
-Tiene que decir:
+`check` debe mostrar la GPU:
 
 ```
-  GPU: NVIDIA GeForce RTX 4060 (8.0 GB)
+  GPU: NVIDIA GeForce RTX 4060 (8.6 GB) · CUDA 12.6
 ```
 
-Si dice `no disponible`, el PyTorch instalado es el `+cpu`. Reinstala con el
-índice de CUDA antes de seguir.
+Si dice `no disponible · PyTorch +cpu`, reinstala torch con el comando del
+paso 1. Las pruebas deben terminar en `passed`, sin `failed`.
 
----
-
-## 2. Qué configurar
-
-Todo vive en [configs/pipeline.yaml](configs/pipeline.yaml). Solo hay **tres
-decisiones** que tomar:
-
-```yaml
-gridsearch:
-  preset: "standard"                   # fast | standard | paper
-
-evaluation:
-  stability:
-    seeds: [42, 123, 456, 789, 2024]   # 5 semillas = 5 reentrenamientos extra
-
-training:
-  device: "auto"                       # déjalo así
-  amp: "auto"                          # déjalo así
-```
-
-**`preset`** decide casi todo el tiempo de cómputo:
-
-| Preset | Configuraciones por modelo | Ajustes de CV | RTX 4060 (estimado) |
-|---|---|---|---|
-| `fast` | 1 | 45 | ~8–12 h |
-| `standard` | 16 | 720 | ~25–40 h |
-| `paper` | 108–324 | 11.340 | inviable |
-
-Usa **`standard`**. Es el equilibrio razonable: explora *learning rate*, tamaño
-de lote, dropout y weight decay sin volverse impracticable.
-
-**`seeds`** es la segunda palanca. Las 5 semillas son ~70 % del coste del preset
-`fast`. Si vas justo de tiempo, déjalas en 3 — o quítalas del todo con
-`--no-multiseed` y córrelas después solo para el modelo ganador.
-
-El resto del archivo son valores anclados al manuscrito (200 épocas, paciencia
-20, AdamW, 3 decision steps, 4 capas encoder, Min–Max, Label Encoding). Si
-cambias uno de esos, **el pipeline se niega a arrancar** y te dice cuál
-contradice al artículo. Es intencional: evita que el código y el texto se
-separen sin que nadie lo note.
-
----
-
-## 3. Los comandos, en orden
+## 3. Prueba de humo (~5 min)
 
 ```powershell
-python run_pipeline.py etl          # ~10 s
-python run_pipeline.py benchmark    # ~10 min
-python run_pipeline.py train        # el paso largo
-python run_pipeline.py report       # ~1 min
+python run_pipeline.py etl
+python run_pipeline.py smoke
 ```
 
-### `etl`
-
-Lee los CSV crudos, rehace la segmentación etaria, construye el target y las
-variables, y escribe `data/aligned/`. Debe terminar con:
+Recorre todo el camino (ETL → Grid Search → etapas A y B → test → semillas →
+tablas y figuras) con 600 filas por partición y 4 épocas. Debe terminar en:
 
 ```
-  universo -> final : 105 -> 34 features     (niños)
-  universo -> final : 105 -> 33 features     (jóvenes)
-  universo -> final : 121 -> 59 features     (adultos)
+  9/9 combinaciones completas en X min
+  figuras generadas: 10/10
+  TODO FUNCIONA
 ```
 
-### `benchmark`
+Escribe en `results/_smoke/` y `outputs/_smoke/`, y cada figura lleva la marca
+**"PRUEBA DE HUMO · NO SON RESULTADOS"**. Sus números no significan nada: solo
+confirman que el código funciona en esa PC.
 
-**Córrelo antes de comprometerte.** Cronometra 3 épocas de cada combinación en
-*esa* GPU y extrapola el total por preset. Te dice si son 25 h o 60 h en tu
-hardware, no en el mío. Deja el detalle en `results/aligned/benchmark.json`.
-
-### `train`
-
-Las 9 combinaciones (3 grupos × 3 arquitecturas). Para cada una: Grid Search con
-validación cruzada 5-fold sobre el 70 %, reentrenamiento con la mejor
-configuración sobre el 85 %, y evaluación única sobre el 15 % de prueba.
-
-### `report`
-
-Genera tablas y figuras desde los resultados reales.
-
-### Opciones útiles
-
-| Opción | Para qué |
-|---|---|
-| `--preset fast` | Prueba rápida antes de la corrida buena |
-| `--groups jovenes` | Solo una cohorte |
-| `--models tabnet mlp_ma` | Solo ciertas arquitecturas |
-| `--no-multiseed` | Salta las 5 semillas |
-| `--no-gridsearch` | Salta la búsqueda (solo para depurar) |
-
-**Recomendación:** antes de lanzar 30 horas, haz una pasada de humo de ~15 min:
+## 4. Estimar el tiempo
 
 ```powershell
-python run_pipeline.py train --preset fast --groups jovenes --no-multiseed
-python run_pipeline.py report
+python run_pipeline.py benchmark
 ```
 
-Si eso produce tablas y figuras, el camino completo funciona.
+Cronometra unas épocas de cada combinación en esa GPU y estima el total por
+preset (peor caso, sin early stopping). Deja el detalle en
+`results/aligned/benchmark.json`.
 
----
+## 5. Entrenar
 
-## 4. Lanzar en segundo plano
+Todo se configura en [configs/pipeline.yaml](configs/pipeline.yaml). Lo
+normal es no tocar nada; la decisión principal es el tamaño del Grid Search:
 
-Para que no lo mate un cierre de sesión:
+| `gridsearch.preset` | Configuraciones por modelo | Uso |
+|---|---|---|
+| `fast` | 1 | Solo para probar |
+| `standard` | 16 | **Recomendado** |
+| `paper` | 108–324 | Tabla 2 completa; muy costoso |
+
+```powershell
+python run_pipeline.py train
+```
+
+En segundo plano, para que no lo corte un cierre de sesión:
 
 ```powershell
 Start-Process python -ArgumentList "-u","run_pipeline.py","train" `
   -RedirectStandardOutput train.log -RedirectStandardError train.err -NoNewWindow
-
-Get-Content train.log -Wait -Tail 30      # seguir el avance
+Get-Content train.log -Wait -Tail 30
 ```
 
-En Linux:
+Para cada una de las 9 combinaciones (3 grupos × 3 arquitecturas):
 
-```bash
-nohup python -u run_pipeline.py train > train.log 2>&1 &
-tail -f train.log
-```
+1. **Grid Search** con validación cruzada estratificada de 5 folds sobre el 70 %.
+2. **Etapa A:** entrena con el 70 % y valida con el 15 % (hasta 200 épocas,
+   early stopping con paciencia 20). Produce las curvas de la Fig. 11 y la
+   mejor época.
+3. **Etapa B:** reentrena con el 85 % durante esa cantidad de épocas.
+4. **Test:** evalúa una sola vez sobre el 15 % que nunca se usó.
+5. **Semillas:** repite la etapa B con 5 semillas (media ± desviación).
 
-Vigilar la GPU en otra terminal:
-
-```powershell
-nvidia-smi --query-gpu=utilization.gpu,memory.used,temperature.gpu `
-  --format=csv --loop=5
-```
-
----
-
-## 5. Qué ves mientras entrena
-
-Por cada combinación:
-
-```
-==================================================================
-ADULTOS · ft_transformer
-==================================================================
-  train (41565, 59) · val (4593, 59) · test (4593, 59)
-
-  Grid Search · ft_transformer · preset 'standard' · 16 configuraciones x 5 folds = 80 ajustes
-    [  1/16] lr=0.001   bs=64   do=0.2  wd=1e-05   d=4 -> f1_macro=0.5231 (±0.0182)
-    [  2/16] lr=0.001   bs=64   do=0.3  wd=1e-05   d=4 -> f1_macro=0.5417 (±0.0143)
-    ...
-  mejor: {'lr': 0.0001, 'batch_size': 128, ...} -> f1_macro=0.5612
-
-  Reentrenando sobre 85% (46,158 muestras) con {...}
-    epoca  20/200 | train 0.7412/0.6891 | val 0.7893/0.6612
-    epoca  40/200 | train 0.6234/0.7402 | val 0.7101/0.7014
-    early stopping en la epoca 87 (mejor: 67)
-
-  TEST · acc=0.7412 f1w=0.7301 f1m=0.5612 auc=0.8734
-
-  Estabilidad multi-semilla: [42, 123, 456, 789, 2024]
-    seed 42:  acc=0.7412 f1m=0.5612
-    seed 123: acc=0.7389 f1m=0.5578
-    ...
-  artefactos -> results/aligned/adultos_ft_transformer  (312.4 min)
-```
-
-### Qué vigilar
-
-- **`[ n/16]` es tu reloj.** Si la primera configuración tarda 20 min, el Grid
-  Search de esa celda son ~5 h. Con eso decides si sigues o cambias de preset.
-- **En las líneas de época**, `train` y `val` moviéndose juntos = sano. Si
-  `train` sigue bajando y `val` empieza a subir, hay sobreajuste — pero el early
-  stopping lo corta solo.
-- **El `±`** es la desviación entre los 5 folds. Por encima de 0,05 esa
-  configuración es inestable y no conviene aunque tenga buena media.
-- **Utilización de GPU.** Si `nvidia-smi` marca 30 % o menos, es normal: los
-  modelos son pequeños y buena parte del tiempo se va en lanzar kernels, no en
-  calcular. No es un problema que puedas arreglar sin salirte del grid del
-  artículo.
-
-### Orden de coste
-
-`adultos_ft_transformer` es ~2/3 del total. Le siguen `ninos_ft_transformer` y
-`adultos_mlp_ma`. Las tres combinaciones de jóvenes juntas no llegan al 3 %.
-
----
-
-## 6. Si se corta
-
-Cada combinación escribe su `results.json` **en cuanto termina**. Si el proceso
-muere en la séptima, no pierdes las seis anteriores.
-
-Mira qué falta:
-
-```powershell
-Get-ChildItem results\aligned -Directory | ForEach-Object {
-  $ok = Test-Path "$($_.FullName)\results.json"
-  "{0,-30} {1}" -f $_.Name, $(if ($ok) {"OK"} else {"FALTA"})
-}
-```
-
-Y relanza solo eso:
+**Es reanudable.** Cada combinación guarda su `results.json` al terminar. Si el
+proceso se corta, relanza solo lo que falte:
 
 ```powershell
 python run_pipeline.py train --groups adultos --models ft_transformer
 ```
 
-Una combinación que falla **no detiene las demás**: el pipeline la registra en
-`results/aligned/run_summary.json` con su traza y sigue.
+## 6. Tablas y figuras
 
----
+```powershell
+python run_pipeline.py report
+```
 
-## 7. Qué queda al final
+Todo queda en `outputs/aligned/`, con un `INDICE_FIGURAS.md` que indica a
+qué parte del artículo va cada archivo:
 
-### Por combinación — `results/aligned/<grupo>_<modelo>/`
-
-| Archivo | Contenido |
+| Archivo | En el artículo |
 |---|---|
-| `results.json` | Métricas de test, curvas ROC, curvas de aprendizaje por época, interpretabilidad, resultado de la CV, hiperparámetros ganadores |
-| `gridsearch_results.csv` | Las 16 configuraciones con media y desviación por fold |
-| `gridsearch_best.json` | La configuración ganadora y el coste de la búsqueda |
-| `test_predictions.npz` | `y_true`, `y_pred`, `y_proba` para recalcular lo que sea |
-| `best_model.pt` / `tabnet_model.zip` | El modelo entrenado |
+| `tabla_resumen_datos.csv` | Descripción de los datos (registros, edades, clases, n.º de variables) |
+| `tabla2_hiperparametros.csv` | Table 2 (valores elegidos) |
+| `tabla3_metricas.csv/.tex` | Table 3 |
+| `tabla3_media_std.csv/.tex` | Table 3 con media ± desviación (5 semillas) |
+| `tabla4_auc.csv/.tex` | Table 4 (AUC macro one-vs-rest) |
+| `fig_comparacion_grupos.png` | Fig. 7 |
+| `fig_matrices_confusion.png` | Fig. 8 |
+| `fig_curvas_roc.png` | Fig. 9 |
+| `fig_ranking_copeland.png` | Fig. 10 |
+| `fig_curvas_aprendizaje.png` | Fig. 11 |
+| `fig_importancia_variables.png`, `fig_importancia_permutacion.png`, `fig_mascaras_tabnet.png`, `fig_atencion_ft.png`, `interpretabilidad_top.csv` | Interpretabilidad |
 
-### Para el artículo — `outputs/aligned/`
+Cada `results/aligned/<grupo>_<modelo>/results.json` guarda además el equipo
+en que se entrenó (`hardware`), los hiperparámetros, las curvas, las
+predicciones y el tiempo de cómputo. Conviene conservar esa carpeta junto al
+manuscrito: permite demostrar de dónde sale cada número.
 
-| Archivo | Va a |
-|---|---|
-| `tabla3_metricas.csv` / `.tex` | **Tabla 3** |
-| `tabla4_auc.csv` / `.tex` | **Tabla 4** |
-| `copeland_global.csv` | Ranking Copeland (III-F-3) |
-| `estabilidad_multisemilla.csv` | Media ± desviación, 5 semillas (III-F-4) |
-| `interpretabilidad_top.csv` | Variables más influyentes (III-G) |
-| `fig_matrices_confusion.png` | **Fig. 8** |
-| `fig_curvas_roc.png` | **Fig. 9** |
-| `fig_ranking_copeland.png` | **Fig. 10** |
-| `fig_curvas_aprendizaje.png` | **Fig. 11** |
-| `fig_importancia_variables.png` | Interpretabilidad |
+## 7. Qué hay que actualizar en el artículo
 
-Los `.tex` se pegan directo en el manuscrito.
+El código implementa lo que describe el artículo, con estas diferencias que
+el texto debe recoger:
 
-**Si falta alguna combinación**, `report` la nombra y la deja fuera de la tabla.
-No rellena huecos con nada.
+1. **Definición de las clases.** Menores (3–17): P506, frecuencia de lectura
+   de libros. Adultos (18+): P408 + P409, lectura de libros. Frecuente =
+   diariamente o varias veces por semana; Medio = de una vez por semana a
+   una vez al mes; No lector = cada tres meses o menos, o no leyó.
+2. **Desbalance de clases.** Entropía cruzada ponderada por el inverso de la
+   frecuencia de cada clase (sin SMOTE).
+3. **Número de variables.** No son 71 en todos los grupos: niños 31, jóvenes
+   34, adultos 55. El capítulo 300 solo se aplica a mayores de 18, así que a
+   los menores les llegan menos variables propias.
+4. **Indicadores derivados.** Hay que quitar "Frecuencia Lectora Semanal",
+   porque es la misma información que la clase a predecir y usarla sería
+   fuga. El "Índice de Acceso Digital" se construye con estrato
+   socioeconómico, tamaño del centro poblado y asistencia a educación como
+   aproximación, porque el capítulo 600 no está en los datos: hay que
+   decirlo así.
+5. **Protocolo.** El número de épocas del reentrenamiento sobre el 85 % se
+   fija con la mejor época de la corrida train/validación.
+6. **AUC.** Promedio macro one-vs-rest.
+7. **Copeland.** Rango de −6 a +6 (3 grupos, 2 rivales por grupo).
+8. **Equipo.** El que registre `results.json` → `hardware`.
+9. **Resultados, discusión y conclusiones:** reescribir con los números que
+   salgan. Serán más bajos que los del manuscrito actual (97 / 92 / 73 %).
 
----
+## 8. Antes de dar los resultados por buenos
 
-## 8. Problemas frecuentes
+- **Ningún accuracy cercano a 1,000.** Si aparece, algo se filtró.
+- **`estabilidad_multisemilla.csv`:** desviaciones prácticamente nulas
+  (< 0,001) también son sospechosas.
+- **`interpretabilidad_top.csv`:** las variables más influyentes deberían ser
+  nivel educativo, lengua materna, contexto del hogar o nivel
+  socioeconómico. Si aparece algo que huela a lectura, hay que investigarlo.
+- **`diagnostico` en cada `results.json`:** el modelo de la etapa A y el final
+  deben tener métricas de test parecidas.
+
+## 9. Problemas frecuentes
 
 | Síntoma | Causa y arreglo |
 |---|---|
-| `check` dice `GPU: no disponible` | PyTorch `+cpu`. Reinstala con el índice de CUDA |
-| `training.device='cuda' pero PyTorch no ve ninguna GPU` | Igual que arriba; el pipeline se niega a caer a CPU en silencio |
-| `CUDA out of memory` | Improbable con 8 GB. Si pasa, baja `batch_size` en el preset o cierra lo que esté usando la GPU |
-| `FileNotFoundError ... train.parquet` | Falta correr `python run_pipeline.py etl` |
-| `contradice el manuscrito (esperado ...)` | Cambiaste un valor que el artículo fija. Revierte, o corrige también el artículo |
-| `FUGA DEL TARGET detectada` | Entró una variable de comportamiento lector a la matriz. No lo ignores: invalida los resultados |
-| Va mucho más lento de lo estimado | Confirma con `nvidia-smi` que el proceso está en la GPU y no en CPU |
-
----
-
-## 9. Qué esperar de los números
-
-Los resultados van a ser **más bajos** que los del artículo actual (97 % / 92 % /
-73 %). Aquellos venían de predecir la frecuencia lectora usando la frecuencia
-lectora como variable de entrada. Estos son los reales, prediciendo a partir de
-características demográficas y socioculturales.
-
-También es posible que **el ranking entre arquitecturas cambie**. El único
-Copeland que llegó a calcularse con datos reales ponía primero al FT-Transformer,
-no a TabNet. La discusión del artículo está escrita asumiendo lo contrario, así
-que habrá que reescribirla según lo que salga.
-
-Antes de dar los resultados por buenos, revisa tres cosas:
-
-1. **`estabilidad_multisemilla.csv`** — desviaciones muy pequeñas (< 0,001) en
-   accuracy son sospechosas: suelen indicar fuga.
-2. **Ningún accuracy cercano a 1,000.** Si aparece, algo se filtró.
-3. **`interpretabilidad_top.csv`** — las variables más influyentes deberían ser
-   nivel educativo, lengua materna, acceso digital y contexto del hogar. Si
-   sube algo que huela a lectura, hay que investigarlo.
+| `check` dice `PyTorch +cpu` | Reinstalar torch con el índice de CUDA (paso 1) |
+| `training.device='cuda' pero PyTorch no ve ninguna GPU` | Igual que arriba; el pipeline se niega a pasar a CPU en silencio |
+| `CUDA out of memory` | Improbable con 8 GB. Bajar `batch_size` en el preset o cerrar lo que use la GPU |
+| `FileNotFoundError ... train.parquet` | Falta `python run_pipeline.py etl` |
+| `contradice el manuscrito (esperado ...)` | Se cambió un valor que el artículo fija. Revertir, o corregir también el artículo |
+| `FUGA DEL TARGET detectada` | Entró una variable de comportamiento lector. No ignorarlo: invalida los resultados |
+| Mucho más lento de lo estimado | Confirmar con `nvidia-smi` que el proceso usa la GPU |

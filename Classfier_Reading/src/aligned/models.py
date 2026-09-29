@@ -157,6 +157,13 @@ class MLPMultiHeadAttention(nn.Module):
         _, attn = self.attention(x, return_attention=True)
         return attn.mean(dim=(0, 1, 2)).cpu().numpy()
 
+    @torch.no_grad()
+    def attention_maps(self, x: torch.Tensor) -> np.ndarray:
+        """Mapa (H, F, F) promediado sobre el batch, para heatmaps."""
+        self.eval()
+        _, attn = self.attention(x, return_attention=True)
+        return attn.mean(dim=0).cpu().numpy()
+
 
 # =====================================================================
 # 2. TabNet
@@ -209,24 +216,57 @@ class TabNetModel:
 
     def fit(self, X_tr, y_tr, X_val, y_val, epochs: int, patience: int,
             batch_size: int, virtual_batch_size: int = 128,
-            class_weights: Optional[np.ndarray] = None):
-        weights = None
+            class_weights: Optional[np.ndarray] = None,
+            track_train: bool = False):
+        """
+        Con `X_val`: early stopping sobre la log-loss de validacion (igual
+        que MLP+MA y FT-Transformer) y restauracion de la mejor epoca.
+        Sin `X_val` (None): exactamente `epochs` epocas, pesos finales.
+
+        `track_train=True` evalua tambien el conjunto de entrenamiento en
+        cada epoca para dibujar la curva train vs. validacion (Fig. 11).
+        pytorch-tabnet usa el ULTIMO conjunto y la ULTIMA metrica de la
+        lista para el early stopping, por eso el orden es [train, val] y
+        ["accuracy", "logloss"].
+        """
+        Xtr = np.asarray(X_tr, dtype=np.float32)
+        ytr = np.asarray(y_tr).astype(int)
+
+        # Misma regla de balanceo que las otras dos arquitecturas: entropia
+        # cruzada ponderada. `weights` de pytorch-tabnet haria sobremuestreo,
+        # que no es lo mismo.
+        loss_fn = None
         if class_weights is not None:
-            per_class = {i: float(w) for i, w in enumerate(class_weights)}
-            weights = np.array([per_class[int(c)] for c in y_tr])
+            w = torch.as_tensor(np.asarray(class_weights), dtype=torch.float32)
+            loss_fn = nn.CrossEntropyLoss(weight=w.to(self.model.device))
+
+        eval_set, eval_name = [], []
+        if X_val is not None:
+            if track_train:
+                eval_set.append((Xtr, ytr)); eval_name.append("train")
+            eval_set.append((np.asarray(X_val, dtype=np.float32), np.asarray(y_val).astype(int)))
+            eval_name.append("val")
 
         self.model.fit(
-            X_train=np.asarray(X_tr, dtype=np.float32),
-            y_train=np.asarray(y_tr).astype(int),
-            eval_set=[(np.asarray(X_val, dtype=np.float32), np.asarray(y_val).astype(int))],
-            eval_name=["val"], eval_metric=["logloss", "accuracy"],
-            max_epochs=epochs, patience=patience,
+            X_train=Xtr, y_train=ytr,
+            eval_set=eval_set or None, eval_name=eval_name or None,
+            eval_metric=["accuracy", "logloss"] if eval_set else None,
+            loss_fn=loss_fn, weights=0,
+            max_epochs=epochs,
+            patience=patience if X_val is not None else 0,
             batch_size=batch_size,
             virtual_batch_size=min(virtual_batch_size, batch_size),
-            weights=weights if weights is not None else 0,
             drop_last=False,
         )
         return self.history
+
+    @property
+    def best_epoch(self) -> int:
+        """Epoca (base 0) con la menor log-loss de validacion."""
+        val = self.history.get("val_loss") or []
+        if val:
+            return int(np.argmin(val))
+        return max(len(self.history.get("train_loss") or []) - 1, 0)
 
     @property
     def history(self) -> Dict[str, list]:
@@ -236,6 +276,7 @@ class TabNetModel:
         raw = h.history if hasattr(h, "history") else dict(h)
         return {
             "train_loss": list(raw.get("loss", [])),
+            "train_acc": list(raw.get("train_accuracy", [])),
             "val_loss": list(raw.get("val_logloss", [])),
             "val_acc": list(raw.get("val_accuracy", [])),
         }
@@ -254,9 +295,13 @@ class TabNetModel:
         return np.asarray(self.model.feature_importances_)
 
     def step_masks(self, X) -> Dict[str, np.ndarray]:
-        """Mascara de cada decision step, para la lectura step-wise."""
+        """Mascara media de cada decision step (una fila por paso)."""
         _, masks = self.model.explain(np.asarray(X, dtype=np.float32))
         return {f"step_{i + 1}": np.asarray(m).mean(axis=0) for i, m in masks.items()}
+
+    @property
+    def device(self) -> str:
+        return str(self.model.device)
 
     def save(self, path): self.model.save_model(str(path))
     def load(self, path): self.model.load_model(str(path))
@@ -353,18 +398,27 @@ class FTTransformer(nn.Module):
         return self.head(h[:, 0, :])                      # clasificacion por [CLS]
 
     @torch.no_grad()
-    def feature_importance(self, x: torch.Tensor) -> np.ndarray:
+    def feature_importance(self, x: torch.Tensor, batch_size: int = 256) -> np.ndarray:
         """
         I(v_i) promediando la atencion recibida por cada variable sobre
         todas las cabezas y capas. Se descarta la posicion 0 ([CLS]).
+
+        Se procesa por lotes: con 2.048 muestras, 4 capas, 8 cabezas y ~56
+        tokens, los mapas completos ocupan mas de 1 GB.
         """
         self.eval()
-        _, maps = self._encode(x, collect=True)
-        if not maps:
+        total, n = None, 0
+        for i in range(0, x.size(0), batch_size):
+            _, maps = self._encode(x[i:i + batch_size], collect=True)
+            if not maps:
+                continue
+            stacked = torch.stack(maps)                   # (L, b, H, F+1, F+1)
+            per_sample = stacked.mean(dim=(0, 2, 3))      # (b, F+1): media en L, H, i
+            total = per_sample.sum(0) if total is None else total + per_sample.sum(0)
+            n += per_sample.size(0)
+        if total is None:
             return np.zeros(self.num_features)
-        stacked = torch.stack(maps)                       # (L, B, H, F+1, F+1)
-        received = stacked.mean(dim=(0, 1, 2, 3))         # promedio sobre L,B,H,i
-        return received[1:].cpu().numpy()
+        return (total / n)[1:].cpu().numpy()
 
     @torch.no_grad()
     def attention_maps(self, x: torch.Tensor) -> np.ndarray:

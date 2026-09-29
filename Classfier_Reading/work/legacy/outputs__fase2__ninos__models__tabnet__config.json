@@ -1,0 +1,9 @@
+{
+    "input_dim": 75,
+    "n_d": 32,
+    "n_a": 32,
+    "n_steps": 3,
+    "gamma": 1.3,
+    "lambda_sparse": 0.001,
+    "num_classes": 3
+}

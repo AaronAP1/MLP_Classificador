@@ -1,0 +1,24 @@
+# ============================================================================
+# Dependencias MINIMAS para entrenar el pipeline alineado (run_pipeline.py)
+#
+# PyTorch NO esta aqui a proposito: hay que instalarlo ANTES y desde el
+# indice de CUDA, o pip trae la version +cpu y la GPU no se usa:
+#
+#     pip install torch --index-url https://download.pytorch.org/whl/cu126
+#     pip install -r requirements-train.txt
+#
+# requirements.txt (el completo) incluye Azure ML, Jupyter, mkdocs, etc.,
+# que no hacen falta para entrenar y pueden fallar al instalarse.
+# ============================================================================
+numpy>=1.26
+pandas>=2.0,<3.0
+scipy>=1.11
+scikit-learn>=1.3,<2.0
+imbalanced-learn>=0.11      # solo se usa si balancing.method = "smote"
+pytorch-tabnet>=4.1
+pyarrow>=12.0               # lectura/escritura de los .parquet
+matplotlib>=3.7
+pyyaml>=6.0
+openpyxl>=3.1               # etiquetas legibles desde los diccionarios ENL
+joblib>=1.3
+pytest>=7.4

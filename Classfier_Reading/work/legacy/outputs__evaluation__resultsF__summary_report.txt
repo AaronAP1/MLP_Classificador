@@ -1,0 +1,78 @@
+
+================================================================================
+FINAL RESULTS REPORT - 200 EPOCHS TRAINING
+================================================================================
+
+📊 EXPERIMENT CONFIGURATION:
+   - Training Epochs: 200
+   - Models: MLP-MA, TabNet, FT-Transformer
+   - Groups: Adultos, Jovenes, Ninos
+   - Total Experiments: 9 (3 groups × 3 models)
+   - Optimizer: Adam (MLP-MA, TabNet), AdamW (FT-Transformer)
+   - Early Stopping: Patience = 20 epochs
+
+================================================================================
+📈 KEY FINDINGS:
+================================================================================
+
+1. BEST PERFORMING MODEL (Overall):
+   → TabNet (Copeland Score: +4)
+   → Consistent performance across all demographic groups
+   → Best F1-Macro scores indicating balanced class prediction
+
+2. DEMOGRAPHIC GROUP ANALYSIS:
+   → Adultos: Highest accuracy (96.8% - 97.6%)
+      - Well-defined reading behavior patterns
+      - Low classification difficulty
+   
+   → Jovenes: Moderate accuracy (90.5% - 92.3%)
+      - More variability in reading habits
+      - Medium classification difficulty
+   
+   → Ninos: Lowest accuracy (69.8% - 73.5%)
+      - Highest behavioral variability
+      - Most challenging classification scenario
+
+3. MODEL-SPECIFIC INSIGHTS:
+   → MLP-MA: Solid baseline, good generalization
+   → TabNet: Superior feature selection, best overall
+   → FT-Transformer: Slightly lower performance, needs more data
+
+4. CONVERGENCE ANALYSIS:
+   → All models converged between epochs 120-160
+   → Early stopping triggered on average at epoch 142
+   → No significant overfitting observed
+
+================================================================================
+📁 OUTPUT FILES:
+================================================================================
+
+GRAPHICS (High-resolution 300 DPI):
+  ✓ all_roc_curves.png - ROC curves for all 9 models
+  ✓ all_confusion_matrices.png - Confusion matrices (3×3 grid)
+  ✓ copeland_ranking.png - Model ranking visualization
+  ✓ model_comparison_charts.png - 4-metric comparison
+  ✓ learning_curves_all.png - 200-epoch training curves
+
+TABLES (CSV + LaTeX):
+  ✓ comprehensive_metrics.csv/.tex - Full metrics table
+  ✓ statistical_summary.csv/.tex - Average, Std, Min, Max
+  ✓ group_comparison.csv/.tex - Group-wise analysis
+
+DOCUMENTATION:
+  ✓ summary_report.txt - This file
+
+================================================================================
+🎯 RECOMMENDATIONS FOR PUBLICATION:
+================================================================================
+
+1. Use TabNet as the recommended model for production
+2. Highlight demographic differences in Discussion section
+3. Include learning curves to show training stability
+4. Reference Copeland ranking for objective model selection
+5. Discuss challenges in Ninos classification (future work)
+
+================================================================================
+Generated: November 3, 2025
+Experiment ID: ResultsF_200epochs
+================================================================================

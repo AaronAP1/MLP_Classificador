@@ -16,10 +16,12 @@ cruzada → reentrenamiento → evaluación → tablas y figuras del artículo.
 ```bash
 git clone <repo> && cd Classfier_Reading
 python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install torch --index-url https://download.pytorch.org/whl/cu126   # primero, con CUDA
+pip install -r requirements-train.txt
 
 python run_pipeline.py check        # verifica dependencias, GPU y datos
 python run_pipeline.py etl          # ~10 s
+python run_pipeline.py smoke        # ~5 min: todo el camino con pocos datos
 python run_pipeline.py benchmark    # estima el tiempo de entrenamiento AQUÍ
 python run_pipeline.py train        # el paso largo
 python run_pipeline.py report       # tablas y figuras
@@ -55,17 +57,33 @@ src/aligned/
     target.py                 Construcción de las 3 clases lectoras
     features.py               Indicadores derivados + contexto del hogar +
                               selección (varianza, correlación, ranking)
-    etl.py                    ETL completo con verificaciones duras
+    etl.py                    ETL completo con armonización de CSV y
+                              verificaciones duras
+    balancing.py              Pesos de clase / SMOTE, solo dentro de cada ajuste
     models.py                 MLP+MA, TabNet, FT-Transformer
     trainer.py                AdamW, early stopping, curvas por época
     gridsearch.py             Grid Search + StratifiedKFold(5)
-    pipeline.py               Orquestador CV → refit 85% → test 15%
-    evaluate.py               Métricas, AUC OvR, Copeland
+    pipeline.py               CV → etapa A (70/15) → etapa B (85%) → test 15%
+    evaluate.py               Métricas, AUC OvR macro, Copeland
     report.py                 Tablas y figuras (solo desde artefactos reales)
     benchmark.py              Cronómetro para estimar coste
-tests/test_aligned.py         46 pruebas con assert real
-deprecated/                   Generadores sintéticos en cuarentena
+tests/test_aligned.py         61 pruebas con assert real
 ```
+
+---
+
+## Correcciones de la revisión de septiembre de 2026
+
+| Hallazgo | Efecto | Corrección |
+|---|---|---|
+| `jovenes.csv` codifica "no aplica" como vacío (los otros CSV usan 0) y tiene columnas `_x`/`_y` de un merge | El filtro de >20 % de faltantes descartaba el **100 %** de sus filas: nadie de 16 a 27 años llegaba al modelo (jóvenes = solo 14–15; adultos = solo 28+) | `etl.harmonize_source`: une `_x`/`_y` y convierte vacíos en 0. Verificado contra edades vecinas. Jóvenes: 2.899 → 5.642 registros (14–17); adultos: 30.617 → 40.530 (18–99) |
+| SMOTE aplicado al 70 % antes de la CV | Folds de validación con muestras sintéticas hechas de otros folds: CV optimista | El ETL ya no balancea; `balancing.py` actúa dentro de cada ajuste. Por defecto, pérdida ponderada por clase |
+| Reentrenamiento del 85 % con early stopping sobre datos incluidos en el propio entrenamiento | La curva de "validación" de la Fig. 11 no era validación | Etapa A (70 % vs. 15 %) para curvas y época óptima; etapa B (85 %) con esa época fija |
+| TabNet sin curva de entrenamiento y con balanceo por muestreo | Fig. 11 incompleta; balanceo distinto al de los otros modelos | `eval_set` con train; pérdida ponderada igual que MLP+MA y FT |
+| Target de adultos P402/P403 (cualquier lectura) vs. P506 (libros) en menores | Clases no comparables entre grupos; 67 % "frecuente" en adultos | Adultos por P408/P409 (lectura de libros), configurable |
+| `FACTORFINAL_HOGAR`, `FACTOR200_FINAL`, `P201`, `P204` como predictores | Factores de expansión y números de orden dentro del modelo | Movidos a columnas administrativas |
+| `P314` (monto de ingreso) tratado como categórico y `P314_1` (marca) como numérico | Montos no vistos en test mapeados al mínimo; ingreso del hogar calculado con la marca | Tipos corregidos |
+| Interpretabilidad del MLP+MA casi uniforme si la atención no se especializa | Ranking poco informativo | Se añade importancia por permutación, común a los tres modelos |
 
 ---
 
@@ -104,9 +122,9 @@ predictores es:
 
 | Grupo | Universo | Final |
 |---|---|---|
-| Niños (3–13) | 105 | 34 |
-| Jóvenes (14–17) | 105 | 33 |
-| Adultos (18+) | 121 | 59 |
+| Niños (3–13) | 100 | 31 |
+| Jóvenes (14–17) | 100 | 34 |
+| Adultos (18+) | 100 | 55 |
 
 Causa: la ENL solo administra el capítulo 300 —lengua materna, etnia, nivel
 educativo alcanzado, ocupación, ingreso— a personas de 18 años o más. Para las
@@ -130,8 +148,8 @@ a **X**.
 
 El texto define Niños 3–13, Jóvenes 14–17, Adultos 18+; la Figura 9 del mismo
 artículo rotula 0–11 y 12–17; los CSV venían partidos en 0–15 / 16–27 / 28–99.
-El pipeline recalcula la segmentación desde `edad_total` siguiendo el **texto**.
-Hay que corregir la Figura 9.
+El pipeline recalcula la segmentación desde `edad_total` siguiendo el **texto**,
+y las figuras nuevas rotulan los grupos con esos mismos rangos.
 
 ### Además
 
@@ -154,7 +172,8 @@ Hay que corregir la Figura 9.
 | Cohorte | Fuente | Regla |
 |---|---|---|
 | 3–17 | `P506` frecuencia de lectura de libros | 1–2 → Frecuente · 3–5 → Medio · 6–8 → No lector · 9 (NS/NR) → descartado |
-| 18+ | `P402` + `P403` | `P402=2` → No lector · `P403` 1–2 → Frecuente · 3–4 → Medio · 5–6 → No lector |
+| 18+ | `P408` + `P409` lectura de libros (por defecto) | `P408=2` → No lector · `P409` 1–2 → Frecuente · 3–4 → Medio · 5–6 → No lector |
+| 18+ (alternativa) | `P402` + `P403` cualquier contenido | misma regla; `target_source: chapter_300_400` |
 
 Distribución resultante:
 
@@ -162,7 +181,8 @@ Distribución resultante:
 |---|---|---|---|---|
 | Niños | 15.333 | 2.632 | 4.095 | 8.606 |
 | Jóvenes | 5.642 | 751 | 1.556 | 3.335 |
-| Adultos | 40.530 | 3.782 | 9.552 | 27.196 |
+| Adultos (libros) | 40.530 | 23.216 | 6.539 | 10.775 |
+| Adultos (cualquier contenido) | 40.530 | 3.782 | 9.552 | 27.196 |
 
 > El ETL anterior construía el target de adultos con `P315_*` y `P311`, que en
 > la ENL son **limitaciones permanentes (discapacidad)** y **si trabajó la
@@ -177,23 +197,29 @@ data/aligned/<grupo>/          train/val/test.parquet, preprocessor.pkl,
                                config.json (trazabilidad del ETL)
 results/aligned/<grupo>_<modelo>/
                                results.json          métricas, ROC, curvas,
-                                                     interpretabilidad, CV
+                                                     interpretabilidad, CV,
+                                                     semillas, hardware
                                gridsearch_results.csv todos los candidatos
-                               test_predictions.npz
+                               test_predictions.npz  y_true, y_pred, y_proba
+                               interpretabilidad.npz máscaras y atención completas
                                best_model.pt | tabnet_model.zip
-outputs/aligned/               tabla3_metricas.{csv,tex}
-                               tabla4_auc.{csv,tex}
-                               copeland_global.csv
-                               estabilidad_multisemilla.csv
-                               fig_*.png
+outputs/aligned/               INDICE_FIGURAS.md     qué archivo va a qué parte del artículo
+                               tabla_resumen_datos.csv
+                               tabla2_hiperparametros.csv
+                               tabla3_metricas.{csv,tex}  tabla3_media_std.{csv,tex}
+                               tabla4_auc.{csv,tex}       tabla4_auc_por_clase.csv
+                               copeland_*.csv  estabilidad_multisemilla.csv
+                               interpretabilidad_top.csv
+                               fig_*.png             Figs. 7-11 e interpretabilidad
+results/_smoke/, outputs/_smoke/   salida de la prueba de humo (marcada, no son resultados)
 ```
 
 ---
 
 ## Nota sobre reproducibilidad
 
-`seed: 42` en la configuración se propaga a NumPy, PyTorch, los splits, SMOTE y
-los folds. La estabilidad multi-semilla usa `[42, 123, 456, 789, 2024]`, las
+`seed: 42` en la configuración se propaga a NumPy, PyTorch, los splits, el
+balanceo y los folds. La estabilidad multi-semilla usa `[42, 123, 456, 789, 2024]`, las
 cinco que declara el artículo. Cada `results.json` guarda la configuración
 completa que lo produjo, de modo que una tabla siempre puede rastrearse hasta
 sus hiperparámetros.

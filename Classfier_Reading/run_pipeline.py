@@ -4,6 +4,9 @@ Punto de entrada unico del pipeline alineado al manuscrito.
 
     python run_pipeline.py check       Verifica entorno, config y datos
     python run_pipeline.py etl         Prepara los datos (rapido, sin GPU)
+    python run_pipeline.py smoke       Prueba de humo: todo el camino en minutos,
+                                       con pocos datos, en results/_smoke y
+                                       outputs/_smoke. NO produce resultados.
     python run_pipeline.py benchmark   Estima el tiempo de entrenamiento
     python run_pipeline.py train       Grid Search + CV + reentreno + test
     python run_pipeline.py report      Tablas y figuras del articulo
@@ -61,9 +64,14 @@ def cmd_check(cfg, args) -> int:
         import torch
         if torch.cuda.is_available():
             print(f"\n  GPU: {torch.cuda.get_device_name(0)} "
-                  f"({torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB)")
+                  f"({torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB)"
+                  f" · CUDA {torch.version.cuda}")
         else:
-            print("\n  GPU: no disponible; se entrenara en CPU (mas lento).")
+            build = "+cpu (sin soporte CUDA)" if "+cpu" in torch.__version__ else torch.__version__
+            print(f"\n  GPU: no disponible · PyTorch {build}; se entrenara en CPU (mas lento).")
+            if "+cpu" in torch.__version__:
+                print("       Para usar la GPU: pip install torch --index-url "
+                      "https://download.pytorch.org/whl/cu126")
     except ImportError:
         pass
 
@@ -83,6 +91,8 @@ def cmd_check(cfg, args) -> int:
               f"{'' if done else '  (ejecuta: python run_pipeline.py etl)'}")
 
     print(f"\n  Configuracion validada contra el manuscrito: OK")
+    print(f"    target adultos={cfg['groups']['adultos']['target_source']} · "
+          f"balanceo={cfg['balancing']['method']}")
     print(f"    optimizador={cfg['training']['optimizer']} · "
           f"epocas={cfg['training']['final_epochs']} · "
           f"patience={cfg['training']['early_stopping_patience']}")
@@ -145,6 +155,60 @@ def cmd_all(cfg, args) -> int:
     return 0
 
 
+def smoke_config(cfg: dict) -> dict:
+    """
+    Copia de la configuracion para la prueba de humo. Reduce datos,
+    folds, epocas y semillas, y redirige la salida a carpetas propias.
+    La configuracion real no se toca.
+    """
+    import copy
+    s = cfg["smoke_test"]
+    c = copy.deepcopy(cfg)
+    c["smoke"] = {"max_rows_per_split": s["max_rows_per_split"]}
+    c["training"]["final_epochs"] = s["final_epochs"]
+    c["training"]["early_stopping_patience"] = s["early_stopping_patience"]
+    c["gridsearch"].update(cv_folds=s["cv_folds"], cv_epochs=s["cv_epochs"],
+                           cv_patience=s["cv_patience"], preset=s["preset"])
+    c["evaluation"]["stability"]["seeds"] = list(s["seeds"])
+    c["evaluation"]["interpretability_samples"] = 256
+    c["paths"]["results_dir"] = s["results_dir"]
+    c["paths"]["figures_dir"] = s["figures_dir"]
+    return c
+
+
+def cmd_smoke(cfg, args) -> int:
+    banner("PRUEBA DE HUMO · NO PRODUCE RESULTADOS")
+    started = time.time()
+    proc = ROOT / cfg["paths"]["processed_dir"]
+    if not all((proc / g / "test.parquet").exists() for g in cfg["groups"]):
+        print("  Datos procesados ausentes: ejecutando ETL primero.")
+        cmd_etl(cfg, args)
+    c = smoke_config(cfg)
+    s = cfg["smoke_test"]
+    print(f"  {s['max_rows_per_split']} filas por split · {s['final_epochs']} epocas · "
+          f"{s['cv_folds']} folds · semillas {s['seeds']}")
+    print(f"  salida: {c['paths']['results_dir']} y {c['paths']['figures_dir']}")
+
+    from src.aligned.pipeline import run_all
+    from src.aligned.report import build_report
+    results = run_all(c, ROOT, args.groups, args.models)
+    fails = {k: v["error"] for k, v in results.items() if "error" in v}
+    info = build_report(c, ROOT)
+    missing_figs = [k for k, v in info["figuras"].items() if v is None]
+
+    print(f"\n  {len(results) - len(fails)}/{len(results)} combinaciones completas "
+          f"en {(time.time() - started) / 60:.1f} min")
+    for k, e in fails.items():
+        print(f"    FALLO {k}: {e}")
+    print(f"  figuras generadas: {sum(v is not None for v in info['figuras'].values())}"
+          f"/{len(info['figuras'])}"
+          + (f" · faltan: {', '.join(missing_figs)}" if missing_figs else ""))
+    ok = not fails and not missing_figs
+    print(f"\n  {'TODO FUNCIONA' if ok else 'HAY PROBLEMAS (ver arriba)'} · "
+          f"figuras de prueba en {info['output_dir']}")
+    return 0 if ok else 1
+
+
 # ---------------------------------------------------------------------
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -153,7 +217,7 @@ def main() -> int:
         epilog=__doc__,
     )
     parser.add_argument("command",
-                        choices=["check", "etl", "benchmark", "train", "report", "all"])
+                        choices=["check", "etl", "smoke", "benchmark", "train", "report", "all"])
     parser.add_argument("--config", type=Path, default=None)
     parser.add_argument("--preset", choices=["fast", "standard", "paper"])
     parser.add_argument("--groups", nargs="+", default=None,
@@ -173,8 +237,9 @@ def main() -> int:
         cfg["seed"] = args.seed
 
     return {
-        "check": cmd_check, "etl": cmd_etl, "benchmark": cmd_benchmark,
-        "train": cmd_train, "report": cmd_report, "all": cmd_all,
+        "check": cmd_check, "etl": cmd_etl, "smoke": cmd_smoke,
+        "benchmark": cmd_benchmark, "train": cmd_train, "report": cmd_report,
+        "all": cmd_all,
     }[args.command](cfg, args)
 
 

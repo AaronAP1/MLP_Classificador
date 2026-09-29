@@ -81,3 +81,14 @@ def validate(cfg: dict) -> None:
     preset = cfg["gridsearch"]["preset"]
     if preset not in cfg["gridsearch"]["presets"]:
         raise ValueError(f"Preset desconocido: {preset!r}")
+
+    from .target import TARGET_SOURCES
+    for group, gcfg in cfg["groups"].items():
+        if gcfg["target_source"] not in TARGET_SOURCES:
+            raise ValueError(
+                f"groups.{group}.target_source = {gcfg['target_source']!r} no existe. "
+                f"Opciones: {sorted(TARGET_SOURCES)}")
+
+    method = cfg["balancing"].get("method")
+    if method not in ("class_weights", "smote", "none"):
+        raise ValueError(f"balancing.method = {method!r}; opciones: class_weights, smote, none")

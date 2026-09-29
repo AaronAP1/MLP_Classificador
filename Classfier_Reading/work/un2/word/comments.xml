@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?><w:comments xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:oel="http://schemas.microsoft.com/office/2019/extlst" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16du="http://schemas.microsoft.com/office/word/2023/wordml/word16du" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16sdtfl="http://schemas.microsoft.com/office/word/2024/wordml/sdtformatlock" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex w16sdtdh w16sdtfl w16du wp14"><w:comment w:id="0" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="7E369288" w14:textId="77777777" w:rsidR="00B31AEE" w:rsidRDefault="00000000" w:rsidP="00B31AEE"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:annotationRef/></w:r><w:r w:rsidR="00B31AEE"><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Propuestas de edición hechas con Claude (IA) sobre los párrafos que Turnitin marcó como IA. Se conservan todas las cifras y citas. Revisen cada cambio y reescríbanlo con sus palabras: si aceptan el texto tal cual, Turnitin podría volver a marcarlo, porque también es texto generado por IA. Los comentarios señalan qué datos propios conviene agregar. Algunas propuestas usan primera persona del plural ('atribuimos', 'creemos'); unifiquen el estilo como prefieran.</w:t></w:r></w:p></w:comment><w:comment w:id="1" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="4CFCDA48" w14:textId="6ED3C9C8" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>El resumen menciona SMOTE, pero la sección de Métodos no describe dónde ni cómo se aplicó (¿solo sobre el conjunto de entrenamiento? ¿a qué grupos?). Descríbanlo en Métodos o quítenlo del resumen.</w:t></w:r></w:p></w:comment><w:comment w:id="2" w:author="Anthony  Aquino" w:date="2026-09-29T12:34:00Z" w:initials="AA"><w:p w14:paraId="67F5B4FB" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Quitar del Resumen</w:t></w:r></w:p></w:comment><w:comment w:id="3" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="3492191F" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Cambié 'superiores al 97 %…' por los valores exactos de la Table 3 y añadí la distancia entre MLP+MA y TabNet. Los datos concretos hacen el resumen más informativo y menos genérico.</w:t></w:r></w:p></w:comment><w:comment w:id="4" w:author="Anthony  Aquino" w:date="2026-09-29T12:35:00Z" w:initials="AA"><w:p w14:paraId="45C6408A" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="9" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="60CA0393" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Quité dos transiciones genéricas ('Este escenario motiva…', 'lo que convierte… en un desafío relevante'). Todas las cifras y citas se mantienen. Si pueden, agreguen un dato propio de la ENL (p. ej., la región con menor hábito lector).</w:t></w:r></w:p></w:comment><w:comment w:id="10" w:author="Anthony  Aquino" w:date="2026-09-29T12:36:00Z" w:initials="AA"><w:p w14:paraId="15B02BDB" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t xml:space="preserve">Investiga por tu parte y pon eso. </w:t></w:r></w:p></w:comment><w:comment w:id="11" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="14D5A612" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Reemplacé 'ofrecen un marco robusto para el descubrimiento de patrones latentes' por la razón concreta de por qué las DNN funcionan mejor aquí.</w:t></w:r></w:p></w:comment><w:comment w:id="12" w:author="Anthony  Aquino" w:date="2026-09-29T12:36:00Z" w:initials="AA"><w:p w14:paraId="77DEDEE2" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="13" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="0F6D0E1F" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Dice 'contrastadas con métodos tradicionales de aprendizaje automático', pero en Resultados no aparece ningún modelo tradicional (Random Forest, XGBoost, regresión logística). Agreguen esa comparación o quiten la frase.</w:t></w:r></w:p></w:comment><w:comment w:id="14" w:author="Anthony  Aquino" w:date="2026-09-29T12:35:00Z" w:initials="AA"><w:p w14:paraId="2FDC3429" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Puedes agregar esa comparacion si es importante y agregando su Cita o sino quitarlo.</w:t></w:r></w:p></w:comment><w:comment w:id="15" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="76CD74E4" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>En vez de citar los títulos en inglés dentro del texto, nombré a los autores y la población de cada estudio (tomado de sus referencias [7] y [8]). Es más específico y es la forma habitual en estilo IEEE.</w:t></w:r></w:p></w:comment><w:comment w:id="16" w:author="Anthony  Aquino" w:date="2026-09-29T12:36:00Z" w:initials="AA"><w:p w14:paraId="6AF0A006" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="17" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="3701000D" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Cambié 'superan ampliamente' y 'la alternativa más eficaz' por afirmaciones más prudentes. Ojo: [16] (Gorishniy et al., 2021) concluye que no hay un modelo profundo universalmente superior y que los árboles de gradiente siguen siendo competitivos; un revisor podría objetar que se cite para decir 'superan ampliamente'.</w:t></w:r></w:p></w:comment><w:comment w:id="18" w:author="Anthony  Aquino" w:date="2026-09-29T12:37:00Z" w:initials="AA"><w:p w14:paraId="3B64D569" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="19" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="70781868" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Oraciones más cortas y un cierre que nombra las decisiones concretas del estudio, en lugar de 'En conjunto, esta evidencia sustenta la pertinencia…'.</w:t></w:r></w:p></w:comment><w:comment w:id="20" w:author="Anthony  Aquino" w:date="2026-09-29T12:38:00Z" w:initials="AA"><w:p w14:paraId="4440CD09" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="21" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="507DB822" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Lo dividí en dos párrafos (XAI y vacío en el Perú / problemas abiertos y propuesta). El objetivo ya aparece al final de la Introducción; podrían acortar la última oración para no repetirlo.</w:t></w:r></w:p></w:comment><w:comment w:id="22" w:author="Anthony  Aquino" w:date="2026-09-29T12:37:00Z" w:initials="AA"><w:p w14:paraId="11571FC8" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="23" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="281B1162" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Estos tres párrafos resumen fases que luego se detallan en sus propias subsecciones; los acorté para no repetir.</w:t></w:r></w:p></w:comment><w:comment w:id="24" w:author="Anthony  Aquino" w:date="2026-09-29T12:38:00Z" w:initials="AA"><w:p w14:paraId="32D8E9E3" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="25" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="16B03C02" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Si pueden, agreguen aquí el número total de registros usados y de dónde se descargaron los microdatos (portal del INEI, módulos). Es el tipo de detalle que solo ustedes conocen y que los revisores piden.</w:t></w:r></w:p></w:comment><w:comment w:id="26" w:author="Anthony  Aquino" w:date="2026-09-29T12:39:00Z" w:initials="AA"><w:p w14:paraId="0DFF898A" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t xml:space="preserve">Los datos se bajaron de </w:t></w:r><w:hyperlink r:id="rId1" w:history="1"><w:r w:rsidRPr="005A492D"><w:rPr><w:rStyle w:val="Hipervnculo"/><w:lang w:val="es-PE"/></w:rPr><w:t>https://www.datosabiertos.gob.pe/dataset/encuesta-nacional-de-lectura</w:t></w:r></w:hyperlink><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:br/></w:r></w:p></w:comment><w:comment w:id="27" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="6B349B12" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Conviene precisar cuántos registros se eliminaron, qué técnica de reducción de dimensionalidad se usó y con qué umbral de correlación. Nota técnica: Label Encoding asigna un orden artificial a variables nominales (p. ej., idioma materno), lo que puede afectar al MLP; un revisor podría preguntarlo.</w:t></w:r></w:p></w:comment><w:comment w:id="28" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="1AFDB7E9" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Tomé los rangos de edad de la sección Result. La partición 70/15/15 aparece tres veces en el artículo (aquí, en 'Construcción del dataset final' y en 'División de datos'); podrían dejarla en un solo lugar. También falta el número de registros por grupo.</w:t></w:r></w:p></w:comment><w:comment w:id="29" w:author="Anthony  Aquino" w:date="2026-09-29T12:38:00Z" w:initials="AA"><w:p w14:paraId="6C37DE7C" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Resolvelo y corrige</w:t></w:r></w:p></w:comment><w:comment w:id="30" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="5CF228E4" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Usé datos de su propia Table 1 para justificar el preprocesamiento con cifras en lugar de una frase general.</w:t></w:r></w:p></w:comment><w:comment w:id="31" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="5AD7460B" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Agreguen el valor del umbral de varianza, el corte de correlación y cuántas variables había antes de llegar a las 71 finales.</w:t></w:r></w:p></w:comment><w:comment w:id="32" w:author="Anthony  Aquino" w:date="2026-09-29T12:39:00Z" w:initials="AA"><w:p w14:paraId="22987BE9" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>No lo tengo a la mano. Seria revisar</w:t></w:r></w:p></w:comment><w:comment w:id="33" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="7483D6AF" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Indiquen cómo se calculó cada índice (suma, promedio, PCA…). Esa explicación, escrita por ustedes, es mucho más útil que una frase general.</w:t></w:r></w:p></w:comment><w:comment w:id="34" w:author="Anthony  Aquino" w:date="2026-09-29T12:39:00Z" w:initials="AA"><w:p w14:paraId="33D407DD" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>añadelo</w:t></w:r></w:p></w:comment><w:comment w:id="35" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="33D86BEE" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>IMPORTANTE: el texto remite al Apéndice A, pero en esta versión del manuscrito no hay ningún apéndice. Agréguenlo o quiten la referencia.</w:t></w:r></w:p></w:comment><w:comment w:id="36" w:author="Anthony  Aquino" w:date="2026-09-29T12:39:00Z" w:initials="AA"><w:p w14:paraId="2611FB54" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Eliminar eso</w:t></w:r></w:p></w:comment><w:comment w:id="39" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="463FD61A" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Revisar '11 de las 15 combinaciones': según la Table 3, TabNet tiene el valor más alto en 14 de 15 (la única excepción es Recall-Weighted en adultos, donde MLP-MA obtiene 0.9727 frente a 0.9724). Lo mismo en la lista 'TabNet lideró en 11 / MLP+MA en 4', en la Discusión y en las Conclusiones.</w:t></w:r></w:p></w:comment><w:comment w:id="40" w:author="Anthony  Aquino" w:date="2026-09-29T12:40:00Z" w:initials="AA"><w:p w14:paraId="1F78DE02" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corrigelo</w:t></w:r></w:p></w:comment><w:comment w:id="41" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="118FBC40" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>El original decía que la caída 'varía significativamente' entre arquitecturas, pero según la Table 3 la diferencia es de menos de 3 puntos y no se reporta ninguna prueba estadística. Recomiendo reportar media ± desviación estándar de las 5 semillas / 5 folds (Métodos dice que se calcularon) para respaldar las comparaciones entre modelos, que en varios casos difieren por menos de 1 punto.</w:t></w:r></w:p></w:comment><w:comment w:id="42" w:author="Anthony  Aquino" w:date="2026-09-29T12:40:00Z" w:initials="AA"><w:p w14:paraId="787BFF46" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corrigelo</w:t></w:r></w:p></w:comment><w:comment w:id="43" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="01D955AB" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Cifras tomadas de la Table 3.</w:t></w:r></w:p></w:comment><w:comment w:id="44" w:author="Anthony  Aquino" w:date="2026-09-29T12:40:00Z" w:initials="AA"><w:p w14:paraId="0CD1EBA3" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Ok, si esta bien asi o corregir</w:t></w:r></w:p></w:comment><w:comment w:id="45" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="3218824C" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Esta explicación necesita una cita que la respalde.</w:t></w:r></w:p></w:comment><w:comment w:id="46" w:author="Anthony  Aquino" w:date="2026-09-29T12:40:00Z" w:initials="AA"><w:p w14:paraId="4FF8DCA7" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>citalo</w:t></w:r></w:p></w:comment><w:comment w:id="47" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="1C56678E" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Según la Table 3, FT-Transformer NO supera a MLP+MA en F1-Macro en adultos (0.8478 frente a 0.8671).</w:t></w:r></w:p></w:comment><w:comment w:id="48" w:author="Anthony  Aquino" w:date="2026-09-29T12:40:00Z" w:initials="AA"><w:p w14:paraId="69D86156" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corrigelo</w:t></w:r></w:p></w:comment><w:comment w:id="49" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="02586EEA" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>'Lector Ocasional' no aparece en ninguna otra parte del artículo; en el resto se usan 'Lector Frecuente' y 'Lector Medio', y las figuras muestran 'No Read'. Unifiquen los nombres de las tres clases y defínanlos en Métodos.</w:t></w:r></w:p></w:comment><w:comment w:id="50" w:author="Anthony  Aquino" w:date="2026-09-29T12:41:00Z" w:initials="AA"><w:p w14:paraId="334D3B85" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corrigelo</w:t></w:r></w:p></w:comment><w:comment w:id="51" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="636FA45F" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>El F1-Macro de TabNet en niños aparece aquí como 0.6786, pero en la Table 3 es 0.5540.</w:t></w:r></w:p></w:comment><w:comment w:id="52" w:author="Anthony  Aquino" w:date="2026-09-29T12:41:00Z" w:initials="AA"><w:p w14:paraId="542106FD" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corrigelo</w:t></w:r></w:p></w:comment><w:comment w:id="53" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="05690207" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Los AUC del texto (adultos 0.971–0.978, jóvenes 0.937–0.954, niños 0.762–0.807) no coinciden con la Table 4 (0.9934 / 0.9801 / 0.8731 para TabNet). Aclaren si el texto reporta AUC por clase y la tabla un promedio (micro/macro), o corrijan los valores. Afecta también a la Discusión (AUC ≈ 0.97 / 0.94 / 0.78).</w:t></w:r></w:p></w:comment><w:comment w:id="54" w:author="Anthony  Aquino" w:date="2026-09-29T12:41:00Z" w:initials="AA"><w:p w14:paraId="549AD8D9" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corregilo</w:t></w:r></w:p></w:comment><w:comment w:id="55" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="0721CD9A" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Si pueden, cuantifiquen la brecha entre entrenamiento y validación (p. ej., 'menos de X puntos').</w:t></w:r></w:p></w:comment><w:comment w:id="56" w:author="Anthony  Aquino" w:date="2026-09-29T12:41:00Z" w:initials="AA"><w:p w14:paraId="04DBC7A3" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Añadelo</w:t></w:r></w:p></w:comment><w:comment w:id="57" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="493B7C73" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Revisen el '11 de 15' (ver comentario en Resultados).</w:t></w:r></w:p></w:comment><w:comment w:id="58" w:author="Anthony  Aquino" w:date="2026-09-29T12:42:00Z" w:initials="AA"><w:p w14:paraId="72456141" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corrigelo</w:t></w:r></w:p></w:comment><w:comment w:id="59" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="7652A573" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Para sostener 'más liviana' y 'sin alto costo computacional', agreguen el número de parámetros o el tiempo de entrenamiento de cada modelo.</w:t></w:r></w:p></w:comment><w:comment w:id="60" w:author="Anthony  Aquino" w:date="2026-09-29T12:54:00Z" w:initials="AA"><w:p w14:paraId="5405593C" w14:textId="77777777" w:rsidR="00A147CD" w:rsidRDefault="00A147CD" w:rsidP="00A147CD"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t xml:space="preserve">Corregir y tomar referencia que se entreno en una grafica rtx 4060 8 gb. </w:t></w:r></w:p></w:comment><w:comment w:id="61" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="209C3B4C" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>'Estudios previos' no tiene cita. Además, presentar las dos causas como hipótesis (y no como hechos) evita objeciones de los revisores.</w:t></w:r></w:p></w:comment><w:comment w:id="62" w:author="Anthony  Aquino" w:date="2026-09-29T12:42:00Z" w:initials="AA"><w:p w14:paraId="0AC9D0F8" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corrigelo</w:t></w:r></w:p></w:comment><w:comment w:id="63" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="21144F0B" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Quité 'reduce la entropía del espacio latente': no se midió en el estudio y un revisor puede pedir evidencia. Revisen también el AUC ≈ 0.97 frente a la Table 4 (ver comentario en Curvas ROC).</w:t></w:r></w:p></w:comment><w:comment w:id="64" w:author="Anthony  Aquino" w:date="2026-09-29T12:42:00Z" w:initials="AA"><w:p w14:paraId="0D9CDED3" w14:textId="77777777" w:rsidR="00997438" w:rsidRDefault="00997438" w:rsidP="00997438"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Corregir o revisar bien por tu parte</w:t></w:r></w:p></w:comment><w:comment w:id="65" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="1B1BE0C5" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Quité 'elevada entropía del dataset infantil' por la misma razón: no se calculó. Si quieren mantener la idea, podrían medir la entropía de la distribución de clases en cada grupo.</w:t></w:r></w:p></w:comment><w:comment w:id="66" w:author="Anthony  Aquino" w:date="2026-09-29T12:54:00Z" w:initials="AA"><w:p w14:paraId="7513E471" w14:textId="77777777" w:rsidR="00A147CD" w:rsidRDefault="00A147CD" w:rsidP="00A147CD"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>quitar</w:t></w:r></w:p></w:comment><w:comment w:id="67" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:50:00Z" w:initials="IA"><w:p w14:paraId="2B9F3E05" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Añadí las citas [7], [8], [3], que ustedes ya usan para esta misma idea en Métodos. Aquí es donde más ayuda escribir con sus propias palabras: por ejemplo, qué significa en el Perú que el idioma materno pese tanto (lenguas originarias, zonas rurales).</w:t></w:r></w:p></w:comment><w:comment w:id="68" w:author="Anthony  Aquino" w:date="2026-09-29T12:55:00Z" w:initials="AA"><w:p w14:paraId="64C65D52" w14:textId="77777777" w:rsidR="00A147CD" w:rsidRDefault="00A147CD" w:rsidP="00A147CD"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="69" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="2D10F279" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Si tienen en mente un programa o institución concreta (MINEDU, planes lectores regionales), menciónenlo aquí.</w:t></w:r></w:p></w:comment><w:comment w:id="70" w:author="Anthony  Aquino" w:date="2026-09-29T12:54:00Z" w:initials="AA"><w:p w14:paraId="2C7C0D6A" w14:textId="77777777" w:rsidR="00A147CD" w:rsidRDefault="00A147CD" w:rsidP="00A147CD"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Hay un programa llamado PerusiLee</w:t></w:r></w:p></w:comment><w:comment w:id="71" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="6F061BA9" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>'Garantiza que sean… transferibles a contextos educativos reales' no se evaluó en el estudio; lo dejé como trabajo pendiente.</w:t></w:r></w:p></w:comment><w:comment w:id="72" w:author="Anthony  Aquino" w:date="2026-09-29T12:54:00Z" w:initials="AA"><w:p w14:paraId="7E4D3684" w14:textId="77777777" w:rsidR="00A147CD" w:rsidRDefault="00A147CD" w:rsidP="00A147CD"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>corrigelo</w:t></w:r></w:p></w:comment><w:comment w:id="73" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="42B50D0B" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Quité 'superando ampliamente los enfoques tradicionales' porque el artículo no incluye ningún modelo tradicional en los resultados. Si quieren mantenerlo, tienen que agregar esa comparación (p. ej., Random Forest o XGBoost).</w:t></w:r></w:p></w:comment><w:comment w:id="74" w:author="Anthony  Aquino" w:date="2026-09-29T12:54:00Z" w:initials="AA"><w:p w14:paraId="09312E0A" w14:textId="77777777" w:rsidR="00A147CD" w:rsidRDefault="00A147CD" w:rsidP="00A147CD"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>No se si esta solucionado, revisar bien</w:t></w:r></w:p></w:comment><w:comment w:id="75" w:author="Claude (propuesta IA)" w:date="2026-09-29T16:51:00Z" w:initials="IA"><w:p w14:paraId="0202B387" w14:textId="77777777" w:rsidR="009D289A" w:rsidRDefault="00000000"><w:r><w:annotationRef/></w:r><w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t>Añadí una limitación y un trabajo futuro: las conclusiones no tenían ninguno y los revisores suelen pedirlo. Ajústenlo con las limitaciones que ustedes consideren.</w:t></w:r></w:p></w:comment><w:comment w:id="76" w:author="Anthony  Aquino" w:date="2026-09-29T12:55:00Z" w:initials="AA"><w:p w14:paraId="7AD98BED" w14:textId="77777777" w:rsidR="00A147CD" w:rsidRDefault="00A147CD" w:rsidP="00A147CD"><w:pPr><w:pStyle w:val="Textocomentario"/></w:pPr><w:r><w:rPr><w:rStyle w:val="Refdecomentario"/></w:rPr><w:annotationRef/></w:r><w:r><w:rPr><w:lang w:val="es-PE"/></w:rPr><w:t>Aprobado</w:t></w:r></w:p></w:comment><w:comment w:id="77" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:34Z" w:initials="IA">
+  <w:p w14:paraId="554A4757" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Hecho: quité SMOTE del resumen. También cambié 'balancear las clases' por 'tener en cuenta el desbalance de clases' al final de Trabajos relacionados, porque el artículo ya no dice que se haya aplicado un balanceo.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="78" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:34Z" w:initials="IA">
+  <w:p w14:paraId="6DB674C8" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Añadí un dato del mismo informe de la ENL 2022 (su referencia [1], p. 84): leyó libros el 49,6 % de los adultos con lengua materna castellana frente al 33,1 % de quienes tienen una lengua nativa (población alfabetizada de 18 a 64 años). Conecta con su hallazgo sobre el idioma materno.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="79" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:34Z" w:initials="IA">
+  <w:p w14:paraId="1A653CE8" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Quité la frase. No agregué la comparación: habría que entrenar Random Forest o XGBoost con sus datos y describir cómo se hizo. En el respaldo legacy_backup_MLP_Py_In01.zip hay imágenes 'comparison_traditional_vs_dl' (nov-2025), pero sin el código ni las métricas no puedo verificar de dónde salen.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="80" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:34Z" w:initials="IA">
+  <w:p w14:paraId="71294606" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Añadí la fuente en el texto y como nueva referencia [31] (Plataforma Nacional de Datos Abiertos; Ministerio de Cultura e INEI, 2023). Queda pendiente el número de registros usados en cada grupo.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="81" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:34Z" w:initials="IA">
+  <w:p w14:paraId="100EF268" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Hecho: la partición 70/15/15 queda solo en 'División de datos y configuración experimental'; eliminé la repetición aquí y en 'Construcción del dataset final'. Aparte, revisen los rangos de edad: los CSV usados (adultos.csv, jovenes.csv, ninos.csv) tienen niños de 0–15 años, jóvenes de 16–27 y adultos de 28–99; el texto dice 3–13, 14–17 y 18+, y la Fig. 9 dice 0–11, 12–17 y 18+. Deben confirmar cuáles se usaron realmente.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="82" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:34Z" w:initials="IA">
+  <w:p w14:paraId="588B3FBF" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">No los agregué. La configuración guardada del experimento de nov-2025 (data/processed/*_config.json) usa One-Hot y StandardScaler, no Label Encoding ni Min-Max, y no registra umbral de varianza ni de correlación; en niños quedan 131 variables, no 71. Los valores 0.005 y 0.95 del código src/aligned se escribieron en agosto a partir del artículo y no produjeron la Table 3. Esta sección debería describir lo que realmente se hizo.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="83" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:34Z" w:initials="IA">
+  <w:p w14:paraId="0182DB11" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">No lo agregué: ninguno de los cuatro índices aparece entre las variables del experimento de nov-2025 (solo hay preguntas originales codificadas). Además, las notas del código src/aligned dicen que el índice de acceso digital es aproximado y que la frecuencia lectora semanal no puede usarse como variable. Si los índices no se usaron, conviene quitar esta subsección.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="84" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="51D77B92" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Hecho: eliminé la referencia al Apéndice A.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="85" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="12BF9CEA" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Corregido a 14 de 15, también en la lista de más abajo (TabNet 14, MLP+MA 1), en la Discusión y en las Conclusiones.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="86" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="6388C5A2" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">El texto ya está corregido. No puedo agregar media ± desviación estándar: en los archivos no hay resultados de las 5 semillas ni de los 5 folds (la 'Std' de statistical_summary.csv es entre grupos, no entre ejecuciones). Si esa evaluación no se hizo, habría que quitar 'Evaluación de estabilidad' de Métodos.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="87" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="677174D9" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Verifiqué las cifras con la Table 3: están bien. Se queda así.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="88" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="3F75F52E" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Añadí la cita [32] (Grinsztajn et al., NeurIPS 2022) y ajusté la frase a lo que ese trabajo muestra: con muestras medianas y variables poco informativas, los modelos profundos pierden frente a los de árboles.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="89" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="6089A79C" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Corregido: en adultos FT-Transformer queda por debajo de MLP+MA en F1-Macro. También corregí la viñeta '0.686 en niños', que corresponde a F1-Weighted y no a F1-Macro (el F1-Macro de FT en niños es 0.5174).</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="90" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="3F02F0A3" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Corregido. En la Fig. 8 los errores de los jóvenes se reparten entre las tres clases (entre 2 % y 6 % por celda) sin un par dominante; lo describí así y quité 'Lector Ocasional'.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="91" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="74899380" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Corregido a 0.5540, como en la Table 3.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="92" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="752319E6" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">No lo cambié porque hay tres versiones distintas. (1) Los AUC del texto (0.971–0.978, 0.937–0.954, 0.762–0.807) coinciden con all_roc_curves.png de la carpeta resultsF, la misma de la Table 3. (2) La Fig. 9 del artículo es otra imagen (roc_curves_consolidated.png, 10-nov) con AUC de 0.958–0.998 y otras edades. (3) La Table 4 (0.99 / 0.98 / 0.87) no coincide con ninguna figura que encontré. Además, según all_roc_curves.png, FT-Transformer no tiene el AUC más bajo en niños (lo tiene MLP+MA), así que también habría que revisar las frases que lo afirman. Tienen que decidir qué corrida es la válida y usar su figura y su tabla.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="93" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="0CB654B7" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">No lo agregué: tendría que leer valores a ojo en la Fig. 11, cuyo origen está en duda (ver comentario en la Table 3). Si tienen el registro del entrenamiento, el dato sale de ahí.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="94" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="2E6B6F7A" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Corregido a 14 de 15.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="95" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:35Z" w:initials="IA">
+  <w:p w14:paraId="6F87147C" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Añadí la GPU aquí y en Métodos ('Todos los modelos se implementaron en PyTorch 2.6.0…'). Ojo: los registros de entrenamiento de nov-2025 que encontré dicen 'Usando device: cpu'. Confirmen en qué equipo se hizo la corrida final.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="96" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:36Z" w:initials="IA">
+  <w:p w14:paraId="2CBF0821" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Corregido: añadí la cita [32] y quité 'baja entropía' y 'estabilizar sus embeddings', que no estaban respaldados.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="97" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:36Z" w:initials="IA">
+  <w:p w14:paraId="3C1875B8" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Revisado: 'Accuracy &gt; 0.96' coincide con la Table 3 y 'AUC ≈ 0.97' con las curvas ROC de resultsF (0.958–0.978 por clase). Si eligen otra versión del AUC, hay que ajustarlo (ver comentario en Curvas ROC).</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="98" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:36Z" w:initials="IA">
+  <w:p w14:paraId="3415C614" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Listo: ya no queda ninguna mención a la entropía de los datos (también la quité del párrafo sobre FT-Transformer). Solo queda 'entropía cruzada', que es la función de pérdida y es correcta.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="99" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:36Z" w:initials="IA">
+  <w:p w14:paraId="39590FDB" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Ojo: 'Perú sí lee' es la campaña de la Iglesia Adventista que reparte el libro 'Esperanza para un mundo en crisis'; no es un programa de promoción de la lectura, y en un artículo sobre política educativa podría generar objeciones. Usé 'El Perú Lee', la estrategia del Ministerio de Educación para la educación básica. Si prefieren otra, cámbienla.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="100" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:36Z" w:initials="IA">
+  <w:p w14:paraId="030A4AE0" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Corregido: ya no dice que el experimento sea reproducible, porque la metodología descrita no coincide con la configuración guardada (ver comentarios en Métodos). Ahora destaca que los datos son públicos y deja la transferencia a otros contextos como algo por comprobar.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="101" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:36Z" w:initials="IA">
+  <w:p w14:paraId="197663FA" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Revisado: ya no queda ninguna afirmación de que se superen los métodos tradicionales (también la quité de la Introducción). En Trabajos relacionados, 'tradicionales' solo aparece al describir otros estudios, lo cual es correcto.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="102" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:36Z" w:initials="IA">
+  <w:p w14:paraId="346735D4" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Verificar el origen de esta tabla antes de enviar. Sus valores coinciden exactamente con outputs/evaluation/resultsF/comprehensive_metrics.csv (legacy_backup_MLP_Py_In01.zip, 3-nov-2025), cuyo README indica que se regenera con generate_resultsF.py ajustando 'Metric ranges' y la semilla aleatoria. Los registros de entrenamiento del mismo día (results/baseline) dan valores muy distintos (p. ej., MLP+MA en niños: accuracy 0.488) y el entrenamiento 'fase2' del 19-nov no generó modelos. Si existe un entrenamiento real que produzca estas cifras, conviene guardar su script y sus registros junto al manuscrito.</w:t>
+    </w:r>
+  </w:p>
+</w:comment><w:comment w:id="103" w:author="Claude (propuesta IA)" w:date="2026-09-29T20:15:36Z" w:initials="IA">
+  <w:p w14:paraId="4BF471ED" w14:textId="77777777">
+    <w:r>
+      <w:rPr><w:rStyle w:val="CommentReference"/></w:rPr>
+      <w:annotationRef/>
+    </w:r>
+    <w:r>
+      <w:rPr>
+        <w:color w:val="000000"/>
+        <w:sz w:val="20"/>
+        <w:szCs w:val="20"/>
+      </w:rPr>
+      <w:t xml:space="preserve">Posible fuga de información: si la clase (No lector / Lector medio / Lector frecuente) se define a partir de la frecuencia de lectura, usar la frecuencia lectora semanal como variable de entrada le da al modelo parte de la respuesta. Las notas del código src/aligned la excluyen por ese motivo. Revisen cómo se definió la clase y si esta variable entró en los modelos; en la Discusión aparece como una de las más influyentes.</w:t>
+    </w:r>
+  </w:p>
+</w:comment></w:comments>

@@ -29,8 +29,12 @@ import time
 from pathlib import Path
 
 if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+    # line_buffering: cada linea llega al log de inmediato (Get-Content -Wait
+    # muestra el avance en vivo aunque la salida este redirigida a un archivo).
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace",
+                                  line_buffering=True)
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace",
+                                  line_buffering=True)
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
@@ -226,9 +230,16 @@ def main() -> int:
     parser.add_argument("--no-gridsearch", action="store_true")
     parser.add_argument("--no-multiseed", action="store_true")
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--tag", default=None,
+                        help="Separa una corrida en results/aligned_<tag> y "
+                             "outputs/aligned_<tag> (p. ej. una prueba preliminar).")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
+    if args.tag:
+        cfg["paths"]["results_dir"] += f"_{args.tag}"
+        cfg["paths"]["figures_dir"] += f"_{args.tag}"
+        cfg["run_label"] = args.tag
     if args.preset:
         cfg["gridsearch"]["preset"] = args.preset
     if args.no_multiseed:

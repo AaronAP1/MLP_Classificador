@@ -75,6 +75,9 @@ def _save(fig, plt, path: Path, cfg: dict) -> Path:
         fig.text(0.5, 0.5, SMOKE_MARK, ha="center", va="center", rotation=25,
                  fontsize=26, color="#c0392b", alpha=0.25, fontweight="bold",
                  transform=fig.transFigure, zorder=100)
+    if cfg.get("run_label"):
+        fig.text(0.995, 0.002, f"Corrida: {cfg['run_label']}", ha="right", va="bottom",
+                 fontsize=7, color="#888", transform=fig.transFigure)
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
     return path
@@ -626,6 +629,7 @@ Generado por `python run_pipeline.py report` a partir de `{results_dir}`.
 | `copeland_*.csv`, `estabilidad_multisemilla.csv` | Texto de resultados | |
 
 Equipo de entrenamiento: {hardware}
+Preset de Grid Search: {preset} · Corrida: {run_label}
 """
 
 
@@ -699,6 +703,8 @@ def build_report(cfg: dict, root: Path) -> Dict[str, object]:
                     if cfg.get("smoke") else ""),
         n_seeds=len(cfg["evaluation"]["stability"]["seeds"]),
         hardware=f"{hw_text} · PyTorch {hw.get('torch', '?')}",
+        preset=next(iter(results.values())).get("gridsearch", {}).get("preset", "sin busqueda"),
+        run_label=cfg.get("run_label") or "definitiva",
     ), encoding="utf-8")
 
     print(f"\n  Tabla 3 ({len(t3)} filas):")

@@ -202,6 +202,7 @@ evaluation:
     seeds: [42, 123, 456, 789, 2024] # "Cinco ejecuciones con diferentes semillas"
   interpretability: true             # III-G  mascaras TabNet + atencion FT / MLP-MA
   interpretability_samples: 2048     # filas de test usadas para la importancia
+  ensemble: true                     # voto suave de los 3 modelos (en `report`, sin reentrenar)
 
 # ---------------------------------------------------------------------
 # 9. RUTAS

@@ -34,6 +34,7 @@ escrita en INDICE_FIGURAS.md dentro de la misma carpeta.
 
 from __future__ import annotations
 
+import itertools
 import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -42,12 +43,72 @@ import numpy as np
 import pandas as pd
 
 from . import variables as V
-from .evaluate import copeland_across_groups, copeland_ranking
+from .evaluate import compute_metrics, copeland_across_groups, copeland_ranking, roc_curves
 from .models import MODEL_NAMES
 
-DISPLAY = {"mlp_ma": "MLP-MA", "tabnet": "TabNet", "ft_transformer": "FT-Transformer"}
+DISPLAY = {"mlp_ma": "MLP-MA", "tabnet": "TabNet", "ft_transformer": "FT-Transformer",
+           "ensemble": "Ensemble"}
 GROUP_DISPLAY = {"ninos": "Niños", "jovenes": "Jóvenes", "adultos": "Adultos"}
-MODEL_COLORS = {"mlp_ma": "#3b82c4", "tabnet": "#2e9e6b", "ft_transformer": "#d9654b"}
+MODEL_COLORS = {"mlp_ma": "#3b82c4", "tabnet": "#2e9e6b", "ft_transformer": "#d9654b",
+                "ensemble": "#7b5ea7"}
+
+
+def _models(results: Dict[str, dict]) -> List[str]:
+    """Arquitecturas a mostrar: las tres, mas el ensemble si se calculo."""
+    extra = ["ensemble"] if any(k.endswith("_ensemble") for k in results) else []
+    return MODEL_NAMES + extra
+
+
+def build_ensemble(results: Dict[str, dict], cfg: dict, root: Path
+                   ) -> Tuple[Dict[str, dict], pd.DataFrame]:
+    """
+    Ensemble por voto suave: promedio de las probabilidades en test de
+    MLP-MA, TabNet y FT-Transformer de cada grupo. No se entrena nada ni
+    se ajusta ningun peso, asi que el conjunto de prueba sigue sin usarse
+    para decidir nada.
+
+    Devuelve los resultados del ensemble y una tabla de diversidad: si los
+    tres modelos se equivocan en los mismos casos, promediarlos no aporta.
+    """
+    out, rows = {}, []
+    base = root / cfg["paths"]["results_dir"]
+    for group in cfg["groups"]:
+        keys = [f"{group}_{m}" for m in MODEL_NAMES]
+        paths = [base / k / "test_predictions.npz" for k in keys]
+        if not all(k in results for k in keys) or not all(p.exists() for p in paths):
+            continue
+        preds = {}
+        for m, p in zip(MODEL_NAMES, paths):
+            with np.load(p) as z:
+                preds[m] = (z["y_true"].astype(int), z["y_pred"].astype(int),
+                            z["y_proba"].astype(float))
+        y_true = preds[MODEL_NAMES[0]][0]
+        if any(not np.array_equal(y_true, v[0]) for v in preds.values()):
+            raise AssertionError(f"El conjunto de prueba de {group} no es el mismo en los tres modelos.")
+
+        proba = np.mean([v[2] for v in preds.values()], axis=0)
+        metrics = compute_metrics(y_true, proba.argmax(axis=1), proba,
+                                  cfg["n_classes"], cfg["class_names"])
+        out[f"{group}_ensemble"] = {
+            "grupo": group, "modelo": "ensemble", "test_metrics": metrics,
+            "roc_curves": roc_curves(y_true, proba, cfg["n_classes"]),
+            "metodo": "voto suave: promedio de las probabilidades de los tres modelos",
+        }
+
+        f1 = {m: results[f"{group}_{m}"]["test_metrics"]["f1_macro"] for m in MODEL_NAMES}
+        best = max(f1, key=f1.get)
+        row = {"Grupo": GROUP_DISPLAY.get(group, group)}
+        row.update({f"F1-Macro {DISPLAY[m]}": f1[m] for m in MODEL_NAMES})
+        row["F1-Macro Ensemble"] = metrics["f1_macro"]
+        row["Mejor individual"] = DISPLAY[best]
+        row["Ganancia F1-Macro vs. mejor individual"] = metrics["f1_macro"] - f1[best]
+        row["AUC Ensemble"] = metrics["roc_auc_ovr"]
+        for a, b in itertools.combinations(MODEL_NAMES, 2):
+            row[f"Desacuerdo {DISPLAY[a]} / {DISPLAY[b]}"] = float(np.mean(preds[a][1] != preds[b][1]))
+        row["Al menos un modelo acierta"] = float(
+            np.mean(np.any([v[1] == y_true for v in preds.values()], axis=0)))
+        rows.append(row)
+    return out, pd.DataFrame(rows)
 CLASS_STYLES = ["-", "--", ":"]
 SMOKE_MARK = "PRUEBA DE HUMO · NO SON RESULTADOS"
 
@@ -76,7 +137,7 @@ def _save(fig, plt, path: Path, cfg: dict) -> Path:
                  fontsize=26, color="#c0392b", alpha=0.25, fontweight="bold",
                  transform=fig.transFigure, zorder=100)
     if cfg.get("run_label"):
-        fig.text(0.995, 0.002, f"Corrida: {cfg['run_label']}", ha="right", va="bottom",
+        fig.text(0.995, 0.998, f"Corrida: {cfg['run_label']}", ha="right", va="top",
                  fontsize=7, color="#888", transform=fig.transFigure)
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
@@ -161,7 +222,7 @@ def tabla_hiperparametros(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
 def tabla3(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
     rows = []
     for group in cfg["groups"]:
-        for model in MODEL_NAMES:
+        for model in _models(results):
             r = results.get(f"{group}_{model}")
             if not r:
                 continue
@@ -200,14 +261,15 @@ def tabla3_media_std(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
 
 def tabla4(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
     rows = []
+    models = _models(results)
     for group in cfg["groups"]:
         row = {"Grupo": GROUP_DISPLAY.get(group, group)}
-        for model in MODEL_NAMES:
+        for model in models:
             r = results.get(f"{group}_{model}")
             row[DISPLAY[model]] = r["test_metrics"]["roc_auc_ovr"] if r else None
         rows.append(row)
     df = pd.DataFrame(rows)
-    numeric = [DISPLAY[m] for m in MODEL_NAMES]
+    numeric = [DISPLAY[m] for m in models]
     if not df.empty:
         promedio = {"Grupo": "Promedio"}
         for c in numeric:
@@ -220,7 +282,7 @@ def tabla4(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
 def tabla4_por_clase(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
     rows = []
     for group in cfg["groups"]:
-        for model in MODEL_NAMES:
+        for model in _models(results):
             r = results.get(f"{group}_{model}")
             if not r:
                 continue
@@ -278,7 +340,7 @@ def ranking_copeland(results: Dict[str, dict], cfg: dict):
     per_group, tables = {}, {}
     for group in cfg["groups"]:
         rows = {}
-        for model in MODEL_NAMES:
+        for model in _models(results):
             r = results.get(f"{group}_{model}")
             if r:
                 rows[DISPLAY[model]] = {k: r["test_metrics"][k] for k in metrics}
@@ -301,31 +363,34 @@ def fig_comparacion(results, cfg, out: Path) -> Optional[Path]:
         return None
     panels = [("accuracy", "Accuracy"), ("f1_weighted", "F1-Weighted"),
               ("f1_macro", "F1-Macro"), ("precision_weighted", "Precision-Weighted")]
+    models = _models(results)
     fig, axes = plt.subplots(2, 2, figsize=(11, 7.8))
-    width = 0.8 / len(MODEL_NAMES)
+    width = 0.8 / len(models)
     x = np.arange(len(groups))
     for ax, (key, label) in zip(axes.ravel(), panels):
-        for j, model in enumerate(MODEL_NAMES):
+        for j, model in enumerate(models):
             vals, errs = [], []
             for g in groups:
                 r = results.get(f"{g}_{model}")
                 vals.append(r["test_metrics"][key] if r else np.nan)
                 est = (r or {}).get("estabilidad") or {}
                 errs.append(est.get(f"{key}_std") or 0.0)
-            ax.bar(x + (j - 1) * width, vals, width, yerr=errs, capsize=3,
-                   color=MODEL_COLORS[model], label=DISPLAY[model], alpha=.9,
+            ax.bar(x + (j - (len(models) - 1) / 2) * width, vals, width, yerr=errs,
+                   capsize=3, color=MODEL_COLORS[model], label=DISPLAY[model], alpha=.9,
                    edgecolor="white", error_kw={"elinewidth": .8})
         ax.set_xticks(x)
         ax.set_xticklabels([_group_title(cfg, g) for g in groups], fontsize=8)
         ax.set_ylim(0, 1.05); ax.set_title(label, fontweight="bold")
         ax.set_ylabel(label); ax.grid(axis="y", alpha=.3)
     handles, labels = axes[0][0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=len(MODEL_NAMES),
+    fig.legend(handles, labels, loc="upper center", ncol=len(models),
                bbox_to_anchor=(0.5, 0.955), frameon=False)
     fig.suptitle("Comparación del rendimiento entre grupos (conjunto de prueba)",
                  fontweight="bold", y=0.995)
-    fig.text(0.5, 0.005, "Barras de error: desviación estándar entre semillas.",
-             ha="center", fontsize=7, color="#555")
+    note = "Barras de error: desviación estándar entre semillas."
+    if "ensemble" in models:
+        note += " El ensemble (promedio de probabilidades) se calcula con la semilla principal."
+    fig.text(0.5, 0.005, note, ha="center", fontsize=7, color="#555")
     fig.tight_layout(rect=(0, 0.02, 1, 0.93))
     return _save(fig, plt, out / "fig_comparacion_grupos.png", cfg)
 
@@ -334,12 +399,13 @@ def fig_confusion(results, cfg, out: Path) -> Optional[Path]:
     """Fig. 8 · matrices de confusion normalizadas por fila (recall por clase)."""
     plt = _mpl()
     groups, names = list(cfg["groups"]), cfg["class_names"]
-    fig, axes = plt.subplots(len(groups), len(MODEL_NAMES),
-                             figsize=(4.8 * len(MODEL_NAMES), 3.7 * len(groups)),
+    models = _models(results)
+    fig, axes = plt.subplots(len(groups), len(models),
+                             figsize=(4.8 * len(models), 3.7 * len(groups)),
                              squeeze=False)
     drew = False
     for i, group in enumerate(groups):
-        for j, model in enumerate(MODEL_NAMES):
+        for j, model in enumerate(models):
             ax = axes[i][j]
             r = results.get(f"{group}_{model}")
             title = f"{_group_title(cfg, group)} · {DISPLAY[model]}"
@@ -379,12 +445,13 @@ def fig_roc(results, cfg, out: Path) -> Optional[Path]:
     plt = _mpl()
     groups, names = list(cfg["groups"]), cfg["class_names"]
     colors = ["#c0392b", "#2c7fb8", "#27ae60"]
-    fig, axes = plt.subplots(len(groups), len(MODEL_NAMES),
-                             figsize=(4.2 * len(MODEL_NAMES), 3.9 * len(groups)),
+    models = _models(results)
+    fig, axes = plt.subplots(len(groups), len(models),
+                             figsize=(4.2 * len(models), 3.9 * len(groups)),
                              squeeze=False)
     drew = False
     for i, group in enumerate(groups):
-        for j, model in enumerate(MODEL_NAMES):
+        for j, model in enumerate(models):
             ax = axes[i][j]
             r = results.get(f"{group}_{model}")
             ax.set_title(f"{_group_title(cfg, group)} · {DISPLAY[model]}", fontsize=9)
@@ -423,7 +490,7 @@ def fig_roc_por_grupo(results, cfg, out: Path) -> Optional[Path]:
     drew = False
     for i, group in enumerate(groups):
         ax = axes[0][i]
-        for model in MODEL_NAMES:
+        for model in _models(results):
             r = results.get(f"{group}_{model}")
             if not r or not r.get("roc_curves"):
                 continue
@@ -485,6 +552,12 @@ def fig_learning(results, cfg, out: Path) -> Optional[Path]:
     return _save(fig, plt, out / "fig_curvas_aprendizaje.png", cfg)
 
 
+def copeland_limit(global_rank: pd.DataFrame) -> int:
+    """Puntaje maximo posible: (competidores - 1) rivales por grupo x n.º de grupos."""
+    n_groups = len([c for c in global_rank.columns if c.startswith("score_")])
+    return max(n_groups, 1) * max(len(global_rank) - 1, 1)
+
+
 def fig_copeland(global_rank: pd.DataFrame, cfg: dict, out: Path) -> Optional[Path]:
     """Fig. 10 · puntaje Copeland acumulado en los tres grupos."""
     if global_rank.empty:
@@ -498,8 +571,8 @@ def fig_copeland(global_rank: pd.DataFrame, cfg: dict, out: Path) -> Optional[Pa
     for y, v in zip(d["classifier"], d["copeland_score_global"]):
         ax.text(v + (.06 if v >= 0 else -.06), y, f"{v:+d}",
                 va="center", ha="left" if v >= 0 else "right", fontsize=9)
+    lim = copeland_limit(global_rank)
     n_groups = len([c for c in global_rank.columns if c.startswith("score_")])
-    lim = 2 * max(n_groups, 1)
     ax.set_xlim(-lim - .8, lim + .8)
     ax.axvline(0, color="black", lw=.8)
     ax.set_xlabel(f"Puntaje Copeland acumulado en {n_groups} grupos (rango −{lim} a +{lim})")
@@ -614,14 +687,15 @@ Generado por `python run_pipeline.py report` a partir de `{results_dir}`.
 |---|---|---|
 | `tabla_resumen_datos.csv` | Sección de datos (y reemplazo de la Table 1) | Registros, edades, clases y n.º de variables por grupo |
 | `tabla2_hiperparametros.csv` | Table 2 | Configuración elegida por el Grid Search en cada combinación |
-| `tabla3_metricas.csv/.tex` | Table 3 | Métricas en test del modelo final (semilla 42) |
-| `tabla3_media_std.csv/.tex` | Table 3 (alternativa) o texto de estabilidad | Media ± desviación en {n_seeds} semillas |
+| `tabla3_metricas.csv/.tex` | Table 3 | Métricas en test del modelo final (semilla 42){ensemble_rows} |
+| `tabla3_media_std.csv/.tex` | Table 3 (alternativa) o texto de estabilidad | Media ± desviación en {n_seeds} semillas (sin el ensemble) |
 | `tabla4_auc.csv/.tex` | Table 4 | AUC one-vs-rest, promedio **macro** |
 | `tabla4_auc_por_clase.csv` | Texto de la sección ROC | AUC de cada clase |
+| `tabla_ensemble.csv` | Texto del ensemble | F1-Macro de cada modelo y del ensemble, ganancia frente al mejor modelo individual y desacuerdo entre modelos |
 | `fig_comparacion_grupos.png` | Fig. 7 | |
 | `fig_matrices_confusion.png` | Fig. 8 | Normalizadas por fila; entre paréntesis, conteos |
-| `fig_curvas_roc.png` | Fig. 9 | 3×3 (grupo × modelo). Variante 1×3: `fig_curvas_roc_por_grupo.png` |
-| `fig_ranking_copeland.png` | Fig. 10 | Rango posible −6 a +6 (3 grupos, 2 rivales por grupo) |
+| `fig_curvas_roc.png` | Fig. 9 | Grupo × modelo. Variante 1×3: `fig_curvas_roc_por_grupo.png` |
+| `fig_ranking_copeland.png` | Fig. 10 | Rango posible −{copeland_lim} a +{copeland_lim} ({n_competidores} competidores, 3 grupos) |
 | `fig_curvas_aprendizaje.png` | Fig. 11 | Etapa A: train 70 % vs. validación 15 % |
 | `fig_importancia_variables.png` | Sección de interpretabilidad | Atención (MLP-MA, FT) y máscaras (TabNet) |
 | `fig_importancia_permutacion.png` | Sección de interpretabilidad | Caída de F1-Macro al permutar cada variable; misma vara para los 3 modelos |
@@ -650,6 +724,18 @@ def build_report(cfg: dict, root: Path) -> Dict[str, object]:
         print(f"  AVISO · combinaciones sin resultados ({len(missing)}): "
               f"{', '.join(missing)}")
         print("  Las tablas y figuras las omiten. No se rellena nada.")
+
+    # Ensemble por voto suave, desde las probabilidades ya guardadas.
+    if cfg["evaluation"].get("ensemble", True):
+        ensemble, ens_table = build_ensemble(results, cfg, root)
+        results.update(ensemble)
+        if not ens_table.empty:
+            ens_table.to_csv(out / "tabla_ensemble.csv", index=False)
+            print("\n  Ensemble (voto suave) vs. mejor modelo individual:")
+            cols = ["Grupo", "Mejor individual", "F1-Macro Ensemble",
+                    "Ganancia F1-Macro vs. mejor individual"]
+            print(ens_table[cols].to_string(index=False, float_format=lambda v: f"{v:+.4f}"
+                                            if abs(v) < 0.1 else f"{v:.4f}"))
 
     resumen = tabla_resumen_datos(cfg, root)
     if not resumen.empty:
@@ -704,6 +790,10 @@ def build_report(cfg: dict, root: Path) -> Dict[str, object]:
                     "solo verifican que el código funciona. No son resultados.\n"
                     if cfg.get("smoke") else ""),
         n_seeds=len(cfg["evaluation"]["stability"]["seeds"]),
+        ensemble_rows=("; incluye el ensemble (promedio de probabilidades)"
+                       if "ensemble" in _models(results) else ""),
+        copeland_lim=copeland_limit(global_rank) if not global_rank.empty else 0,
+        n_competidores=len(global_rank),
         hardware=f"{hw_text} · PyTorch {hw.get('torch', '?')}",
         preset=next(iter(results.values())).get("gridsearch", {}).get("preset", "sin busqueda"),
         run_label=cfg.get("run_label") or "definitiva",

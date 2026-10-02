@@ -440,6 +440,35 @@ def test_grid_de_tabnet_usa_su_propio_learning_rate(cfg):
     assert len(mlp) == 16
 
 
+def test_ensemble_promedia_probabilidades(cfg, tmp_path):
+    import copy
+    from src.aligned.report import build_ensemble
+    c = copy.deepcopy(cfg)
+    c["paths"]["results_dir"] = "res"
+    c["groups"] = {"jovenes": cfg["groups"]["jovenes"]}
+    rng = np.random.default_rng(7)
+    y = rng.integers(0, 3, 60)
+    probas = {m: rng.dirichlet([1, 1, 1], 60) for m in ("mlp_ma", "tabnet", "ft_transformer")}
+    results = {}
+    for m, p in probas.items():
+        d = tmp_path / "res" / f"jovenes_{m}"
+        d.mkdir(parents=True)
+        np.savez_compressed(d / "test_predictions.npz", y_true=y, y_pred=p.argmax(1), y_proba=p)
+        results[f"jovenes_{m}"] = {"test_metrics": compute_metrics(y, p.argmax(1), p, 3)}
+    ens, table = build_ensemble(results, c, tmp_path)
+    expected = np.mean(list(probas.values()), axis=0).argmax(1)
+    cm = np.array(ens["jovenes_ensemble"]["test_metrics"]["confusion_matrix"])
+    assert cm.sum() == 60
+    assert ens["jovenes_ensemble"]["test_metrics"]["accuracy"] == pytest.approx(np.mean(expected == y))
+    assert len(table) == 1 and 0 <= table["Desacuerdo MLP-MA / TabNet"].iloc[0] <= 1
+
+    # Si un modelo tiene otro conjunto de prueba, el ensemble no se calcula.
+    np.savez_compressed(tmp_path / "res" / "jovenes_tabnet" / "test_predictions.npz",
+                        y_true=np.roll(y, 1), y_pred=y, y_proba=probas["tabnet"])
+    with pytest.raises(AssertionError, match="no es el mismo"):
+        build_ensemble(results, c, tmp_path)
+
+
 def test_etiquetas_legibles():
     assert V.feature_label("hh_nivel_educ_mean") == "Hogar: nivel educativo promedio"
     assert V.feature_label("P306") == "Último nivel educativo aprobado"

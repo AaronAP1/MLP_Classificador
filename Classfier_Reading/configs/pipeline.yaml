@@ -125,21 +125,29 @@ gridsearch:
   preset: "standard"             # fast | standard | paper
 
   # ---- Tabla 2 del articulo, en su forma completa ----
+  # lr_tabnet: TabNet necesita un learning rate mayor que MLP+MA y
+  # FT-Transformer; sus autores recomiendan ~0,02 (Arik y Pfister, ref. [15]).
+  # Con 0,001-0,0001 aprende tan lento que el early stopping lo corta antes:
+  # en Jovenes quedaba en F1-Macro 0,27 (azar); con 0,005-0,02 llega a ~0,37.
+  # TabNet no usa dropout, asi que esa dimension no se explora para el.
   presets:
     paper:
       lr:           [0.001, 0.0005, 0.0001]
+      lr_tabnet:    [0.02, 0.01, 0.005]
       batch_size:   [32, 64, 128]
       dropout:      [0.1, 0.2, 0.3, 0.4]
       weight_decay: [0.000001, 0.00001, 0.0001]
       depth:        [3, 4, 5]        # MLP: n capas | TabNet: n_steps (2,3,4) | FT: fijo 4
     standard:
       lr:           [0.001, 0.0001]
+      lr_tabnet:    [0.02, 0.005]
       batch_size:   [64, 128]
       dropout:      [0.2, 0.3]
       weight_decay: [0.00001, 0.0001]
       depth:        [4]
     fast:
       lr:           [0.001]
+      lr_tabnet:    [0.02]
       batch_size:   [128]
       dropout:      [0.3]
       weight_decay: [0.0001]

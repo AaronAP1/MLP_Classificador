@@ -336,7 +336,9 @@ def run_one(
         best_hp = gs["best_params"]
     else:
         preset = cfg["gridsearch"]["presets"]["fast"]
-        best_hp = {"lr": preset["lr"][0], "batch_size": preset["batch_size"][0],
+        lr0 = (preset.get("lr_tabnet", preset["lr"]) if model_name == "tabnet"
+               else preset["lr"])[0]
+        best_hp = {"lr": lr0, "batch_size": preset["batch_size"][0],
                    "dropout": preset["dropout"][0],
                    "weight_decay": preset["weight_decay"][0],
                    "depth": preset["depth"][0]}

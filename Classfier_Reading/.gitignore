@@ -9,6 +9,7 @@ data/raw/*.csv
 data/raw/*.xlsx
 data/processed/
 data/samples/*.csv
+entrenamiento/*
 
 # Mantener estructura pero no datos
 !data/raw/.gitkeep

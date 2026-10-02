@@ -120,6 +120,22 @@ proceso se corta, relanza solo lo que falte:
 python run_pipeline.py train --groups adultos --models ft_transformer
 ```
 
+**Reentrenar solo una arquitectura.** Sobrescribe únicamente sus carpetas en
+`results/aligned/`; las de los otros modelos se conservan y `report` vuelve a
+armar todas las tablas y figuras con las 9 combinaciones:
+
+```powershell
+python run_pipeline.py train --models tabnet
+python run_pipeline.py report
+```
+
+> **Corrida del 1-oct-2026:** los resultados de TabNet de esa corrida no son
+> válidos y deben regenerarse con el comando de arriba. Tenía dos desventajas
+> que ya están corregidas: paraba con la log-loss sin ponderar (los otros dos
+> modelos usan la ponderada) y buscaba con learning rates de 0,001–0,0001,
+> demasiado bajos para TabNet. En Jóvenes llegaba a F1-Macro 0,23 (azar); con
+> la corrección, ~0,37. MLP-MA y FT-Transformer no cambian.
+
 ## 6. Tablas y figuras
 
 ```powershell
@@ -169,7 +185,11 @@ el texto debe recoger:
    aproximación, porque el capítulo 600 no está en los datos: hay que
    decirlo así.
 5. **Protocolo.** El número de épocas del reentrenamiento sobre el 85 % se
-   fija con la mejor época de la corrida train/validación.
+   fija con la mejor época de la corrida train/validación. Las tres
+   arquitecturas detienen el entrenamiento con la misma pérdida ponderada.
+   **Table 2:** TabNet se busca con learning rate 0,02 y 0,005 (rango que
+   recomiendan sus autores, ref. [15]) y sin dropout, que no usa; MLP-MA y
+   FT-Transformer con 0,001 y 0,0001.
 6. **AUC.** Promedio macro one-vs-rest.
 7. **Copeland.** Rango de −6 a +6 (3 grupos, 2 rivales por grupo).
 8. **Equipo.** El que registre `results.json` → `hardware`.

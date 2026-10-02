@@ -168,6 +168,49 @@ class MLPMultiHeadAttention(nn.Module):
 # =====================================================================
 # 2. TabNet
 # =====================================================================
+_WEIGHTED_LOGLOSS = None
+
+
+def weighted_logloss_metric():
+    """
+    Metrica de pytorch-tabnet para el early stopping: log-loss ponderada
+    por clase, con los MISMOS pesos que la perdida de entrenamiento.
+
+    Por que: MLP+MA y FT-Transformer detienen el entrenamiento con la
+    entropia cruzada ponderada (su `criterion`). TabNet usaba la log-loss
+    SIN ponderar de la libreria, que premia predecir la clase mayoritaria:
+    en Jovenes eligio la epoca 1 (modelo casi sin entrenar, AUC 0,50) y
+    se detuvo cuando el modelo empezaba a reconocer las clases minoritarias.
+
+    pytorch-tabnet instancia las metricas por nombre entre las subclases
+    directas de `Metric`, sin argumentos; por eso la clase se crea una sola
+    vez y los pesos viajan como atributo de clase, fijado antes de cada fit.
+    """
+    global _WEIGHTED_LOGLOSS
+    if _WEIGHTED_LOGLOSS is None:
+        from pytorch_tabnet.metrics import Metric
+
+        class WeightedLogLoss(Metric):
+            weights: Optional[np.ndarray] = None
+
+            def __init__(self):
+                self._name = "wlogloss"
+                self._maximize = False
+
+            def __call__(self, y_true, y_score):
+                y = np.asarray(y_true).astype(int)
+                proba = np.asarray(y_score, dtype=np.float64)
+                p = np.clip(proba[np.arange(len(y)), y], 1e-15, 1.0)
+                w = (np.ones(proba.shape[1]) if self.weights is None
+                     else np.asarray(self.weights, dtype=np.float64))
+                wi = w[y]
+                # Misma formula que nn.CrossEntropyLoss(weight=w, reduction="mean")
+                return float(-(wi * np.log(p)).sum() / wi.sum())
+
+        _WEIGHTED_LOGLOSS = WeightedLogLoss
+    return _WEIGHTED_LOGLOSS
+
+
 class TabNetModel:
     """
     Envoltura de pytorch-tabnet fijada a los valores del articulo:
@@ -219,15 +262,16 @@ class TabNetModel:
             class_weights: Optional[np.ndarray] = None,
             track_train: bool = False):
         """
-        Con `X_val`: early stopping sobre la log-loss de validacion (igual
-        que MLP+MA y FT-Transformer) y restauracion de la mejor epoca.
+        Con `X_val`: early stopping sobre la log-loss PONDERADA de
+        validacion (el mismo criterio que MLP+MA y FT-Transformer) y
+        restauracion de la mejor epoca.
         Sin `X_val` (None): exactamente `epochs` epocas, pesos finales.
 
         `track_train=True` evalua tambien el conjunto de entrenamiento en
         cada epoca para dibujar la curva train vs. validacion (Fig. 11).
         pytorch-tabnet usa el ULTIMO conjunto y la ULTIMA metrica de la
         lista para el early stopping, por eso el orden es [train, val] y
-        ["accuracy", "logloss"].
+        ["accuracy", log-loss ponderada].
         """
         Xtr = np.asarray(X_tr, dtype=np.float32)
         ytr = np.asarray(y_tr).astype(int)
@@ -247,10 +291,14 @@ class TabNetModel:
             eval_set.append((np.asarray(X_val, dtype=np.float32), np.asarray(y_val).astype(int)))
             eval_name.append("val")
 
+        wlogloss = weighted_logloss_metric()
+        wlogloss.weights = (np.asarray(class_weights, dtype=np.float64)
+                            if class_weights is not None else None)
+
         self.model.fit(
             X_train=Xtr, y_train=ytr,
             eval_set=eval_set or None, eval_name=eval_name or None,
-            eval_metric=["accuracy", "logloss"] if eval_set else None,
+            eval_metric=["accuracy", wlogloss] if eval_set else None,
             loss_fn=loss_fn, weights=0,
             max_epochs=epochs,
             patience=patience if X_val is not None else 0,
@@ -277,7 +325,8 @@ class TabNetModel:
         return {
             "train_loss": list(raw.get("loss", [])),
             "train_acc": list(raw.get("train_accuracy", [])),
-            "val_loss": list(raw.get("val_logloss", [])),
+            # log-loss ponderada: el criterio del early stopping
+            "val_loss": list(raw.get("val_wlogloss", raw.get("val_logloss", []))),
             "val_acc": list(raw.get("val_accuracy", [])),
         }
 

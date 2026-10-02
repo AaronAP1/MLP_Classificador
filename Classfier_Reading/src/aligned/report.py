@@ -147,7 +147,9 @@ def tabla_hiperparametros(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
             rows.append({
                 "Grupo": GROUP_DISPLAY.get(group, group), "Modelo": DISPLAY[model],
                 "Learning rate": hp.get("lr"), "Batch size": hp.get("batch_size"),
-                "Dropout": hp.get("dropout"), "Weight decay": hp.get("weight_decay"),
+                # TabNet no usa dropout: se deja vacio en lugar de un valor inerte.
+                "Dropout": None if model == "tabnet" else hp.get("dropout"),
+                "Weight decay": hp.get("weight_decay"),
                 "Profundidad": hp.get("n_steps", hp.get("depth")),
                 "F1-Macro CV (media)": gs.get("best_cv_score"),
                 "F1-Macro CV (desv.)": gs.get("best_cv_std"),

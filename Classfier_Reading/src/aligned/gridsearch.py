@@ -49,6 +49,8 @@ def build_grid(cfg: dict, model_name: str) -> List[Dict[str, object]]:
     preset_name = cfg["gridsearch"]["preset"]
     preset = cfg["gridsearch"]["presets"][preset_name]
 
+    lrs = list(preset["lr"])
+    dropouts = list(preset["dropout"])
     depths = list(preset["depth"])
     if model_name == "ft_transformer":
         # III-C-3: 4 capas encoder, valor estructural que no se explora.
@@ -59,9 +61,13 @@ def build_grid(cfg: dict, model_name: str) -> List[Dict[str, object]]:
         base = cfg["models"]["tabnet"]["n_steps"]
         depths = (sorted({min(max(int(d) - 1, 2), 4) for d in depths})
                   if preset_name == "paper" else [base])
+        # Rango de learning rate propio (ver configs/pipeline.yaml) y sin
+        # explorar dropout, que TabNet no usa: evita configuraciones repetidas.
+        lrs = list(preset.get("lr_tabnet", lrs))
+        dropouts = dropouts[:1]
 
     combos = itertools.product(
-        preset["lr"], preset["batch_size"], preset["dropout"],
+        lrs, preset["batch_size"], dropouts,
         preset["weight_decay"], depths,
     )
     grid = []

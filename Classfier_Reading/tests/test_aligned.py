@@ -393,6 +393,53 @@ def test_tabnet_registra_curva_de_entrenamiento():
     assert m.predict_proba(X[:4]).shape == (4, 3)
 
 
+def test_logloss_ponderada_igual_a_la_perdida_de_entrenamiento():
+    """El early stopping de TabNet usa la misma formula que nn.CrossEntropyLoss(weight)."""
+    pytest.importorskip("pytorch_tabnet")
+    from src.aligned.models import weighted_logloss_metric
+    rng = np.random.default_rng(3)
+    proba = rng.dirichlet([1, 1, 1], 200)
+    y = rng.integers(0, 3, 200)
+    w = np.array([2.5, 1.2, 0.56])
+    metric = weighted_logloss_metric()
+    metric.weights = w
+    ours = metric()(y, proba)
+    ref = torch.nn.CrossEntropyLoss(weight=torch.tensor(w, dtype=torch.float64))(
+        torch.log(torch.tensor(proba)), torch.tensor(y))
+    assert ours == pytest.approx(float(ref), rel=1e-9)
+
+
+def test_tabnet_detiene_con_la_perdida_ponderada():
+    pytest.importorskip("pytorch_tabnet")
+    from src.aligned.models import TabNetModel
+    rng = np.random.default_rng(0)
+    X = rng.random((150, 5)).astype(np.float32)
+    y = np.array([0] * 20 + [1] * 40 + [2] * 90)
+    m = TabNetModel(num_features=5, n_d=8, n_a=8, device="cpu")
+    m.fit(X[:120], y[:120], X[120:], y[120:], epochs=4, patience=10,
+          batch_size=32, virtual_batch_size=16,
+          class_weights=np.array([2.5, 1.25, 0.55]), track_train=True)
+    raw = m.model.history.history
+    assert "val_wlogloss" in raw and "val_logloss" not in raw
+    assert m.history["val_loss"] == list(raw["val_wlogloss"])
+    assert m.best_epoch == int(np.argmin(raw["val_wlogloss"]))
+
+
+def test_grid_de_tabnet_usa_su_propio_learning_rate(cfg):
+    from src.aligned.gridsearch import build_grid
+    import copy
+    c = copy.deepcopy(cfg)
+    c["gridsearch"]["preset"] = "standard"
+    tab = build_grid(c, "tabnet")
+    mlp = build_grid(c, "mlp_ma")
+    assert {hp["lr"] for hp in tab} == set(c["gridsearch"]["presets"]["standard"]["lr_tabnet"])
+    assert {hp["lr"] for hp in mlp} == set(c["gridsearch"]["presets"]["standard"]["lr"])
+    # Sin configuraciones repetidas: TabNet no explora dropout.
+    assert len({hp["dropout"] for hp in tab}) == 1
+    assert len(tab) == len({tuple(sorted(hp.items())) for hp in tab}) == 8
+    assert len(mlp) == 16
+
+
 def test_etiquetas_legibles():
     assert V.feature_label("hh_nivel_educ_mean") == "Hogar: nivel educativo promedio"
     assert V.feature_label("P306") == "Último nivel educativo aprobado"

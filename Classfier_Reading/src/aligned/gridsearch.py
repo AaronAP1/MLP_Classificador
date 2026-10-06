@@ -85,6 +85,7 @@ def _fit_and_score(
     X_tr: np.ndarray, y_tr: np.ndarray,
     X_va: np.ndarray, y_va: np.ndarray,
     epochs: int, patience: int, seed: int,
+    cat_info: Optional[List] = None,
 ) -> Dict[str, float]:
     """Entrena una configuracion en un fold y devuelve sus metricas."""
     # El balanceo se aplica aqui, SOLO a la parte de entrenamiento del fold.
@@ -92,7 +93,7 @@ def _fit_and_score(
     X_tr, y_tr, weights, _ = balance_training_set(X_tr, y_tr, cfg, seed)
 
     set_seed(seed)
-    model = build_model(model_name, X_tr.shape[1], cfg, hp, seed)
+    model = build_model(model_name, X_tr.shape[1], cfg, hp, seed, cat_info=cat_info)
 
     if IS_TORCH[model_name]:
         trainer = TorchTrainer(
@@ -129,10 +130,12 @@ def grid_search_cv(
     cfg: dict, model_name: str,
     X_train: np.ndarray, y_train: np.ndarray,
     out_dir: Optional[Path] = None, verbose: bool = True,
+    cat_info: Optional[List] = None,
 ) -> Dict[str, object]:
     """
     Ejecuta la busqueda completa y devuelve la mejor configuracion junto
-    con la tabla de todos los candidatos evaluados.
+    con la tabla de todos los candidatos evaluados. `cat_info`: nominales
+    con embedding, igual que en el modelo final.
     """
     gs = cfg["gridsearch"]
     seed = cfg["seed"]
@@ -156,6 +159,7 @@ def grid_search_cv(
                 X_train[tr_idx], y_train[tr_idx],
                 X_train[va_idx], y_train[va_idx],
                 epochs=gs["cv_epochs"], patience=gs["cv_patience"], seed=seed,
+                cat_info=cat_info,
             ))
 
         row: Dict[str, object] = dict(hp)

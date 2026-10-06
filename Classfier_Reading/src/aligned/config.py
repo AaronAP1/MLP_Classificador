@@ -92,3 +92,8 @@ def validate(cfg: dict) -> None:
     method = cfg["balancing"].get("method")
     if method not in ("class_weights", "smote", "none"):
         raise ValueError(f"balancing.method = {method!r}; opciones: class_weights, smote, none")
+    if method == "smote" and cfg["models"].get("categorical_embeddings", True):
+        raise ValueError(
+            "SMOTE interpola entre muestras y fabricaria codigos intermedios de las "
+            "variables nominales (un 'departamento' entre Amazonas y Ucayali). Con "
+            "models.categorical_embeddings: true usa balancing.method: class_weights.")

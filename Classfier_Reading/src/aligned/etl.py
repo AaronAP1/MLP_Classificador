@@ -5,7 +5,9 @@ Flujo:
     1. Consolidacion de los tres CSV crudos en un unico marco, con
        armonizacion de su codificacion (ver `harmonize_source`).
     2. Segmentacion etaria segun el articulo (Ninos 3-13, Jovenes 14-17,
-       Adultos 18+), recalculada desde `edad_total`.
+       Adultos 18-64), recalculada desde `edad_total`. Los capitulos 300 y
+       400 de la ENL solo se aplican de 18 a 64 años: nadie mayor tiene la
+       clase de adultos.
     3. Construccion del target y descarte de filas sin target.
     4. Limpieza: filas con mas del 20% de valores faltantes.
     5. Indicadores derivados.
@@ -39,6 +41,12 @@ from sklearn.model_selection import train_test_split
 from . import features as F
 from . import variables as V
 from .target import build_target, target_report
+
+# Version de los datos procesados. El entrenamiento se niega a usar datos
+# de una version anterior (ver pipeline.load_group).
+#   2 · ingreso con log1p, alfabetismo del hogar corregido, sin P305,
+#       adultos 18-64 y codificacion para los embeddings de las nominales.
+ETL_VERSION = 2
 
 
 # =====================================================================
@@ -108,6 +116,15 @@ def load_raw(raw_dir: Path, blank_sources: Optional[List[str]] = None,
     return consolidated
 
 
+def _has_text(s: pd.Series) -> bool:
+    """True si la columna trae respuestas alfanumericas en lugar de codigos."""
+    if s.dtype != object:
+        return False
+    t = s.dropna().astype(str).str.strip()
+    t = t[t != ""]
+    return bool(pd.to_numeric(t, errors="coerce").isna().any())
+
+
 def segment_by_age(df: pd.DataFrame, edad_min: int, edad_max: int) -> pd.DataFrame:
     edad = pd.to_numeric(df["edad_total"], errors="coerce")
     mask = edad.between(edad_min, edad_max, inclusive="both")
@@ -124,21 +141,39 @@ class AlignedPreprocessor:
     con el conjunto de entrenamiento.
 
     El resultado deja TODAS las columnas en [0, 1], lo que permite
-    aplicar despues el umbral de varianza sobre una escala comun.
+    aplicar despues el umbral de varianza sobre una escala comun. Una
+    categorica con k categorias queda en {0, 1/(k-1), ..., 1}; los modelos
+    recuperan el codigo entero (round(x * (k-1))) para sus embeddings.
+
+    `log_columns`: numericas muy asimetricas (montos en soles) que pasan
+    por log1p antes del escalado. Sin eso, el ingreso (mediana ~S/ 1 000,
+    maximo S/ 35 000) quedaba casi entero cerca de 0, con varianza 0,001,
+    y el umbral de varianza lo descartaba: nunca llegaba al modelo.
     """
 
-    def __init__(self, numeric: List[str], categorical: List[str], fill_cat: int = -1):
+    def __init__(self, numeric: List[str], categorical: List[str], fill_cat: int = -1,
+                 log_columns: Optional[List[str]] = None):
         self.numeric = list(numeric)
         self.categorical = list(categorical)
         self.fill_cat = fill_cat
+        self.log_columns = [c for c in (log_columns or []) if c in self.numeric]
         self.medians_: Dict[str, float] = {}
         self.categories_: Dict[str, Dict[float, int]] = {}
         self.ranges_: Dict[str, Tuple[float, float]] = {}
         self.columns_: List[str] = []
 
+    def _numeric(self, X: pd.DataFrame, col: str) -> pd.Series:
+        s = pd.to_numeric(X[col], errors="coerce")
+        if col in getattr(self, "log_columns", []):
+            s = np.log1p(s.clip(lower=0))
+        return s
+
+    def n_categories(self, col: str) -> int:
+        return len(self.categories_[col])
+
     def fit(self, X: pd.DataFrame) -> "AlignedPreprocessor":
         for col in self.numeric:
-            s = pd.to_numeric(X[col], errors="coerce")
+            s = self._numeric(X, col)
             self.medians_[col] = float(s.median()) if s.notna().any() else 0.0
             filled = s.fillna(self.medians_[col])
             self.ranges_[col] = (float(filled.min()), float(filled.max()))
@@ -155,7 +190,7 @@ class AlignedPreprocessor:
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         out = {}
         for col in self.numeric:
-            s = pd.to_numeric(X[col], errors="coerce").fillna(self.medians_[col])
+            s = self._numeric(X, col).fillna(self.medians_[col])
             lo, hi = self.ranges_[col]
             out[col] = (s - lo) / (hi - lo) if hi > lo else pd.Series(0.0, index=X.index)
 
@@ -188,7 +223,7 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
     out_dir = root / cfg["paths"]["processed_dir"] / group
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    report: Dict[str, object] = {"grupo": group, "seed": seed}
+    report: Dict[str, object] = {"grupo": group, "seed": seed, "etl_version": ETL_VERSION}
 
     # --- 2. Segmentacion etaria ------------------------------------
     df = segment_by_age(raw, gcfg["edad_min"], gcfg["edad_max"])
@@ -206,6 +241,9 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
 
     valid = y_raw.notna()
     df, y_raw = df.loc[valid].copy(), y_raw.loc[valid].astype(int)
+    edades_validas = pd.to_numeric(df["edad_total"], errors="coerce")
+    report["segmentacion"]["edad_con_clase"] = (
+        [int(edades_validas.min()), int(edades_validas.max())] if len(df) else None)
 
     # --- 5. Indicadores derivados (antes de descartar administrativas)
     derived, derived_report = F.build_derived(df)
@@ -233,6 +271,14 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
     # --- 6. Universo de predictores sin fuga ------------------------
     base_features = V.build_feature_list(df.columns)
     V.assert_no_leakage(base_features)
+
+    # Guarda: una columna con respuestas de texto se volveria "sin dato"
+    # (-1) al codificarla, como paso con P305. Se excluye y se informa.
+    text_cols = [c for c in base_features if _has_text(df[c])]
+    if text_cols:
+        print(f"  AVISO · columnas con texto excluidas: {text_cols}")
+        base_features = [c for c in base_features if c not in text_cols]
+    report["columnas_texto_excluidas"] = text_cols
 
     X_raw = pd.concat([df[base_features], derived, hh], axis=1)
     X_raw = X_raw.loc[:, ~X_raw.columns.duplicated()]
@@ -268,13 +314,10 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
     # --- 8. Ajuste de transformadores SOLO con train ----------------
     split_cols = V.classify_columns(list(X_raw.columns))
     prep = AlignedPreprocessor(
-        numeric=[c for c in split_cols["numeric"] if c in X_raw.columns]
-                + [c for c in X_raw.columns
-                   if (c.startswith("idx_") or c.startswith("hh_"))
-                   and c not in split_cols["numeric"]],
-        categorical=[c for c in split_cols["categorical"]
-                     if not (c.startswith("idx_") or c.startswith("hh_"))],
+        numeric=split_cols["numeric"],
+        categorical=split_cols["categorical"],
         fill_cat=pre["missing_categorical_fill"],
+        log_columns=pre.get("log_transform", []),
     )
     Xtr = prep.fit_transform(X_tr)
     Xval, Xte = prep.transform(X_val), prep.transform(X_te)
@@ -297,6 +340,19 @@ def run_group(cfg: dict, group: str, raw: pd.DataFrame, root: Path,
         "features": selected,
         "dimensiones": pd.Series([V.dimension_of(c) for c in selected])
                          .value_counts().to_dict(),
+    }
+
+    # Codificacion que necesitan los modelos: n.º de categorias de cada
+    # categorica (para recuperar el codigo entero) y cuales son nominales,
+    # que reciben un embedding en lugar de entrar como escalar.
+    n_cat = {c: prep.n_categories(c) for c in selected if c in prep.categorical}
+    report["codificacion"] = {
+        "categorias_por_variable": n_cat,
+        "embeddings": {c: n for c, n in n_cat.items() if c in V.NOMINAL_COLUMNS and n >= 3},
+        "log1p": [c for c in prep.log_columns if c in selected],
+        "nota": ("Label Encoding: una categorica con k categorias se guarda como "
+                 "codigo/(k-1) en [0, 1]. Las nominales de `embeddings` entran a los "
+                 "modelos como embedding (round(x*(k-1)) -> vector aprendido)."),
     }
 
     # --- Verificaciones duras ---------------------------------------
@@ -372,12 +428,16 @@ def run_etl(cfg: dict, root: Path) -> Dict[str, dict]:
             json.dump(rep, fh, indent=2, ensure_ascii=False, default=str)
         reports[group] = rep
         sel, seg = rep["seleccion_features"], rep["segmentacion"]
-        print(f"  edades incluidas            : {seg['edad_observada'][0]}-{seg['edad_observada'][1]} "
+        edades = seg.get("edad_con_clase") or seg["edad_observada"]
+        print(f"  edades con clase            : {edades[0]}-{edades[1]} "
               f"· origen {seg['procedencia_csv']}")
         print(f"  registros con target valido : {rep['target']['n_valid']:,}")
         print(f"  distribucion                : {rep['target']['counts']}")
         print(f"  eliminados por >20% faltante: {rep['limpieza']['n_removidos']:,}")
         print(f"  universo -> final           : {sel['universo_inicial']} -> {sel['n_final']} features")
+        emb = rep["codificacion"]["embeddings"]
+        print(f"  nominales con embedding     : {len(emb)} "
+              f"({', '.join(f'{c}:{n}' for c, n in emb.items())})")
         print(f"  train/val/test              : "
               f"{rep['splits']['train']['n']:,} / {rep['splits']['val']['n']:,} / {rep['splits']['test']['n']:,}")
     return reports

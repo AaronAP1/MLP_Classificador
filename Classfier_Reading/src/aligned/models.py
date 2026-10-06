@@ -17,17 +17,56 @@ Correcciones respecto a la implementacion auditada:
   * FT-Transformer conserva su diseño (embeddings de 64, 4 encoders,
     token [CLS]) y ademas expone los pesos de atencion por cabeza y capa,
     necesarios para la seccion III-G-2, que antes no se podian extraer.
+
+  * Variables nominales (departamento, lengua materna, etnia...): en las
+    tres arquitecturas cada categoria tiene su propio vector aprendido
+    (embedding), como en el FT-Transformer original. Antes entraban como un
+    unico numero de 0 a 1 con el orden arbitrario del Label Encoding.
+    `cat_info` lista (posicion de la variable, n.º de categorias).
 """
 
 from __future__ import annotations
 
 import math
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as Fn
+
+CatInfo = Sequence[Tuple[int, int]]
+
+
+def category_codes(x: torch.Tensor, n_categories: int) -> torch.Tensor:
+    """Codigo entero de una categorica guardada como codigo/(k-1) en [0, 1]."""
+    hi = max(int(n_categories) - 1, 1)
+    return torch.round(x.float() * hi).long().clamp_(0, int(n_categories) - 1)
+
+
+class CategoricalTokens(nn.Module):
+    """
+    Una tabla de embeddings por variable nominal. Reemplaza, en la secuencia
+    de tokens (B, F, D), la posicion de cada nominal por el vector de su
+    categoria; las demas variables conservan su token escalar x*W + b.
+    """
+
+    def __init__(self, cat_info: CatInfo, dim: int):
+        super().__init__()
+        self.positions = [int(p) for p, _ in cat_info]
+        self.cards = [int(k) for _, k in cat_info]
+        self.tables = nn.ModuleList([nn.Embedding(k, dim) for k in self.cards])
+        bound = 1 / math.sqrt(dim)                         # init de Gorishniy et al. (2021)
+        for table in self.tables:
+            nn.init.uniform_(table.weight, -bound, bound)
+        self.register_buffer("index", torch.tensor(self.positions, dtype=torch.long),
+                             persistent=False)
+
+    def forward(self, x: torch.Tensor, tokens: torch.Tensor) -> torch.Tensor:
+        cat = torch.stack([table(category_codes(x[:, p], k))
+                           for table, p, k in zip(self.tables, self.positions, self.cards)],
+                          dim=1)                           # (B, C, D)
+        return tokens.index_copy(1, self.index, cat.to(tokens.dtype))
 
 
 # =====================================================================
@@ -45,7 +84,8 @@ class MultiHeadFeatureAttention(nn.Module):
     """
 
     def __init__(self, num_features: int, attn_dim: int = 64, n_heads: int = 4,
-                 dropout: float = 0.1):
+                 dropout: float = 0.1, cat_info: Optional[CatInfo] = None,
+                 token_out_dim: int = 1):
         super().__init__()
         if attn_dim % n_heads != 0:
             raise ValueError(f"attn_dim ({attn_dim}) debe ser divisible por n_heads ({n_heads})")
@@ -54,11 +94,14 @@ class MultiHeadFeatureAttention(nn.Module):
         self.attn_dim = attn_dim
         self.n_heads = n_heads
         self.d_k = attn_dim // n_heads
+        self.token_out_dim = token_out_dim
 
-        # Token por variable: proyeccion escalar -> attn_dim
+        # Token por variable: proyeccion escalar -> attn_dim; las nominales,
+        # un embedding por categoria.
         self.embed = nn.Parameter(torch.empty(num_features, attn_dim))
         self.embed_bias = nn.Parameter(torch.zeros(num_features, attn_dim))
         nn.init.xavier_uniform_(self.embed)
+        self.cat_tokens = CategoricalTokens(cat_info, attn_dim) if cat_info else None
 
         self.W_q = nn.Linear(attn_dim, attn_dim)
         self.W_k = nn.Linear(attn_dim, attn_dim)
@@ -67,9 +110,9 @@ class MultiHeadFeatureAttention(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.norm = nn.LayerNorm(attn_dim)
 
-        # Colapsa el token atendido de vuelta a un escalar por variable,
-        # para que la salida conserve la dimension original de entrada.
-        self.collapse = nn.Linear(attn_dim, 1)
+        # Colapsa el token atendido a `token_out_dim` valores por variable;
+        # con 1, la salida conserva la dimension original de entrada.
+        self.collapse = nn.Linear(attn_dim, token_out_dim)
 
         for layer in (self.W_q, self.W_k, self.W_v, self.W_o):
             nn.init.xavier_uniform_(layer.weight)
@@ -82,11 +125,14 @@ class MultiHeadFeatureAttention(nn.Module):
         Args:
             x: (B, num_features)
         Returns:
-            (B, num_features) y, opcionalmente, los pesos (B, n_heads, F, F)
+            (B, num_features * token_out_dim) y, opcionalmente, los pesos
+            (B, n_heads, F, F)
         """
         B, F_ = x.shape
         # Tokenizacion: (B, F, attn_dim)
         tokens = x.unsqueeze(-1) * self.embed.unsqueeze(0) + self.embed_bias.unsqueeze(0)
+        if self.cat_tokens is not None:
+            tokens = self.cat_tokens(x, tokens)
 
         q = self.W_q(tokens).view(B, F_, self.n_heads, self.d_k).transpose(1, 2)
         k = self.W_k(tokens).view(B, F_, self.n_heads, self.d_k).transpose(1, 2)
@@ -103,7 +149,7 @@ class MultiHeadFeatureAttention(nn.Module):
         # Concat de cabezas + W_O
         concat = heads.transpose(1, 2).contiguous().view(B, F_, self.attn_dim)
         out = self.norm(self.W_o(concat) + tokens)        # residual
-        attended = self.collapse(out).squeeze(-1)         # (B, F)
+        attended = self.collapse(out).flatten(1)          # (B, F * token_out_dim)
 
         return attended, (attn if return_attention else None)
 
@@ -124,6 +170,8 @@ class MLPMultiHeadAttention(nn.Module):
         attn_dim: int = 64,
         dropout: float = 0.3,
         depth: Optional[int] = None,
+        cat_info: Optional[CatInfo] = None,
+        token_out_dim: int = 1,
     ):
         super().__init__()
         hidden_dims = list(hidden_dims or [256, 128, 64, 32])
@@ -133,10 +181,12 @@ class MLPMultiHeadAttention(nn.Module):
             )
 
         self.num_features = num_features
-        self.attention = MultiHeadFeatureAttention(num_features, attn_dim, n_heads, dropout)
+        self.attention = MultiHeadFeatureAttention(num_features, attn_dim, n_heads, dropout,
+                                                   cat_info=cat_info,
+                                                   token_out_dim=token_out_dim)
 
         layers: List[nn.Module] = []
-        in_dim = num_features
+        in_dim = num_features * token_out_dim
         for h in hidden_dims:
             layers += [nn.Linear(in_dim, h), nn.ReLU(), nn.Dropout(dropout)]
             in_dim = h
@@ -233,6 +283,8 @@ class TabNetModel:
         weight_decay: float = 1e-4,
         seed: int = 42,
         device: str = "auto",
+        cat_info: Optional[CatInfo] = None,
+        cat_emb_dim_max: int = 4,
     ):
         from pytorch_tabnet.tab_model import TabNetClassifier
 
@@ -241,7 +293,19 @@ class TabNetModel:
         self.n_steps = n_steps
         self.mask_type = mask_type
 
+        # Nominales: embeddings categoricos nativos de pytorch-tabnet, que
+        # esperan el codigo entero en la columna (ver `_encode`). Las mascaras
+        # y la importancia se siguen reportando por variable original.
+        self.cat_positions = [int(p) for p, _ in (cat_info or [])]
+        self.cat_cards = [int(k) for _, k in (cat_info or [])]
+        cat_kwargs = {}
+        if self.cat_positions:
+            cat_kwargs = {"cat_idxs": self.cat_positions, "cat_dims": self.cat_cards,
+                          "cat_emb_dim": [max(1, min(cat_emb_dim_max, k - 1))
+                                          for k in self.cat_cards]}
+
         self.model = TabNetClassifier(
+            **cat_kwargs,
             n_d=n_d, n_a=n_a, n_steps=n_steps, gamma=gamma,
             n_independent=n_independent, n_shared=n_shared,
             lambda_sparse=lambda_sparse, mask_type=mask_type,
@@ -256,6 +320,13 @@ class TabNetModel:
             device_name=("cuda" if torch.cuda.is_available() else "cpu")
             if device == "auto" else device,
         )
+
+    def _encode(self, X) -> np.ndarray:
+        """Matriz para pytorch-tabnet: las nominales con su codigo entero."""
+        X = np.array(X, dtype=np.float32, copy=True)
+        for p, k in zip(self.cat_positions, self.cat_cards):
+            X[:, p] = np.clip(np.rint(X[:, p] * max(k - 1, 1)), 0, k - 1)
+        return X
 
     def fit(self, X_tr, y_tr, X_val, y_val, epochs: int, patience: int,
             batch_size: int, virtual_batch_size: int = 128,
@@ -273,7 +344,7 @@ class TabNetModel:
         lista para el early stopping, por eso el orden es [train, val] y
         ["accuracy", log-loss ponderada].
         """
-        Xtr = np.asarray(X_tr, dtype=np.float32)
+        Xtr = self._encode(X_tr)
         ytr = np.asarray(y_tr).astype(int)
 
         # Misma regla de balanceo que las otras dos arquitecturas: entropia
@@ -288,7 +359,7 @@ class TabNetModel:
         if X_val is not None:
             if track_train:
                 eval_set.append((Xtr, ytr)); eval_name.append("train")
-            eval_set.append((np.asarray(X_val, dtype=np.float32), np.asarray(y_val).astype(int)))
+            eval_set.append((self._encode(X_val), np.asarray(y_val).astype(int)))
             eval_name.append("val")
 
         wlogloss = weighted_logloss_metric()
@@ -331,10 +402,14 @@ class TabNetModel:
         }
 
     def predict(self, X) -> np.ndarray:
-        return self.model.predict(np.asarray(X, dtype=np.float32))
+        return self.model.predict(self._encode(X))
 
     def predict_proba(self, X) -> np.ndarray:
-        return self.model.predict_proba(np.asarray(X, dtype=np.float32))
+        return self.model.predict_proba(self._encode(X))
+
+    def explain(self, X):
+        """(importancia por muestra, mascaras por paso), en variables originales."""
+        return self.model.explain(self._encode(X))
 
     def feature_importance(self, X=None) -> np.ndarray:
         """
@@ -345,7 +420,7 @@ class TabNetModel:
 
     def step_masks(self, X) -> Dict[str, np.ndarray]:
         """Mascara media de cada decision step (una fila por paso)."""
-        _, masks = self.model.explain(np.asarray(X, dtype=np.float32))
+        _, masks = self.explain(X)
         return {f"step_{i + 1}": np.asarray(m).mean(axis=0) for i, m in masks.items()}
 
     @property
@@ -360,16 +435,24 @@ class TabNetModel:
 # 3. FT-Transformer
 # =====================================================================
 class FeatureTokenizer(nn.Module):
-    """Cada variable escalar -> embedding de `emb_dim` dimensiones."""
+    """
+    Cada variable -> token de `emb_dim` dimensiones: x*W + b para las
+    numericas y ordinales, y un embedding por categoria para las nominales
+    (el Feature Tokenizer de Gorishniy et al., 2021).
+    """
 
-    def __init__(self, num_features: int, emb_dim: int):
+    def __init__(self, num_features: int, emb_dim: int, cat_info: Optional[CatInfo] = None):
         super().__init__()
         self.weight = nn.Parameter(torch.empty(num_features, emb_dim))
         self.bias = nn.Parameter(torch.zeros(num_features, emb_dim))
         nn.init.xavier_uniform_(self.weight)
+        self.cat_tokens = CategoricalTokens(cat_info, emb_dim) if cat_info else None
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x.unsqueeze(-1) * self.weight.unsqueeze(0) + self.bias.unsqueeze(0)
+        tokens = x.unsqueeze(-1) * self.weight.unsqueeze(0) + self.bias.unsqueeze(0)
+        if self.cat_tokens is not None:
+            tokens = self.cat_tokens(x, tokens)
+        return tokens
 
 
 class FTTransformer(nn.Module):
@@ -393,6 +476,7 @@ class FTTransformer(nn.Module):
         dim_feedforward: int = 256,
         dropout: float = 0.3,
         depth: Optional[int] = None,   # ignorado: el articulo fija 4 encoders
+        cat_info: Optional[CatInfo] = None,
     ):
         super().__init__()
         if emb_dim % n_heads != 0:
@@ -403,7 +487,7 @@ class FTTransformer(nn.Module):
         self.n_layers = n_layers
         self.n_heads = n_heads
 
-        self.tokenizer = FeatureTokenizer(num_features, emb_dim)
+        self.tokenizer = FeatureTokenizer(num_features, emb_dim, cat_info)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, emb_dim))
         nn.init.normal_(self.cls_token, std=0.02)
 
@@ -480,20 +564,25 @@ class FTTransformer(nn.Module):
 # =====================================================================
 # Fabrica
 # =====================================================================
-def build_model(name: str, num_features: int, cfg: dict, hp: dict, seed: int = 42):
+def build_model(name: str, num_features: int, cfg: dict, hp: dict, seed: int = 42,
+                cat_info: Optional[CatInfo] = None):
     """
     Crea una arquitectura a partir de la configuracion estructural
     (`cfg['models'][name]`) y de los hiperparametros buscados (`hp`).
+    `cat_info`: nominales que reciben embedding, como (posicion, n.º de
+    categorias); se ignora si `models.categorical_embeddings` es false.
     """
     mcfg = cfg["models"][name]
     n_classes = cfg["n_classes"]
+    cat_info = list(cat_info or []) if cfg["models"].get("categorical_embeddings", True) else []
 
     if name == "mlp_ma":
         return MLPMultiHeadAttention(
             num_features=num_features, num_classes=n_classes,
             hidden_dims=mcfg["hidden_dims"], n_heads=mcfg["n_heads"],
             attn_dim=mcfg["attn_dim"], dropout=hp["dropout"],
-            depth=hp.get("depth"),
+            depth=hp.get("depth"), cat_info=cat_info,
+            token_out_dim=int(mcfg.get("token_out_dim", 1)),
         )
 
     if name == "ft_transformer":
@@ -501,7 +590,7 @@ def build_model(name: str, num_features: int, cfg: dict, hp: dict, seed: int = 4
             num_features=num_features, num_classes=n_classes,
             emb_dim=mcfg["emb_dim"], n_layers=mcfg["n_layers"],
             n_heads=mcfg["n_heads"], dim_feedforward=mcfg["dim_feedforward"],
-            dropout=hp["dropout"],
+            dropout=hp["dropout"], cat_info=cat_info,
         )
 
     if name == "tabnet":
@@ -518,6 +607,7 @@ def build_model(name: str, num_features: int, cfg: dict, hp: dict, seed: int = 4
             n_independent=mcfg["n_independent"], n_shared=mcfg["n_shared"],
             lambda_sparse=mcfg["lambda_sparse"],
             lr=hp["lr"], weight_decay=hp["weight_decay"], seed=seed,
+            cat_info=cat_info, cat_emb_dim_max=int(mcfg.get("cat_emb_dim_max", 4)),
         )
 
     raise ValueError(f"Modelo desconocido: {name!r}")

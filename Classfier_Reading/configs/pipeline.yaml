@@ -35,7 +35,8 @@ groups:
     target_source: "chapter_500"        # P506 · frecuencia de lectura de LIBROS
   adultos:
     edad_min: 18
-    edad_max: 120
+    edad_max: 64                        # los capitulos 300-400 de la ENL solo se aplican
+                                        # de 18 a 64 años: nadie de 65+ tiene la clase
     target_source: "chapter_400_libros" # P408 + P409 · lectura de LIBROS
     # Alternativa: "chapter_300_400" (P402 + P403, cualquier contenido:
     # libros, periodicos, revistas...). Con ella el 67 % de adultos es
@@ -61,6 +62,9 @@ preprocessing:
   numeric_scaling: "minmax"      # III-A "Min-Max Scaling"
   missing_numeric_strategy: "median"
   missing_categorical_fill: -1   # categoria explicita "sin dato" antes del Label Encoding
+  # Montos en soles muy asimetricos: log1p antes del Min-Max. Sin esto el
+  # ingreso quedaba casi entero cerca de 0 y el umbral de varianza lo descartaba.
+  log_transform: ["P314", "hh_ingreso_mean", "hh_ingreso_max"]
 
 # ---------------------------------------------------------------------
 # 3. FEATURE ENGINEERING Y SELECCION  (Seccion III-B)
@@ -158,10 +162,21 @@ gridsearch:
 #    Los valores marcados FIJO son estructurales y no entran al grid.
 # ---------------------------------------------------------------------
 models:
+  # Variables nominales (departamento, lengua, etnia, ocupacion...; lista en
+  # src/aligned/variables.py: NOMINAL_COLUMNS): cada categoria recibe un
+  # vector aprendido en lugar de entrar como un numero con orden arbitrario.
+  # MLP-MA y FT-Transformer usan un embedding del tamaño de su token;
+  # TabNet, sus embeddings categoricos nativos (cat_idxs / cat_dims).
+  categorical_embeddings: true
+
   mlp_ma:
     hidden_dims: [256, 128, 64, 32]  # III-C-1 "256 -> 128 -> 64 -> 32"  FIJO
     n_heads: 4                       # III-C-1 atencion multi-cabeza real
     attn_dim: 64                     # dimension del espacio de atencion
+    token_out_dim: 4                 # valores por variable que pasan del token atendido
+                                     # al MLP. Con embeddings, 4 rindio mas que 1 en
+                                     # validacion (F1-Macro jovenes 0,424 vs. 0,413;
+                                     # niños 0,444 vs. 0,434)
     activation: "relu"               # III-C-1 "todas con activacion ReLU"
 
   tabnet:
@@ -174,6 +189,7 @@ models:
     n_shared: 2
     lambda_sparse: 0.001
     virtual_batch_size: 128
+    cat_emb_dim_max: 4               # embedding de cada nominal: min(4, k-1) dimensiones
 
   ft_transformer:
     emb_dim: 64                      # III-C-3 "embedding de 64 dimensiones"  FIJO

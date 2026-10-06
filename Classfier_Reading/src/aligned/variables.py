@@ -87,6 +87,13 @@ LEAKAGE_EXCEPTIONS: List[str] = [
 # valor predictivo y con riesgo de filtrar la respuesta literal.
 FREE_TEXT_PATTERN = r"_O$|_O_|_9_O$|_1_O$"
 
+# Respuestas alfanumericas sin codificar. P305 guarda el NOMBRE del pueblo
+# indigena ("QUECHUAS", "AIMARA"...): al convertirla a numero el texto se
+# volvia "sin dato" (-1), y como jovenes.csv la trae vacia, en la practica
+# marcaba el archivo de origen de cada persona. La pertenencia a un pueblo
+# ya la recoge P304 (si / no / no sabe).
+TEXT_COLUMNS: List[str] = ["P305"]
+
 # ---------------------------------------------------------------------
 # Agrupacion tematica de los predictores admitidos. Se usa para construir
 # los indicadores derivados de la seccion III-B del articulo.
@@ -122,12 +129,39 @@ DIMENSIONS: Dict[str, List[str]] = {
 }
 
 # Variables tratadas como numericas continuas. El resto es categorico y
-# recibe Label Encoding segun la seccion III-A.
+# recibe Label Encoding segun la seccion III-A. Los indicadores derivados
+# (idx_*, hh_*) son numericos salvo los que figuran en NOMINAL_COLUMNS.
 NUMERIC_COLUMNS: List[str] = [
     "edad_total", "P210_A", "P210_M", "TOT_HOGAR",
     "P314",            # monto del ingreso mensual (soles). P314_1 es solo
                        # la marca "no sabe / no tuvo ganancia": categorica.
     "P306_A", "P310_A", "P514_2", "P513",
+]
+
+# Categoricas SIN orden: el codigo es una etiqueta (Amazonas=1, Ancash=2...),
+# no una magnitud. Con Label Encoding entran como un numero de 0 a 1 y la
+# red tendria que "deshacer" un orden arbitrario; por eso cada una recibe un
+# embedding propio (un vector aprendido por categoria) en las tres
+# arquitecturas. En una prueba con un MLP simple, representarlas como
+# categorias subio el F1-Macro en validacion +0,05 (niños), +0,06
+# (jovenes) y +0,01 (adultos). Las categoricas ordinales (estrato por
+# tamaño de centro poblado, grado, nivel educativo) y las binarias siguen
+# como escalar, que ya conserva toda su informacion.
+NOMINAL_COLUMNS: List[str] = [
+    "CCDD",            # departamento
+    "DOMINIO",         # dominio geografico
+    "ESTRATOSOCIO",    # estrato socioeconomico (incluye la categoria rural)
+    "P203", "P205",    # parentesco con el jefe de hogar / de nucleo
+    "P212",            # estado civil
+    "P301", "P513A",   # lengua materna (18+ / 3-17)
+    "P303",            # autoidentificacion etnica
+    "P304",            # pertenencia a pueblo indigena (si / no / no sabe)
+    "P306_C", "P310_C",  # tipo de centro de estudios
+    "P307_1", "P307_2",  # sabe leer y escribir (no aplica / si / no)
+    "P310_N", "P514_1",  # nivel que cursa (mezcla niveles y modalidades)
+    "P313",            # categoria ocupacional
+    "hh_etnia_jefe",   # etnia del jefe de hogar
+    "idx_lengua_materna_tipo",  # castellano / originaria / extranjera / otra
 ]
 
 # Etiquetas legibles para tablas y figuras. Las variables de la ENL que no
@@ -270,7 +304,7 @@ def is_admin(column: str) -> bool:
 
 
 def is_free_text(column: str) -> bool:
-    return bool(re.search(FREE_TEXT_PATTERN, column))
+    return column in TEXT_COLUMNS or bool(re.search(FREE_TEXT_PATTERN, column))
 
 
 def build_feature_list(all_columns: Sequence[str]) -> List[str]:
@@ -292,10 +326,17 @@ def build_feature_list(all_columns: Sequence[str]) -> List[str]:
     return features
 
 
+def is_numeric_column(column: str) -> bool:
+    """Numerica continua: la lista explicita y los indicadores derivados no nominales."""
+    if column in NOMINAL_COLUMNS:
+        return False
+    return column in NUMERIC_COLUMNS or column.startswith(("idx_", "hh_"))
+
+
 def classify_columns(columns: Sequence[str]) -> Dict[str, List[str]]:
     """Separa los predictores en numericos y categoricos."""
-    numeric = [c for c in columns if c in NUMERIC_COLUMNS]
-    categorical = [c for c in columns if c not in NUMERIC_COLUMNS]
+    numeric = [c for c in columns if is_numeric_column(c)]
+    categorical = [c for c in columns if not is_numeric_column(c)]
     return {"numeric": numeric, "categorical": categorical}
 
 

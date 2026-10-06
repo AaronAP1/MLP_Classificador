@@ -63,6 +63,11 @@ LENGUA_INDIGENA = set(range(1, 10))     # codigos 1-9 en P301 / P513A
 LENGUA_CASTELLANO = {10}
 LENGUA_EXTRANJERA = {11, 12, 13}
 
+# P306 con primaria completa o mas. A estas personas la ENL no les pregunta
+# P307 ("¿sabe leer y escribir?") y la deja en 0: se las cuenta como
+# alfabetas. P307 solo se aplica con P306 = 1, 2, 3 o 7.
+PRIMARIA_COMPLETA_O_MAS = {4, 5, 6, 8, 9, 10, 11, 12}
+
 # CONG (conglomerado) es imprescindible: sin el, VIVIENDA se repite entre
 # conglomerados y los "hogares" resultantes llegan a 244 miembros.
 HOUSEHOLD_KEY = ["UBIGEO", "CONG", "VIVIENDA", "HOGAR"]
@@ -208,26 +213,39 @@ def household_context(df_all: pd.DataFrame, index: pd.Index) -> pd.DataFrame:
     base["_nivel"] = nivel_educativo(df_all)
     base["_es_jefe"] = (df_all["P203"].replace(0, np.nan) == 1) if "P203" in df_all else False
 
-    def col(name: str, transform=None) -> pd.Series:
+    def num(name: str) -> pd.Series:
         if name not in df_all.columns:
             return pd.Series(np.nan, index=df_all.index)
-        s = df_all[name].replace(0, np.nan)
-        return transform(s) if transform else s
+        return pd.to_numeric(df_all[name], errors="coerce")
 
-    base["_alfabeto"] = col("P307_1", lambda s: (s == 1).astype("float64"))
-    base["_lengua_indigena"] = col("P301", lambda s: s.isin(LENGUA_INDIGENA).astype("float64"))
-    base["_pueblo_indigena"] = col("P304", lambda s: (s == 1).astype("float64"))
+    def col(name: str, transform=None) -> pd.Series:
+        # 0 = "no aplica": la persona no respondio el capitulo 300 (mayores
+        # de 64, miembros no entrevistados). Queda en NaN para que no entre
+        # al promedio del hogar como si hubiera respondido "no".
+        s = num(name).replace(0, np.nan)
+        return transform(s).astype("float64").where(s.notna()) if transform else s
+
+    p306, p307 = num("P306"), num("P307_1")
+    alfabeto = pd.Series(np.nan, index=df_all.index, dtype="float64")
+    alfabeto[p306.isin(PRIMARIA_COMPLETA_O_MAS)] = 1.0
+    alfabeto[p307 == 1] = 1.0
+    alfabeto[p307 == 2] = 0.0
+    base["_alfabeto"] = alfabeto
+    base["_lengua_indigena"] = col("P301", lambda s: s.isin(LENGUA_INDIGENA))
+    base["_pueblo_indigena"] = col("P304", lambda s: s == 1)
     base["_etnia"] = col("P303")
-    base["_trabaja"] = col("P311", lambda s: (s == 1).astype("float64"))
+    base["_trabaja"] = col("P311", lambda s: s == 1)
     # P314 es el monto (soles); P314_1 solo marca "no sabe / sin ganancia".
-    base["_ingreso"] = pd.to_numeric(col("P314"), errors="coerce")
-    base["_estudia"] = col("P309", lambda s: (s == 1).astype("float64"))
+    base["_ingreso"] = col("P314")
+    base["_estudia"] = col("P309", lambda s: s == 1)
     lim = [c for c in ("P315_1", "P315_2", "P315_3", "P315_4", "P315_5", "P315_6")
            if c in df_all.columns]
-    base["_limitacion"] = (
-        (df_all[lim].replace(0, np.nan) == 1).any(axis=1).astype("float64")
-        if lim else np.nan
-    )
+    if lim:
+        lim_vals = df_all[lim].apply(pd.to_numeric, errors="coerce").replace(0, np.nan)
+        base["_limitacion"] = ((lim_vals == 1).any(axis=1).astype("float64")
+                               .where(lim_vals.notna().any(axis=1)))
+    else:
+        base["_limitacion"] = np.nan
 
     adultos = base[base["_edad"] >= 18]
     grp = adultos.groupby(key, dropna=False)
@@ -247,10 +265,15 @@ def household_context(df_all: pd.DataFrame, index: pd.Index) -> pd.DataFrame:
         "hh_n_adultos": grp.size(),
     })
 
-    # Nivel educativo del jefe de hogar, tomado aparte.
+    # Nivel educativo y etnia del jefe de hogar, tomados aparte. Si el
+    # jefe/a no respondio el capitulo 300, la etnia queda la del primer
+    # adulto del hogar que si lo hizo.
     jefes = base[base["_es_jefe"].fillna(False).astype(bool)]
     if len(jefes):
-        agg["hh_nivel_educ_jefe"] = jefes.groupby(key, dropna=False)["_nivel"].max()
+        by_jefe = jefes.groupby(key, dropna=False)
+        agg["hh_nivel_educ_jefe"] = by_jefe["_nivel"].max()
+        agg["hh_etnia_jefe"] = (by_jefe["_etnia"].first().reindex(agg.index)
+                                .fillna(agg["hh_etnia_jefe"]))
 
     # Composicion del hogar, sobre todos los miembros.
     total = base.groupby(key, dropna=False)

@@ -129,12 +129,21 @@ python run_pipeline.py train --models tabnet
 python run_pipeline.py report
 ```
 
-> **Corrida del 1-oct-2026:** los resultados de TabNet de esa corrida no son
-> válidos y deben regenerarse con el comando de arriba. Tenía dos desventajas
-> que ya están corregidas: paraba con la log-loss sin ponderar (los otros dos
-> modelos usan la ponderada) y buscaba con learning rates de 0,001–0,0001,
-> demasiado bajos para TabNet. En Jóvenes llegaba a F1-Macro 0,23 (azar); con
-> la corrección, ~0,37. MLP-MA y FT-Transformer no cambian.
+> **Octubre de 2026 · hay que repetir TODO (ETL v2).** Cambiaron los datos
+> y la forma en que los modelos leen las variables nominales (embeddings), así
+> que los resultados del 1-oct-2026 no se mezclan con los nuevos:
+>
+> ```powershell
+> git pull
+> python run_pipeline.py etl        # obligatorio: train se niega a usar datos v1
+> python -m pytest tests/test_aligned.py -q
+> python run_pipeline.py smoke
+> python run_pipeline.py train      # las 9 combinaciones, ~13-15 h en la RTX 4060
+> python run_pipeline.py report
+> ```
+>
+> Antes de lanzar, conviene mover la carpeta `results/aligned` de la corrida
+> anterior a otro nombre (por ejemplo `results/aligned_v1`) para conservarla.
 
 ## 6. Tablas y figuras
 
@@ -149,14 +158,15 @@ qué parte del artículo va cada archivo:
 |---|---|
 | `tabla_resumen_datos.csv` | Descripción de los datos (registros, edades, clases, n.º de variables) |
 | `tabla2_hiperparametros.csv` | Table 2 (valores elegidos) |
-| `tabla3_metricas.csv/.tex` | Table 3 |
-| `tabla3_media_std.csv/.tex` | Table 3 con media ± desviación (5 semillas) |
+| `tabla3_media_std.csv/.tex` | **Table 3**: media ± desviación en 5 semillas, con el ensemble |
+| `tabla3_metricas.csv/.tex` | Complementaria: solo la semilla 42 (la de las matrices y las ROC) |
 | `tabla4_auc.csv/.tex` | Table 4 (AUC macro one-vs-rest) |
-| `fig_comparacion_grupos.png` | Fig. 7 |
+| `tabla_ensemble.csv` | Texto del ensemble: ganancia frente al mejor modelo, semilla a semilla |
+| `fig_comparacion_grupos.png` | Fig. 7 (media ± desviación) |
 | `fig_matrices_confusion.png` | Fig. 8 |
 | `fig_curvas_roc.png` | Fig. 9 |
-| `fig_ranking_copeland.png` | Fig. 10 |
-| `fig_curvas_aprendizaje.png` | Fig. 11 |
+| `fig_ranking_copeland.png` | Fig. 10 (sobre las medias de las semillas) |
+| `fig_curvas_aprendizaje.png` | Fig. 11 (pérdida; en accuracy: `fig_curvas_aprendizaje_accuracy.png`) |
 | `fig_importancia_variables.png`, `fig_importancia_permutacion.png`, `fig_mascaras_tabnet.png`, `fig_atencion_ft.png`, `interpretabilidad_top.csv` | Interpretabilidad |
 
 Cada `results/aligned/<grupo>_<modelo>/results.json` guarda además el equipo
@@ -170,13 +180,13 @@ El código implementa lo que describe el artículo, con estas diferencias que
 el texto debe recoger:
 
 1. **Definición de las clases.** Menores (3–17): P506, frecuencia de lectura
-   de libros. Adultos (18+): P408 + P409, lectura de libros. Frecuente =
+   de libros. Adultos (18–64): P408 + P409, lectura de libros. Frecuente =
    diariamente o varias veces por semana; Medio = de una vez por semana a
    una vez al mes; No lector = cada tres meses o menos, o no leyó.
 2. **Desbalance de clases.** Entropía cruzada ponderada por el inverso de la
    frecuencia de cada clase (sin SMOTE).
-3. **Número de variables.** No son 71 en todos los grupos: niños 31, jóvenes
-   34, adultos 55. El capítulo 300 solo se aplica a mayores de 18, así que a
+3. **Número de variables.** No son 71 en todos los grupos: niños 32, jóvenes
+   32, adultos 56 (ETL v2). El capítulo 300 solo se aplica a mayores de 18, así que a
    los menores les llegan menos variables propias.
 4. **Indicadores derivados.** Hay que quitar "Frecuencia Lectora Semanal",
    porque es la misma información que la clase a predecir y usarla sería
@@ -191,10 +201,29 @@ el texto debe recoger:
    recomiendan sus autores, ref. [15]) y sin dropout, que no usa; MLP-MA y
    FT-Transformer con 0,001 y 0,0001.
 6. **AUC.** Promedio macro one-vs-rest.
-7. **Copeland.** Rango de −6 a +6 (3 grupos, 2 rivales por grupo).
+7. **Copeland.** Con el ensemble son 4 competidores: rango de −9 a +9
+   (3 grupos, 3 rivales por grupo). Se calcula sobre la media de las 5
+   semillas, no sobre una sola.
 8. **Equipo.** El que registre `results.json` → `hardware`.
-9. **Resultados, discusión y conclusiones:** reescribir con los números que
-   salgan. Serán más bajos que los del manuscrito actual (97 / 92 / 73 %).
+9. **Variables nominales (Métodos, III-A y III-C).** El Label Encoding se
+   mantiene, pero las variables sin orden (departamento, dominio, estrato
+   socioeconómico, lengua materna, etnia, parentesco, estado civil,
+   ocupación, tipo de centro, nivel que cursa) no entran como número: cada
+   categoría tiene un embedding aprendido. En FT-Transformer es su Feature
+   Tokenizer original (Gorishniy et al., 2021); en MLP-MA, el token de
+   atención de esa variable; en TabNet, sus embeddings categóricos nativos.
+   Las ordinales y binarias siguen como escalar.
+10. **Ingreso.** Se transforma con log(1 + x) antes del Min-Max.
+11. **Adultos: 18 a 64 años**, no "18+": los capítulos 300 y 400 de la ENL
+    solo se aplican en ese rango.
+12. **Indicadores del hogar.** Promedian solo a los adultos que respondieron
+    cada pregunta; el alfabetismo cuenta como alfabeta a quien terminó la
+    primaria (la ENL no le pregunta P307).
+13. **Table 3 y ensemble.** Media ± desviación en 5 semillas. El ensemble
+    se calcula en cada semilla (promedio de las probabilidades de los tres
+    modelos de esa semilla) y se compara semilla a semilla.
+14. **Resultados, discusión y conclusiones:** reescribir con los números que
+    salgan. Serán más bajos que los del manuscrito actual (97 / 92 / 73 %).
 
 ## 8. Antes de dar los resultados por buenos
 

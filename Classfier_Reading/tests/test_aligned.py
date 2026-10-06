@@ -487,3 +487,160 @@ def test_datos_procesados_sin_smote(cfg):
         p_tr = tr.value_counts(normalize=True).sort_index().to_numpy()
         p_va = va.value_counts(normalize=True).sort_index().to_numpy()
         assert np.allclose(p_tr, p_va, atol=0.02), f"{group}: train no estratificado/natural"
+
+
+# =====================================================================
+# Correcciones de mapeo (oct-2026) y embeddings para nominales
+# =====================================================================
+def test_p305_es_texto_y_se_excluye():
+    assert V.is_free_text("P305")
+    assert V.build_feature_list(["P305", "P304", "P303"]) == ["P304", "P303"]
+
+
+def test_nominales_van_como_categoricas():
+    cols = ["CCDD", "hh_etnia_jefe", "idx_lengua_materna_tipo",
+            "hh_tamano", "idx_nivel_educativo", "P314", "ESTRATO"]
+    split = V.classify_columns(cols)
+    assert set(split["numeric"]) == {"hh_tamano", "idx_nivel_educativo", "P314"}
+    assert set(split["categorical"]) == {"CCDD", "hh_etnia_jefe", "idx_lengua_materna_tipo",
+                                         "ESTRATO"}
+    assert "ESTRATO" not in V.NOMINAL_COLUMNS      # ordinal: sigue como escalar
+
+
+def _hogar(rows):
+    base = {"UBIGEO": 1, "CONG": 1, "VIVIENDA": 1, "HOGAR": 1, "P301": 10, "P303": 7,
+            "P304": 2, "P311": 1, "P314": 0, "P309": 2, "P310_N": 0, "P514_1": 0}
+    return pd.DataFrame([{**base, **r} for r in rows])
+
+
+def test_alfabetismo_del_hogar_no_cuenta_no_aplica_como_analfabeto():
+    from src.aligned.features import household_context
+    df = _hogar([
+        # jefa con secundaria completa: la ENL no le pregunta P307 (0) -> alfabeta
+        {"edad_total": 40, "P203": 1, "P306": 6, "P307_1": 0, "P303": 1, "P311": 1},
+        # adulto con primaria incompleta que no sabe leer
+        {"edad_total": 38, "P203": 2, "P306": 3, "P307_1": 2, "P303": 7, "P311": 2},
+        # mayor de 64 sin capitulo 300: no entra a los promedios
+        {"edad_total": 70, "P203": 5, "P306": 0, "P307_1": 0, "P303": 0, "P311": 0},
+        {"edad_total": 9, "P203": 3, "P306": 0, "P307_1": 0, "P303": 0, "P311": 0},
+    ])
+    hh = household_context(df, pd.Index([3]))
+    assert hh.loc[3, "hh_alfabetismo"] == pytest.approx(0.5)
+    assert hh.loc[3, "hh_tasa_ocupacion"] == pytest.approx(0.5)   # no 1/3
+    assert hh.loc[3, "hh_etnia_jefe"] == 1                        # la del jefe/a, no la del 1.er adulto con dato
+    assert hh.loc[3, "hh_n_adultos"] == 3
+
+
+def test_log1p_hace_que_el_ingreso_pase_el_umbral_de_varianza():
+    from src.aligned.etl import AlignedPreprocessor
+    rng = np.random.default_rng(0)
+    ingreso = np.where(rng.random(4000) < 0.4, 0, rng.lognormal(7, 0.6, 4000))
+    ingreso[0] = 35000                                  # un caso extremo, como en la ENL
+    X = pd.DataFrame({"P314": ingreso})
+    plano = AlignedPreprocessor(["P314"], []).fit_transform(X)["P314"]
+    con_log = AlignedPreprocessor(["P314"], [], log_columns=["P314"]).fit_transform(X)["P314"]
+    assert plano.var(ddof=0) < 0.005 < con_log.var(ddof=0)
+    assert con_log.between(0, 1).all()
+
+
+@pytest.mark.parametrize("k", [2, 3, 9, 25])
+def test_codigo_categorico_ida_y_vuelta(k):
+    from src.aligned.models import category_codes
+    codes = torch.arange(k)
+    x = torch.as_tensor(codes.numpy() / max(k - 1, 1), dtype=torch.float32)
+    assert torch.equal(category_codes(x, k), codes)
+
+
+def test_embeddings_en_mlp_ma_y_ft_transformer():
+    cat = [(1, 5)]
+    x = torch.rand(6, 4)
+    x[:, 1] = torch.tensor([0, .25, .5, .75, 1., .25])              # codigos 0-4
+    for model in (MLPMultiHeadAttention(4, depth=2, cat_info=cat, token_out_dim=4),
+                  FTTransformer(4, emb_dim=32, n_layers=1, n_heads=4, cat_info=cat)):
+        model.eval()
+        a, b = x.clone(), x.clone()
+        b[:, 1] = 0.0                                                # solo cambia la categoria
+        assert model(a).shape == (6, 3)
+        assert not torch.allclose(model(a), model(b))
+        model.train()
+        model(a).sum().backward()
+        tables = [m for m in model.modules() if isinstance(m, torch.nn.Embedding)]
+        assert len(tables) == 1 and tables[0].weight.grad.abs().sum() > 0
+    # La atencion sigue siendo de una fila y columna por variable.
+    att = MLPMultiHeadAttention(4, cat_info=cat).attention_maps(x)
+    assert att.shape == (4, 4, 4)
+
+
+def test_tabnet_con_embeddings_reporta_por_variable_original():
+    from src.aligned.models import TabNetModel
+    rng = np.random.default_rng(1)
+    X = rng.random((240, 4)).astype(np.float32)
+    X[:, 2] = rng.integers(0, 6, 240) / 5                           # nominal de 6 categorias
+    y = rng.integers(0, 3, 240)
+    m = TabNetModel(4, n_steps=3, device="cpu", cat_info=[(2, 6)], seed=1)
+    m.fit(X[:200], y[:200], X[200:], y[200:], epochs=2, patience=5, batch_size=64)
+    assert m.predict_proba(X).shape == (240, 3)
+    imp, masks = m.explain(X[:50])
+    assert imp.shape == (50, 4) and all(v.shape == (50, 4) for v in masks.values())
+
+
+def test_ensemble_por_semilla(cfg, tmp_path):
+    import copy
+    from src.aligned.report import build_ensemble
+    c = copy.deepcopy(cfg)
+    c["paths"]["results_dir"] = "res"
+    c["groups"] = {"jovenes": cfg["groups"]["jovenes"]}
+    rng = np.random.default_rng(3)
+    y = rng.integers(0, 3, 80)
+    seeds = np.array([42, 123])
+    results, all_p = {}, {}
+    for m in ("mlp_ma", "tabnet", "ft_transformer"):
+        p = rng.dirichlet([1, 1, 1], (2, 80))
+        all_p[m] = p
+        d = tmp_path / "res" / f"jovenes_{m}"
+        d.mkdir(parents=True)
+        np.savez_compressed(d / "test_predictions.npz", y_true=y, y_pred=p[0].argmax(1), y_proba=p[0])
+        np.savez_compressed(d / "test_predictions_seeds.npz", y_true=y, seeds=seeds, y_proba=p)
+        runs = [{"seed": int(s), **compute_metrics(y, p[i].argmax(1), p[i], 3)} for i, s in enumerate(seeds)]
+        results[f"jovenes_{m}"] = {"test_metrics": compute_metrics(y, p[0].argmax(1), p[0], 3),
+                                   "estabilidad": {"runs": runs}}
+    ens, table = build_ensemble(results, c, tmp_path)
+    est = ens["jovenes_ensemble"]["estabilidad"]
+    assert est["n_runs"] == 2
+    acc = [np.mean(np.mean([all_p[m][i] for m in all_p], axis=0).argmax(1) == y) for i in range(2)]
+    assert est["accuracy_mean"] == pytest.approx(np.mean(acc))
+    assert table["Semillas en que el ensemble gana"].iloc[0].endswith("/2")
+
+
+def test_copeland_usa_la_media_de_las_semillas(cfg):
+    import copy
+    from src.aligned.report import ranking_copeland
+    c = copy.deepcopy(cfg)
+    c["groups"] = {"ninos": cfg["groups"]["ninos"]}
+    keys = cfg["evaluation"]["copeland_metrics"]
+
+    def r(seed42, media):
+        return {"test_metrics": {k: seed42 for k in keys},
+                "estabilidad": {f"{k}_mean": media for k in keys}}
+    # En la semilla 42 gana TabNet; en la media, FT-Transformer.
+    results = {"ninos_mlp_ma": r(0.40, 0.40), "ninos_tabnet": r(0.60, 0.41),
+               "ninos_ft_transformer": r(0.50, 0.45)}
+    _, global_rank = ranking_copeland(results, c)
+    assert global_rank.iloc[0]["classifier"] == "FT-Transformer"
+
+
+def test_entrenamiento_rechaza_datos_de_un_etl_anterior(cfg, tmp_path):
+    import copy, json
+    from src.aligned.pipeline import load_group
+    c = copy.deepcopy(cfg)
+    c["paths"]["processed_dir"] = "proc"
+    d = tmp_path / "proc" / "ninos"
+    d.mkdir(parents=True)
+    pd.DataFrame({"P209": [0.0, 1.0], "target": [0, 1]}).to_parquet(d / "train.parquet")
+    (d / "config.json").write_text(json.dumps({"grupo": "ninos"}), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="version anterior del ETL"):
+        load_group(c, "ninos", tmp_path)
+
+
+def test_adultos_son_de_18_a_64(cfg):
+    assert (cfg["groups"]["adultos"]["edad_min"], cfg["groups"]["adultos"]["edad_max"]) == (18, 64)

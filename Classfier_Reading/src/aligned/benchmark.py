@@ -29,7 +29,7 @@ import torch
 
 from .gridsearch import build_grid
 from .models import IS_TORCH, MODEL_NAMES, build_model
-from .pipeline import load_group, set_seed
+from .pipeline import load_categorical_info, load_group, set_seed
 from .trainer import TorchTrainer, compute_class_weights, make_loader
 
 PROBE_EPOCHS = 3        # epocas cronometradas por combinacion
@@ -44,7 +44,7 @@ def _fmt(seconds: float) -> str:
 
 
 def _time_epochs(cfg: dict, model_name: str, X: np.ndarray, y: np.ndarray,
-                 hp: dict, epochs: int = PROBE_EPOCHS) -> float:
+                 hp: dict, epochs: int = PROBE_EPOCHS, cat_info=None) -> float:
     """Segundos por epoca, medidos sobre datos reales."""
     set_seed(cfg["seed"])
     weights = compute_class_weights(y, cfg["n_classes"])
@@ -55,7 +55,7 @@ def _time_epochs(cfg: dict, model_name: str, X: np.ndarray, y: np.ndarray,
     X_tr, X_va, y_tr, y_va = train_test_split(
         X, y, test_size=0.15, random_state=cfg["seed"], stratify=y)
 
-    model = build_model(model_name, X.shape[1], cfg, hp, cfg["seed"])
+    model = build_model(model_name, X.shape[1], cfg, hp, cfg["seed"], cat_info=cat_info)
 
     if IS_TORCH[model_name]:
         trainer = TorchTrainer(
@@ -115,7 +115,8 @@ def run_benchmark(cfg: dict, root: Path, groups: Optional[List[str]] = None,
             key = f"{group}_{model_name}"
             print(f"  midiendo {key} ...", end=" ", flush=True)
             try:
-                t = _time_epochs(cfg, model_name, X_tr, y_tr, hp_probe)
+                t = _time_epochs(cfg, model_name, X_tr, y_tr, hp_probe,
+                                 cat_info=load_categorical_info(cfg, group, root, feats))
                 per_epoch[key] = t
                 print(f"{t:.2f} s/epoca  (train n={len(X_tr):,}, {len(feats)} features)")
             except Exception as exc:                      # noqa: BLE001

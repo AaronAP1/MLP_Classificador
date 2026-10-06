@@ -13,19 +13,20 @@ escrita en INDICE_FIGURAS.md dentro de la misma carpeta.
 
     tabla_resumen_datos.csv          registros, edades, clases y variables por grupo
     tabla2_hiperparametros.csv       configuracion elegida por el Grid Search
-    tabla3_metricas.{csv,tex}        Tabla 3 · metricas en test (semilla 42)
-    tabla3_media_std.{csv,tex}       Tabla 3 · media ± desviacion (5 semillas)
+    tabla3_media_std.{csv,tex}       Tabla 3 · media ± desviacion (5 semillas, con ensemble)
+    tabla3_metricas.{csv,tex}        complementaria · metricas en test (semilla 42)
     tabla4_auc.{csv,tex}             Tabla 4 · AUC macro one-vs-rest
     tabla4_auc_por_clase.csv         AUC de cada clase
-    copeland_<grupo>.csv / copeland_global.csv
+    tabla_ensemble.csv               ensemble vs. mejor modelo, semilla a semilla
+    copeland_<grupo>.csv / copeland_global.csv   (sobre las medias de las semillas)
     estabilidad_multisemilla.csv     III-F-4
     interpretabilidad_top.csv        III-G
-    fig_comparacion_grupos.png       Fig. 7
+    fig_comparacion_grupos.png       Fig. 7  (media ± desviacion)
     fig_matrices_confusion.png       Fig. 8
     fig_curvas_roc.png               Fig. 9  (3x3: grupo x modelo)
     fig_curvas_roc_por_grupo.png     Fig. 9  (variante 1x3)
     fig_ranking_copeland.png         Fig. 10
-    fig_curvas_aprendizaje.png       Fig. 11
+    fig_curvas_aprendizaje.png       Fig. 11 (perdida; variante en accuracy)
     fig_importancia_variables.png    III-G · importancia propia de cada arquitectura
     fig_importancia_permutacion.png  III-G · importancia por permutacion (comun)
     fig_mascaras_tabnet.png          III-G · mascaras de seleccion de TabNet
@@ -43,8 +44,12 @@ import numpy as np
 import pandas as pd
 
 from . import variables as V
-from .evaluate import compute_metrics, copeland_across_groups, copeland_ranking, roc_curves
+from .evaluate import (aggregate_seed_runs, compute_metrics, copeland_across_groups,
+                       copeland_ranking, roc_curves)
 from .models import MODEL_NAMES
+
+SEED_METRICS = ("accuracy", "f1_weighted", "f1_macro", "precision_weighted",
+                "recall_weighted", "roc_auc_ovr")
 
 DISPLAY = {"mlp_ma": "MLP-MA", "tabnet": "TabNet", "ft_transformer": "FT-Transformer",
            "ensemble": "Ensemble"}
@@ -59,6 +64,36 @@ def _models(results: Dict[str, dict]) -> List[str]:
     return MODEL_NAMES + extra
 
 
+def _ensemble_por_semilla(base: Path, keys: List[str], y_true: np.ndarray, cfg: dict
+                         ) -> Optional[Dict[str, object]]:
+    """
+    Ensemble de cada semilla de estabilidad (promedio de las probabilidades
+    de los tres modelos entrenados con esa semilla). Devuelve el bloque
+    `estabilidad`, o None si falta algun `test_predictions_seeds.npz` o las
+    semillas no coinciden.
+    """
+    paths = [base / k / "test_predictions_seeds.npz" for k in keys]
+    if not all(p.exists() for p in paths):
+        return None
+    loaded = []
+    for p in paths:
+        with np.load(p) as z:
+            loaded.append((z["y_true"].astype(int), z["seeds"].astype(int),
+                           z["y_proba"].astype(float)))
+    seeds = loaded[0][1]
+    if any(not np.array_equal(t, y_true) or not np.array_equal(s, seeds) for t, s, _ in loaded):
+        return None
+    runs = []
+    for i, s in enumerate(seeds):
+        proba = np.mean([pr[i] for _, _, pr in loaded], axis=0)
+        m = compute_metrics(y_true, proba.argmax(axis=1), proba,
+                            cfg["n_classes"], cfg["class_names"])
+        runs.append({"seed": int(s), **{k: m[k] for k in SEED_METRICS}})
+    return {"seeds": seeds.tolist(), "runs": runs,
+            "protocolo": "promedio de las probabilidades de los tres modelos de cada semilla",
+            **aggregate_seed_runs(runs, list(SEED_METRICS))}
+
+
 def build_ensemble(results: Dict[str, dict], cfg: dict, root: Path
                    ) -> Tuple[Dict[str, dict], pd.DataFrame]:
     """
@@ -66,6 +101,11 @@ def build_ensemble(results: Dict[str, dict], cfg: dict, root: Path
     MLP-MA, TabNet y FT-Transformer de cada grupo. No se entrena nada ni
     se ajusta ningun peso, asi que el conjunto de prueba sigue sin usarse
     para decidir nada.
+
+    Se calcula para la semilla principal (matrices de confusion y curvas
+    ROC) y, si estan las probabilidades de cada semilla, para todas: asi el
+    ensemble tiene media ± desviacion como los modelos individuales y la
+    comparacion con ellos se hace semilla a semilla.
 
     Devuelve los resultados del ensemble y una tabla de diversidad: si los
     tres modelos se equivocan en los mismos casos, promediarlos no aporta.
@@ -89,10 +129,12 @@ def build_ensemble(results: Dict[str, dict], cfg: dict, root: Path
         proba = np.mean([v[2] for v in preds.values()], axis=0)
         metrics = compute_metrics(y_true, proba.argmax(axis=1), proba,
                                   cfg["n_classes"], cfg["class_names"])
+        est = _ensemble_por_semilla(base, keys, y_true, cfg)
         out[f"{group}_ensemble"] = {
             "grupo": group, "modelo": "ensemble", "test_metrics": metrics,
             "roc_curves": roc_curves(y_true, proba, cfg["n_classes"]),
             "metodo": "voto suave: promedio de las probabilidades de los tres modelos",
+            **({"estabilidad": est} if est else {}),
         }
 
         f1 = {m: results[f"{group}_{m}"]["test_metrics"]["f1_macro"] for m in MODEL_NAMES}
@@ -103,6 +145,23 @@ def build_ensemble(results: Dict[str, dict], cfg: dict, root: Path
         row["Mejor individual"] = DISPLAY[best]
         row["Ganancia F1-Macro vs. mejor individual"] = metrics["f1_macro"] - f1[best]
         row["AUC Ensemble"] = metrics["roc_auc_ovr"]
+
+        # Semilla a semilla, frente al modelo individual con mejor media.
+        ind = {m: {r["seed"]: r["f1_macro"]
+                   for r in ((results[f"{group}_{m}"].get("estabilidad") or {}).get("runs") or [])}
+               for m in MODEL_NAMES}
+        if est and all(ind.values()):
+            means = {m: float(np.mean(list(v.values()))) for m, v in ind.items()}
+            best_m = max(means, key=means.get)
+            gains = [r["f1_macro"] - ind[best_m][r["seed"]]
+                     for r in est["runs"] if r["seed"] in ind[best_m]]
+            row["F1-Macro Ensemble (media semillas)"] = est["f1_macro_mean"]
+            row["F1-Macro Ensemble (desv.)"] = est["f1_macro_std"]
+            row["Mejor individual (media)"] = DISPLAY[best_m]
+            row["F1-Macro mejor individual (media)"] = means[best_m]
+            row["Ganancia media por semilla"] = float(np.mean(gains))
+            row["Ganancia por semilla (desv.)"] = float(np.std(gains))
+            row["Semillas en que el ensemble gana"] = f"{sum(g > 0 for g in gains)}/{len(gains)}"
         for a, b in itertools.combinations(MODEL_NAMES, 2):
             row[f"Desacuerdo {DISPLAY[a]} / {DISPLAY[b]}"] = float(np.mean(preds[a][1] != preds[b][1]))
         row["Al menos un modelo acierta"] = float(
@@ -181,9 +240,11 @@ def tabla_resumen_datos(cfg: dict, root: Path) -> pd.DataFrame:
         c = json.loads(path.read_text(encoding="utf-8"))
         counts = c["target"]["counts"]
         total = sum(counts.values())
+        # Edades de las personas que si tienen clase (en adultos, 18-64).
+        edades = c["segmentacion"].get("edad_con_clase") or c["segmentacion"]["edad_observada"]
         row = {
             "Grupo": GROUP_DISPLAY.get(group, group),
-            "Edades": f"{c['segmentacion']['edad_observada'][0]}-{c['segmentacion']['edad_observada'][1]}",
+            "Edades": f"{edades[0]}-{edades[1]}",
             "Registros con clase": c["target"]["n_valid"],
             "Eliminados >20% faltantes": c["limpieza"]["n_removidos"],
             "Registros finales": sum(v["n"] for v in c["splits"].values()),
@@ -239,13 +300,13 @@ def tabla3(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
 
 
 def tabla3_media_std(results: Dict[str, dict], cfg: dict) -> pd.DataFrame:
-    """Tabla 3 en formato media ± desviacion sobre las semillas."""
+    """Tabla 3 en formato media ± desviacion sobre las semillas (con el ensemble)."""
     rows = []
     keys = [("accuracy", "Accuracy"), ("f1_weighted", "F1-Weighted"),
             ("f1_macro", "F1-Macro"), ("precision_weighted", "Precision-Weighted"),
             ("recall_weighted", "Recall-Weighted"), ("roc_auc_ovr", "AUC macro")]
     for group in cfg["groups"]:
-        for model in MODEL_NAMES:
+        for model in _models(results):
             r = results.get(f"{group}_{model}")
             est = (r or {}).get("estabilidad") or {}
             if not est.get("runs"):
@@ -335,15 +396,27 @@ def tabla_interpretabilidad(results: Dict[str, dict], top_n: int = 15) -> pd.Dat
     return pd.DataFrame(rows)
 
 
+def _seed_mean(r: Optional[dict], key: str) -> Optional[float]:
+    est = (r or {}).get("estabilidad") or {}
+    return est.get(f"{key}_mean")
+
+
 def ranking_copeland(results: Dict[str, dict], cfg: dict):
+    """
+    Copeland por grupo y global. Se calcula sobre la MEDIA de las semillas
+    cuando todos los modelos del grupo la tienen: con una sola semilla, una
+    diferencia de 0,001 cuenta como victoria y el ranking cambia segun la
+    suerte de esa semilla. Sin semillas, usa la semilla principal.
+    """
     metrics = cfg["evaluation"]["copeland_metrics"]
     per_group, tables = {}, {}
     for group in cfg["groups"]:
-        rows = {}
-        for model in _models(results):
-            r = results.get(f"{group}_{model}")
-            if r:
-                rows[DISPLAY[model]] = {k: r["test_metrics"][k] for k in metrics}
+        present = {m: results[f"{group}_{m}"] for m in _models(results)
+                   if f"{group}_{m}" in results}
+        use_mean = all(_seed_mean(r, k) is not None for r in present.values() for k in metrics)
+        rows = {DISPLAY[m]: {k: (_seed_mean(r, k) if use_mean else r["test_metrics"][k])
+                             for k in metrics}
+                for m, r in present.items()}
         if len(rows) >= 2:
             frame = pd.DataFrame(rows).T
             per_group[group] = frame
@@ -372,8 +445,11 @@ def fig_comparacion(results, cfg, out: Path) -> Optional[Path]:
             vals, errs = [], []
             for g in groups:
                 r = results.get(f"{g}_{model}")
-                vals.append(r["test_metrics"][key] if r else np.nan)
                 est = (r or {}).get("estabilidad") or {}
+                # Media de las semillas (la semilla principal si no las hay).
+                mean = est.get(f"{key}_mean")
+                vals.append(mean if mean is not None else
+                            (r["test_metrics"][key] if r else np.nan))
                 errs.append(est.get(f"{key}_std") or 0.0)
             ax.bar(x + (j - (len(models) - 1) / 2) * width, vals, width, yerr=errs,
                    capsize=3, color=MODEL_COLORS[model], label=DISPLAY[model], alpha=.9,
@@ -387,9 +463,11 @@ def fig_comparacion(results, cfg, out: Path) -> Optional[Path]:
                bbox_to_anchor=(0.5, 0.955), frameon=False)
     fig.suptitle("Comparación del rendimiento entre grupos (conjunto de prueba)",
                  fontweight="bold", y=0.995)
-    note = "Barras de error: desviación estándar entre semillas."
+    note = "Barras: media entre semillas; barras de error: desviación estándar."
     if "ensemble" in models:
-        note += " El ensemble (promedio de probabilidades) se calcula con la semilla principal."
+        por_semilla = all("estabilidad" in results.get(f"{g}_ensemble", {}) for g in groups)
+        note += (" Ensemble: promedio de las probabilidades de los tres modelos "
+                 + ("de cada semilla." if por_semilla else "de la semilla principal."))
     fig.text(0.5, 0.005, note, ha="center", fontsize=7, color="#555")
     fig.tight_layout(rect=(0, 0.02, 1, 0.93))
     return _save(fig, plt, out / "fig_comparacion_grupos.png", cfg)
@@ -512,9 +590,20 @@ def fig_roc_por_grupo(results, cfg, out: Path) -> Optional[Path]:
     return _save(fig, plt, out / "fig_curvas_roc_por_grupo.png", cfg)
 
 
-def fig_learning(results, cfg, out: Path) -> Optional[Path]:
-    """Fig. 11 · accuracy de train y de validacion por epoca (etapa A)."""
+LEARNING_METRICS = {
+    # La perdida es el criterio con que se elige la mejor epoca; la accuracy
+    # se dibuja aparte porque, con pesos de clase, casi no se mueve.
+    "loss": ("train_loss", "val_loss", "Pérdida (entropía cruzada ponderada)",
+             "fig_curvas_aprendizaje.png", "upper right"),
+    "acc": ("train_acc", "val_acc", "Accuracy",
+            "fig_curvas_aprendizaje_accuracy.png", "lower right"),
+}
+
+
+def fig_learning(results, cfg, out: Path, metric: str = "loss") -> Optional[Path]:
+    """Fig. 11 · perdida (o accuracy) de train y de validacion por epoca (etapa A)."""
     plt = _mpl()
+    tr_key, va_key, ylabel, filename, legend_loc = LEARNING_METRICS[metric]
     groups = list(cfg["groups"])
     fig, axes = plt.subplots(len(groups), len(MODEL_NAMES),
                              figsize=(4.2 * len(MODEL_NAMES), 3.1 * len(groups)),
@@ -525,7 +614,7 @@ def fig_learning(results, cfg, out: Path) -> Optional[Path]:
             ax = axes[i][j]
             r = results.get(f"{group}_{model}")
             hist = (r or {}).get("learning_curves") or {}
-            tr, va = hist.get("train_acc") or [], hist.get("val_acc") or []
+            tr, va = hist.get(tr_key) or [], hist.get(va_key) or []
             if not tr and not va:
                 ax.text(.5, .5, "sin curvas", ha="center", va="center",
                         transform=ax.transAxes, color="#999")
@@ -540,8 +629,10 @@ def fig_learning(results, cfg, out: Path) -> Optional[Path]:
                     ax.axvline(best, color="#555", ls=":", lw=.9,
                                label=f"Mejor época: {best} (mín. pérdida val.)")
                 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-                ax.set_ylim(0, 1.02); ax.legend(fontsize=6.5, loc="lower right")
-                ax.grid(alpha=.3); ax.set_xlabel("Época"); ax.set_ylabel("Accuracy")
+                if metric == "acc":
+                    ax.set_ylim(0, 1.02)
+                ax.legend(fontsize=6.5, loc=legend_loc)
+                ax.grid(alpha=.3); ax.set_xlabel("Época"); ax.set_ylabel(ylabel, fontsize=7.5)
                 drew = True
             ax.set_title(f"{_group_title(cfg, group)} · {DISPLAY[model]}", fontsize=9)
     if not drew:
@@ -549,7 +640,7 @@ def fig_learning(results, cfg, out: Path) -> Optional[Path]:
     fig.suptitle("Curvas de aprendizaje: entrenamiento (70 %) vs. validación (15 %)",
                  fontweight="bold")
     fig.tight_layout()
-    return _save(fig, plt, out / "fig_curvas_aprendizaje.png", cfg)
+    return _save(fig, plt, out / filename, cfg)
 
 
 def copeland_limit(global_rank: pd.DataFrame) -> int:
@@ -687,16 +778,16 @@ Generado por `python run_pipeline.py report` a partir de `{results_dir}`.
 |---|---|---|
 | `tabla_resumen_datos.csv` | Sección de datos (y reemplazo de la Table 1) | Registros, edades, clases y n.º de variables por grupo |
 | `tabla2_hiperparametros.csv` | Table 2 | Configuración elegida por el Grid Search en cada combinación |
-| `tabla3_metricas.csv/.tex` | Table 3 | Métricas en test del modelo final (semilla 42){ensemble_rows} |
-| `tabla3_media_std.csv/.tex` | Table 3 (alternativa) o texto de estabilidad | Media ± desviación en {n_seeds} semillas (sin el ensemble) |
-| `tabla4_auc.csv/.tex` | Table 4 | AUC one-vs-rest, promedio **macro** |
+| `tabla3_media_std.csv/.tex` | **Table 3** | Media ± desviación en {n_seeds} semillas{ensemble_seeds}. Una sola semilla puede invertir el orden de dos modelos |
+| `tabla3_metricas.csv/.tex` | Material complementario | Métricas en test de la semilla principal (42){ensemble_rows}; es la que dibujan las matrices de confusión y las curvas ROC |
+| `tabla4_auc.csv/.tex` | Table 4 | AUC one-vs-rest, promedio **macro** (semilla principal; la media está en la Table 3) |
 | `tabla4_auc_por_clase.csv` | Texto de la sección ROC | AUC de cada clase |
-| `tabla_ensemble.csv` | Texto del ensemble | F1-Macro de cada modelo y del ensemble, ganancia frente al mejor modelo individual y desacuerdo entre modelos |
-| `fig_comparacion_grupos.png` | Fig. 7 | |
+| `tabla_ensemble.csv` | Texto del ensemble | F1-Macro de cada modelo y del ensemble, ganancia frente al mejor modelo individual (semilla principal y semilla a semilla) y desacuerdo entre modelos |
+| `fig_comparacion_grupos.png` | Fig. 7 | Media entre semillas ± desviación |
 | `fig_matrices_confusion.png` | Fig. 8 | Normalizadas por fila; entre paréntesis, conteos |
 | `fig_curvas_roc.png` | Fig. 9 | Grupo × modelo. Variante 1×3: `fig_curvas_roc_por_grupo.png` |
-| `fig_ranking_copeland.png` | Fig. 10 | Rango posible −{copeland_lim} a +{copeland_lim} ({n_competidores} competidores, 3 grupos) |
-| `fig_curvas_aprendizaje.png` | Fig. 11 | Etapa A: train 70 % vs. validación 15 % |
+| `fig_ranking_copeland.png` | Fig. 10 | {copeland_base}. Rango posible −{copeland_lim} a +{copeland_lim} ({n_competidores} competidores, 3 grupos) |
+| `fig_curvas_aprendizaje.png` | Fig. 11 | Etapa A: pérdida de train 70 % vs. validación 15 %, con la mejor época. En accuracy: `fig_curvas_aprendizaje_accuracy.png` |
 | `fig_importancia_variables.png` | Sección de interpretabilidad | Atención (MLP-MA, FT) y máscaras (TabNet) |
 | `fig_importancia_permutacion.png` | Sección de interpretabilidad | Caída de F1-Macro al permutar cada variable; misma vara para los 3 modelos |
 | `fig_mascaras_tabnet.png` | Sección de interpretabilidad | Máscaras por decision step |
@@ -734,6 +825,10 @@ def build_report(cfg: dict, root: Path) -> Dict[str, object]:
             print("\n  Ensemble (voto suave) vs. mejor modelo individual:")
             cols = ["Grupo", "Mejor individual", "F1-Macro Ensemble",
                     "Ganancia F1-Macro vs. mejor individual"]
+            per_seed = ["Mejor individual (media)", "F1-Macro Ensemble (media semillas)",
+                        "Ganancia media por semilla", "Semillas en que el ensemble gana"]
+            if all(c in ens_table for c in per_seed):
+                cols = ["Grupo"] + per_seed
             print(ens_table[cols].to_string(index=False, float_format=lambda v: f"{v:+.4f}"
                                             if abs(v) < 0.1 else f"{v:.4f}"))
 
@@ -775,7 +870,8 @@ def build_report(cfg: dict, root: Path) -> Dict[str, object]:
         "fig9_roc": fig_roc(results, cfg, out),
         "fig9b_roc_por_grupo": fig_roc_por_grupo(results, cfg, out),
         "fig10_copeland": fig_copeland(global_rank, cfg, out),
-        "fig11_aprendizaje": fig_learning(results, cfg, out),
+        "fig11_aprendizaje": fig_learning(results, cfg, out, "loss"),
+        "fig11b_aprendizaje_accuracy": fig_learning(results, cfg, out, "acc"),
         "importancia": fig_importance(results, cfg, out, "propia"),
         "importancia_permutacion": fig_importance(results, cfg, out, "permutacion"),
         "mascaras_tabnet": fig_mascaras_tabnet(results, cfg, root, out),
@@ -792,6 +888,12 @@ def build_report(cfg: dict, root: Path) -> Dict[str, object]:
         n_seeds=len(cfg["evaluation"]["stability"]["seeds"]),
         ensemble_rows=("; incluye el ensemble (promedio de probabilidades)"
                        if "ensemble" in _models(results) else ""),
+        ensemble_seeds=(", incluido el ensemble"
+                        if any("estabilidad" in v for k, v in results.items()
+                               if k.endswith("_ensemble")) else ""),
+        copeland_base=("Sobre la media de las semillas"
+                       if any(_seed_mean(v, "accuracy") is not None for v in results.values())
+                       else "Sobre la semilla principal"),
         copeland_lim=copeland_limit(global_rank) if not global_rank.empty else 0,
         n_competidores=len(global_rank),
         hardware=f"{hw_text} · PyTorch {hw.get('torch', '?')}",
@@ -799,8 +901,13 @@ def build_report(cfg: dict, root: Path) -> Dict[str, object]:
         run_label=cfg.get("run_label") or "definitiva",
     ), encoding="utf-8")
 
-    print(f"\n  Tabla 3 ({len(t3)} filas):")
-    print(t3.to_string(index=False, float_format=lambda v: f"{v:.4f}"))
+    if not t3s.empty:
+        print(f"\n  Tabla 3 · media ± desviación ({len(t3s)} filas):")
+        print(t3s[["Grupo", "Modelo", "Semillas", "Accuracy", "F1-Macro", "AUC macro"]]
+              .to_string(index=False))
+    else:
+        print(f"\n  Tabla 3 ({len(t3)} filas):")
+        print(t3.to_string(index=False, float_format=lambda v: f"{v:.4f}"))
     if not global_rank.empty:
         print("\n  Ranking Copeland global:")
         print(global_rank.to_string(index=False))

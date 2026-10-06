@@ -39,6 +39,9 @@ versionan por tamaño).
 | `--models mlp_ma tabnet ft_transformer` | Subconjunto de arquitecturas |
 | `--no-gridsearch` | Salta la búsqueda (solo para pruebas) |
 | `--no-multiseed` | Salta las 5 semillas de estabilidad |
+| `--seeds 42 123` | Semillas de estabilidad (por defecto, las del YAML) |
+| `--hp-from <results>` | Reutiliza los hiperparámetros de otra corrida y omite el Grid Search (para comparar versiones de los datos) |
+| `--tag <nombre>` | Corrida separada en `results/aligned_<nombre>` y `outputs/aligned_<nombre>` |
 
 **Reanudable:** `train` escribe un `results.json` por combinación en cuanto la
 termina. Si el proceso se corta, se relanza acotando `--groups` / `--models` a
@@ -67,7 +70,7 @@ src/aligned/
     evaluate.py               Métricas, AUC OvR macro, Copeland
     report.py                 Tablas y figuras (solo desde artefactos reales)
     benchmark.py              Cronómetro para estimar coste
-tests/test_aligned.py         61 pruebas con assert real
+tests/test_aligned.py         pruebas con assert real (pytest)
 ```
 
 ---
@@ -84,6 +87,24 @@ tests/test_aligned.py         61 pruebas con assert real
 | `FACTORFINAL_HOGAR`, `FACTOR200_FINAL`, `P201`, `P204` como predictores | Factores de expansión y números de orden dentro del modelo | Movidos a columnas administrativas |
 | `P314` (monto de ingreso) tratado como categórico y `P314_1` (marca) como numérico | Montos no vistos en test mapeados al mínimo; ingreso del hogar calculado con la marca | Tipos corregidos |
 | Interpretabilidad del MLP+MA casi uniforme si la atención no se especializa | Ranking poco informativo | Se añade importancia por permutación, común a los tres modelos |
+
+## Correcciones de octubre de 2026 (ETL v2)
+
+Detectadas al revisar la corrida definitiva del 1-oct-2026. Los datos
+procesados llevan `etl_version: 2` y el entrenamiento se niega a usar datos
+de la versión anterior.
+
+| Hallazgo | Efecto | Corrección |
+|---|---|---|
+| Variables nominales (departamento, lengua materna, etnia, ocupación…) con Label Encoding entraban como **un número** de 0 a 1 | La red tenía que deshacer un orden arbitrario (Amazonas < Áncash < … < Ucayali). En una prueba con un MLP simple, tratarlas como categorías subió el F1-Macro en validación +0,05 (niños), +0,06 (jóvenes) y +0,01 (adultos), y el AUC +0,05 / +0,10 / +0,02 | **Embeddings**: cada categoría tiene un vector aprendido en las tres arquitecturas (`variables.NOMINAL_COLUMNS`; `models.CategoricalTokens`; en TabNet, `cat_idxs`/`cat_dims`). El Label Encoding se mantiene: da el índice del embedding |
+| Ingreso (`P314`, `hh_ingreso_*`) escalado con Min-Max sin transformar | Mediana ~S/ 1 000 y máximo S/ 35 000: casi todo quedaba cerca de 0, con varianza 0,001, y el umbral de varianza lo **descartaba** en niños y adultos | `log1p` antes del escalado (`preprocessing.log_transform`) |
+| `hh_alfabetismo` contaba como analfabeto a quien no respondió P307 | P307 solo se pregunta con primaria incompleta o menos; los demás (incluidos universitarios) quedaban como "no sabe leer" | Alfabeto si P306 ≥ primaria completa o P307 = sí; los "no aplica" no entran a los promedios del hogar (también en ocupación, lengua, pueblo y estudio) |
+| `P305` (nombre del pueblo indígena, texto) | Al convertirlo a número quedaba "sin dato" (−1) en todo `jovenes.csv`: indicaba el archivo de origen de cada persona | Excluida (`variables.TEXT_COLUMNS`) y guarda en el ETL para cualquier otra columna con texto |
+| Adultos declarados 18+ | Los capítulos 300-400 solo se aplican de 18 a 64 años: nadie de 65+ tiene la clase | `edad_max: 64`; tablas y figuras dicen 18–64 |
+| `hh_etnia_jefe` tomaba la etnia del primer adulto, como número | No era necesariamente el jefe/a y su código (1–9) entraba como magnitud | Etnia del jefe/a, como nominal con embedding |
+| Tabla 3, Fig. 7 y Copeland con la semilla 42 | El orden de dos modelos cambiaba según la suerte de esa semilla (TabNet adultos va de 0,417 a 0,480 de F1-Macro según la semilla) | Media ± desviación de las 5 semillas; Copeland sobre las medias |
+| Ensemble solo con la semilla 42 | Sin desviación y comparado contra una sola semilla de cada modelo | Se guardan las probabilidades de cada semilla (`test_predictions_seeds.npz`) y el ensemble se calcula semilla a semilla |
+| Fig. 11 en accuracy | Líneas casi planas: la mejor época se elige por la pérdida | Fig. 11 muestra la pérdida ponderada; la accuracy queda en `fig_curvas_aprendizaje_accuracy.png` |
 
 ---
 
@@ -122,9 +143,9 @@ predictores es:
 
 | Grupo | Universo | Final |
 |---|---|---|
-| Niños (3–13) | 100 | 31 |
-| Jóvenes (14–17) | 100 | 34 |
-| Adultos (18+) | 100 | 55 |
+| Niños (3–13) | 99 | 32 |
+| Jóvenes (14–17) | 99 | 32 |
+| Adultos (18–64) | 99 | 56 |
 
 Causa: la ENL solo administra el capítulo 300 —lengua materna, etnia, nivel
 educativo alcanzado, ocupación, ingreso— a personas de 18 años o más. Para las

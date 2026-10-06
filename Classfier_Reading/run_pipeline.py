@@ -18,6 +18,9 @@ Opciones utiles:
     --models mlp_ma tabnet ft_transformer
     --no-gridsearch                  Salta la busqueda (solo para pruebas)
     --no-multiseed                   Salta las 5 semillas de estabilidad
+    --seeds 42 123                   Semillas de estabilidad (por defecto, las del YAML)
+    --hp-from <carpeta results>      Reutiliza los hiperparametros de otra corrida
+    --tag <nombre>                   Corrida separada en results/aligned_<nombre>
 """
 
 from __future__ import annotations
@@ -233,6 +236,11 @@ def main() -> int:
     parser.add_argument("--tag", default=None,
                         help="Separa una corrida en results/aligned_<tag> y "
                              "outputs/aligned_<tag> (p. ej. una prueba preliminar).")
+    parser.add_argument("--seeds", nargs="+", type=int, default=None,
+                        help="Semillas de la estabilidad multi-semilla (por defecto, las del YAML).")
+    parser.add_argument("--hp-from", type=Path, default=None,
+                        help="Carpeta de resultados de otra corrida: reutiliza sus "
+                             "hiperparametros y omite el Grid Search.")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
@@ -246,6 +254,10 @@ def main() -> int:
         cfg["evaluation"]["stability"]["multiseed"] = False
     if args.seed is not None:
         cfg["seed"] = args.seed
+    if args.seeds:
+        cfg["evaluation"]["stability"]["seeds"] = list(args.seeds)
+    if args.hp_from:
+        cfg["gridsearch"]["hp_from"] = str(args.hp_from.resolve())
 
     return {
         "check": cmd_check, "etl": cmd_etl, "smoke": cmd_smoke,

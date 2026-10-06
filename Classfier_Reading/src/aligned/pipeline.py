@@ -51,9 +51,22 @@ warnings.filterwarnings("ignore", message="Best weights from best epoch")
 # =====================================================================
 # Datos
 # =====================================================================
+def _etl_report(cfg: dict, group: str, root: Path) -> dict:
+    path = root / cfg["paths"]["processed_dir"] / group / "config.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+
+
 def load_group(cfg: dict, group: str, root: Path):
     """Carga los tres splits ya procesados y verifica que no haya fuga."""
+    from .etl import ETL_VERSION
+
     d = root / cfg["paths"]["processed_dir"] / group
+    version = _etl_report(cfg, group, root).get("etl_version", 1)
+    if (d / "train.parquet").exists() and version < ETL_VERSION:
+        raise RuntimeError(
+            f"Los datos de {d} vienen de una version anterior del ETL (v{version}; "
+            f"la actual es v{ETL_VERSION}: ingreso, alfabetismo, P305, adultos 18-64 "
+            "y codificacion para embeddings). Ejecuta antes:  python run_pipeline.py etl")
     parts = {}
     for name in ("train", "val", "test"):
         path = d / f"{name}.parquet"
@@ -87,6 +100,18 @@ def load_group(cfg: dict, group: str, root: Path):
         out = {name: _stratified_head(X, y, limit, cfg["seed"])
                for name, (X, y) in out.items()}
     return out, feature_cols
+
+
+def load_categorical_info(cfg: dict, group: str, root: Path,
+                          feature_cols: List[str]) -> List[Tuple[int, int]]:
+    """
+    Nominales que reciben embedding, como (posicion, n.º de categorias),
+    segun lo que el ETL dejo en `config.json` -> codificacion.embeddings.
+    """
+    if not cfg["models"].get("categorical_embeddings", True):
+        return []
+    emb = (_etl_report(cfg, group, root).get("codificacion") or {}).get("embeddings") or {}
+    return [(feature_cols.index(c), int(k)) for c, k in emb.items() if c in feature_cols]
 
 
 def _stratified_head(X: np.ndarray, y: np.ndarray, n: int, seed: int):
@@ -154,6 +179,7 @@ def fit_estimator(
     X_val: Optional[np.ndarray], y_val: Optional[np.ndarray],
     epochs: int, patience: int, seed: int,
     verbose: bool = True, track_train: bool = False,
+    cat_info: Optional[List[Tuple[int, int]]] = None,
 ) -> Tuple[object, Dict[str, list], int, Dict[str, object]]:
     """
     Entrena una arquitectura con la configuracion `hp`.
@@ -166,7 +192,7 @@ def fit_estimator(
     """
     X_bal, y_bal, weights, bal_info = balance_training_set(X_tr, y_tr, cfg, seed)
     set_seed(seed)
-    model = build_model(model_name, X_bal.shape[1], cfg, hp, seed)
+    model = build_model(model_name, X_bal.shape[1], cfg, hp, seed, cat_info=cat_info)
     tcfg = cfg["training"]
 
     if IS_TORCH[model_name]:
@@ -267,7 +293,7 @@ def interpretability(
 
     try:
         if model_name == "tabnet":
-            M_explain, masks = estimator.model.explain(np.asarray(Xs, dtype=np.float32))
+            M_explain, masks = estimator.explain(Xs)
             imp = np.asarray(M_explain).mean(axis=0)
             steps = np.stack([np.asarray(masks[k]).mean(axis=0) for k in sorted(masks)])
             arrays["tabnet_step_masks"] = steps                     # (pasos, F)
@@ -324,15 +350,28 @@ def run_one(
 
     data, feature_names = load_group(cfg, group, root)
     (X_tr, y_tr), (X_val, y_val), (X_te, y_te) = data["train"], data["val"], data["test"]
+    cat_info = load_categorical_info(cfg, group, root, feature_names)
 
     if verbose:
         print(f"\n{'=' * 66}\n{group.upper()} · {model_name}\n{'=' * 66}")
         print(f"  train {X_tr.shape} · val {X_val.shape} · test {X_te.shape}")
+        if cat_info:
+            print(f"  embeddings para {len(cat_info)} nominales: "
+                  + ", ".join(f"{feature_names[p]}({k})" for p, k in cat_info))
 
     # --- 1. Grid Search + 5-Fold CV sobre el 70% ---------------------
     use_gs = cfg["gridsearch"]["enabled"] if do_gridsearch is None else do_gridsearch
-    if use_gs:
-        gs = grid_search_cv(cfg, model_name, X_tr, y_tr, out_dir, verbose)
+    hp_from = cfg["gridsearch"].get("hp_from")
+    if hp_from:
+        # Reutiliza la configuracion que eligio una corrida anterior (para
+        # comparar dos versiones de los datos con los mismos hiperparametros).
+        src = Path(hp_from) / f"{group}_{model_name}" / "results.json"
+        best_hp = dict(json.loads(src.read_text(encoding="utf-8"))["hiperparametros_finales"])
+        gs = {"skipped": True, "hp_from": str(src), "best_params": best_hp}
+        if verbose:
+            print(f"  Grid Search omitido · hiperparametros de {src}: {best_hp}")
+    elif use_gs:
+        gs = grid_search_cv(cfg, model_name, X_tr, y_tr, out_dir, verbose, cat_info=cat_info)
         best_hp = gs["best_params"]
     else:
         preset = cfg["gridsearch"]["presets"]["fast"]
@@ -353,7 +392,7 @@ def run_one(
     est_a, curves, best_epoch, bal_info = fit_estimator(
         cfg, model_name, best_hp, X_tr, y_tr, X_val, y_val,
         epochs=tcfg["final_epochs"], patience=tcfg["early_stopping_patience"],
-        seed=seed, verbose=verbose, track_train=True,
+        seed=seed, verbose=verbose, track_train=True, cat_info=cat_info,
     )
     n_refit = best_epoch + 1
     yp_a, pp_a = predict(est_a, model_name, X_te)
@@ -367,7 +406,7 @@ def run_one(
               f"durante {n_refit} epocas (mejor epoca de la etapa A)")
     estimator, hist_b, _, _ = fit_estimator(
         cfg, model_name, best_hp, X_fit, y_fit, None, None,
-        epochs=n_refit, patience=0, seed=seed, verbose=False,
+        epochs=n_refit, patience=0, seed=seed, verbose=False, cat_info=cat_info,
     )
 
     # --- 4. Evaluacion sobre el 15% de test --------------------------
@@ -390,6 +429,7 @@ def run_one(
 
     # --- 6. Estabilidad multi-semilla (etapa B con otras semillas) -----
     stability: Dict[str, object] = {}
+    seed_probas: List[np.ndarray] = []
     if cfg["evaluation"]["stability"]["multiseed"]:
         runs = []
         seeds = cfg["evaluation"]["stability"]["seeds"]
@@ -398,8 +438,9 @@ def run_one(
         for s in seeds:
             est_s, _, _, _ = fit_estimator(
                 cfg, model_name, best_hp, X_fit, y_fit, None, None,
-                epochs=n_refit, patience=0, seed=s, verbose=False)
+                epochs=n_refit, patience=0, seed=s, verbose=False, cat_info=cat_info)
             yp, pp = predict(est_s, model_name, X_te)
+            seed_probas.append(pp)
             m = compute_metrics(y_te, yp, pp, cfg["n_classes"], cfg["class_names"])
             runs.append({"seed": s, **{k: m[k] for k in
                          ("accuracy", "f1_weighted", "f1_macro",
@@ -421,6 +462,7 @@ def run_one(
         "hardware": hardware_info(cfg),
         "n_features": len(feature_names),
         "features": feature_names,
+        "embeddings_categoricas": {feature_names[p]: k for p, k in cat_info},
         "n_muestras": {"train": int(len(X_tr)), "val": int(len(X_val)),
                        "test": int(len(X_te)), "refit_85": int(len(X_fit))},
         "gridsearch": gs,
@@ -455,6 +497,12 @@ def run_one(
         json.dump(payload, fh, indent=2, ensure_ascii=False, default=str)
     np.savez_compressed(out_dir / "test_predictions.npz",
                         y_true=y_te, y_pred=y_pred, y_proba=y_proba)
+    if seed_probas:
+        # Probabilidades de cada semilla: el ensemble se calcula por semilla
+        # y se reporta, como los modelos individuales, con media ± desviacion.
+        np.savez_compressed(out_dir / "test_predictions_seeds.npz", y_true=y_te,
+                            seeds=np.asarray(cfg["evaluation"]["stability"]["seeds"]),
+                            y_proba=np.stack(seed_probas))
 
     if IS_TORCH[model_name]:
         estimator.save(out_dir / "best_model.pt")

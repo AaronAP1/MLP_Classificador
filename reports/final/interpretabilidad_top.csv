@@ -1,0 +1,271 @@
+Grupo,Modelo,Metodo,Puesto,Variable,Descripcion,Dimension,Importancia
+Niños,MLP-MA,Atención / máscaras de la arquitectura,1,hh_nivel_educ_max,Hogar: nivel educativo máximo,otro,0.03235445904599704
+Niños,MLP-MA,Atención / máscaras de la arquitectura,2,hh_nivel_educ_jefe,Hogar: nivel educativo del jefe/a,otro,0.032283306001561485
+Niños,MLP-MA,Atención / máscaras de la arquitectura,3,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.03184920164998918
+Niños,MLP-MA,Atención / máscaras de la arquitectura,4,hh_ratio_menores,Hogar: proporción de menores,otro,0.031618460895052325
+Niños,MLP-MA,Atención / máscaras de la arquitectura,5,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.03154859307576495
+Niños,MLP-MA,Atención / máscaras de la arquitectura,6,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.0314896180052697
+Niños,MLP-MA,Atención / máscaras de la arquitectura,7,P209,Sexo,demografico,0.03145891788803444
+Niños,MLP-MA,Atención / máscaras de la arquitectura,8,P514_2,Año de estudios,educativo,0.03141985076882001
+Niños,MLP-MA,Atención / máscaras de la arquitectura,9,P212,Estado civil,demografico,0.031399793805927806
+Niños,MLP-MA,Atención / máscaras de la arquitectura,10,hh_estudia,Hogar: adultos que estudian,otro,0.03139831859097511
+Niños,MLP-MA,Atención / máscaras de la arquitectura,11,hh_n_menores,Hogar: n.º de menores,otro,0.03135648358107923
+Niños,MLP-MA,Atención / máscaras de la arquitectura,12,idx_lengua_materna_tipo,Tipo de lengua materna,otro,0.03135557461024979
+Niños,MLP-MA,Atención / máscaras de la arquitectura,13,idx_acceso_digital,Índice de acceso digital (aprox.),otro,0.031338989617902824
+Niños,MLP-MA,Atención / máscaras de la arquitectura,14,P211,Nacionalidad,demografico,0.03130587923785344
+Niños,MLP-MA,Atención / máscaras de la arquitectura,15,CCDD,Departamento,geografico,0.03130122262499771
+Niños,MLP-MA,Permutación (caída de F1-Macro),1,CCDD,Departamento,geografico,0.07056997609664045
+Niños,MLP-MA,Permutación (caída de F1-Macro),2,DOMINIO,Dominio geográfico,geografico,0.0142032075212802
+Niños,MLP-MA,Permutación (caída de F1-Macro),3,P514_1,Nivel educativo al que asiste,educativo,0.011693665868983072
+Niños,MLP-MA,Permutación (caída de F1-Macro),4,P514_3,Grado de estudios,educativo,0.011310153223240952
+Niños,MLP-MA,Permutación (caída de F1-Macro),5,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.008678080821731752
+Niños,MLP-MA,Permutación (caída de F1-Macro),6,P210_A,Edad (años),demografico,0.008454481118343219
+Niños,MLP-MA,Permutación (caída de F1-Macro),7,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.007661579196509671
+Niños,MLP-MA,Permutación (caída de F1-Macro),8,P209,Sexo,demografico,0.006053893627155489
+Niños,MLP-MA,Permutación (caída de F1-Macro),9,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.006044701446001277
+Niños,MLP-MA,Permutación (caída de F1-Macro),10,hh_estudia,Hogar: adultos que estudian,otro,0.005258783258789201
+Niños,MLP-MA,Permutación (caída de F1-Macro),11,idx_nivel_educativo,Nivel educativo (índice),otro,0.005153860904577405
+Niños,MLP-MA,Permutación (caída de F1-Macro),12,P514_2,Año de estudios,educativo,0.004014023836162932
+Niños,MLP-MA,Permutación (caída de F1-Macro),13,hh_lengua_indigena,Hogar: adultos con lengua originaria,otro,0.003380728304149964
+Niños,MLP-MA,Permutación (caída de F1-Macro),14,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.0028333711279976783
+Niños,MLP-MA,Permutación (caída de F1-Macro),15,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.001358067890050237
+Niños,TabNet,Atención / máscaras de la arquitectura,1,CCDD,Departamento,geografico,0.30691333865263204
+Niños,TabNet,Atención / máscaras de la arquitectura,2,P210_A,Edad (años),demografico,0.09765350955961903
+Niños,TabNet,Atención / máscaras de la arquitectura,3,DOMINIO,Dominio geográfico,geografico,0.08419104711807956
+Niños,TabNet,Atención / máscaras de la arquitectura,4,idx_nivel_educativo,Nivel educativo (índice),otro,0.07960588625858926
+Niños,TabNet,Atención / máscaras de la arquitectura,5,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.05829575572120218
+Niños,TabNet,Atención / máscaras de la arquitectura,6,P514_3,Grado de estudios,educativo,0.05423542885702384
+Niños,TabNet,Atención / máscaras de la arquitectura,7,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.03274160812769285
+Niños,TabNet,Atención / máscaras de la arquitectura,8,idx_acceso_digital,Índice de acceso digital (aprox.),otro,0.03130109641327556
+Niños,TabNet,Atención / máscaras de la arquitectura,9,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.029487181653079352
+Niños,TabNet,Atención / máscaras de la arquitectura,10,P514_1,Nivel educativo al que asiste,educativo,0.02798278290446095
+Niños,TabNet,Atención / máscaras de la arquitectura,11,hh_n_menores,Hogar: n.º de menores,otro,0.025276163175540364
+Niños,TabNet,Atención / máscaras de la arquitectura,12,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.022875990888760748
+Niños,TabNet,Atención / máscaras de la arquitectura,13,hh_ingreso_mean,Hogar: ingreso promedio,otro,0.019352063516327237
+Niños,TabNet,Atención / máscaras de la arquitectura,14,hh_tasa_ocupacion,Hogar: tasa de ocupación,otro,0.018494114574062213
+Niños,TabNet,Atención / máscaras de la arquitectura,15,hh_nivel_educ_max,Hogar: nivel educativo máximo,otro,0.016534972371383516
+Niños,TabNet,Permutación (caída de F1-Macro),1,CCDD,Departamento,geografico,0.06504610250963526
+Niños,TabNet,Permutación (caída de F1-Macro),2,idx_nivel_educativo,Nivel educativo (índice),otro,0.019331601931311466
+Niños,TabNet,Permutación (caída de F1-Macro),3,DOMINIO,Dominio geográfico,geografico,0.017429394149262496
+Niños,TabNet,Permutación (caída de F1-Macro),4,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.01337553459883221
+Niños,TabNet,Permutación (caída de F1-Macro),5,P210_A,Edad (años),demografico,0.013119956471399205
+Niños,TabNet,Permutación (caída de F1-Macro),6,P514_3,Grado de estudios,educativo,0.01115434640989745
+Niños,TabNet,Permutación (caída de F1-Macro),7,idx_acceso_digital,Índice de acceso digital (aprox.),otro,0.008166187580484338
+Niños,TabNet,Permutación (caída de F1-Macro),8,hh_nivel_educ_jefe,Hogar: nivel educativo del jefe/a,otro,0.005625330866763423
+Niños,TabNet,Permutación (caída de F1-Macro),9,hh_tasa_ocupacion,Hogar: tasa de ocupación,otro,0.005503645135302937
+Niños,TabNet,Permutación (caída de F1-Macro),10,hh_nivel_educ_max,Hogar: nivel educativo máximo,otro,0.005483239836252818
+Niños,TabNet,Permutación (caída de F1-Macro),11,hh_ingreso_mean,Hogar: ingreso promedio,otro,0.005252396798387811
+Niños,TabNet,Permutación (caída de F1-Macro),12,P203,Parentesco con jefe/a de hogar,demografico,0.004236166408044788
+Niños,TabNet,Permutación (caída de F1-Macro),13,hh_ratio_menores,Hogar: proporción de menores,otro,0.00415837716816612
+Niños,TabNet,Permutación (caída de F1-Macro),14,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.004045730492825805
+Niños,TabNet,Permutación (caída de F1-Macro),15,P514_1,Nivel educativo al que asiste,educativo,0.00391954614185371
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,1,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.0885802361448047
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,2,CCDD,Departamento,geografico,0.06620374708882767
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,3,DOMINIO,Dominio geográfico,geografico,0.053349947536835265
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,4,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.053119572449186164
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,5,P210_A,Edad (años),demografico,0.04656076616894518
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,6,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.04000943581565292
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,7,P514_1,Nivel educativo al que asiste,educativo,0.03542123132290989
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,8,P514_2,Año de estudios,educativo,0.03435970301406048
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,9,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.03356647783997292
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,10,P205,Parentesco con jefe/a de núcleo,demografico,0.030549598558432582
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,11,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.029012244446762543
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,12,hh_alfabetismo,Hogar: alfabetismo adulto,otro,0.02733481477159913
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,13,P212,Estado civil,demografico,0.026019923756627622
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,14,idx_nivel_educativo,Nivel educativo (índice),otro,0.025400804276064167
+Niños,FT-Transformer,Atención / máscaras de la arquitectura,15,hh_lengua_indigena,Hogar: adultos con lengua originaria,otro,0.025214174595901823
+Niños,FT-Transformer,Permutación (caída de F1-Macro),1,CCDD,Departamento,geografico,0.09702671296528381
+Niños,FT-Transformer,Permutación (caída de F1-Macro),2,P514_1,Nivel educativo al que asiste,educativo,0.027882927118820993
+Niños,FT-Transformer,Permutación (caída de F1-Macro),3,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.022293124106237423
+Niños,FT-Transformer,Permutación (caída de F1-Macro),4,DOMINIO,Dominio geográfico,geografico,0.017894930602072534
+Niños,FT-Transformer,Permutación (caída de F1-Macro),5,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.014217560667669807
+Niños,FT-Transformer,Permutación (caída de F1-Macro),6,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.011313885556971437
+Niños,FT-Transformer,Permutación (caída de F1-Macro),7,P210_A,Edad (años),demografico,0.0095457424472112
+Niños,FT-Transformer,Permutación (caída de F1-Macro),8,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.007581187212094091
+Niños,FT-Transformer,Permutación (caída de F1-Macro),9,hh_nivel_educ_max,Hogar: nivel educativo máximo,otro,0.007532431022268656
+Niños,FT-Transformer,Permutación (caída de F1-Macro),10,P513A,Lengua materna (3-17 años),linguistico,0.006174464919813698
+Niños,FT-Transformer,Permutación (caída de F1-Macro),11,idx_nivel_educativo,Nivel educativo (índice),otro,0.005383223101198209
+Niños,FT-Transformer,Permutación (caída de F1-Macro),12,hh_n_menores,Hogar: n.º de menores,otro,0.004481091050467752
+Niños,FT-Transformer,Permutación (caída de F1-Macro),13,hh_ratio_menores,Hogar: proporción de menores,otro,0.0032308231020164446
+Niños,FT-Transformer,Permutación (caída de F1-Macro),14,P514_3,Grado de estudios,educativo,0.0032112025547461065
+Niños,FT-Transformer,Permutación (caída de F1-Macro),15,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.0031470280907544
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,1,P514_2,Año de estudios,educativo,0.03130794794027333
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,2,hh_ratio_menores,Hogar: proporción de menores,otro,0.03129238367688452
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,3,idx_nivel_educativo,Nivel educativo (índice),otro,0.03128115937683893
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,4,P514_1,Nivel educativo al que asiste,educativo,0.031272267108598366
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,5,P203,Parentesco con jefe/a de hogar,demografico,0.031269439613167034
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,6,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.031266790931676024
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,7,idx_acceso_digital,Índice de acceso digital (aprox.),otro,0.03126227587968291
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,8,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.03126078203822314
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,9,CCDD,Departamento,geografico,0.03126060694957324
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,10,hh_estudia,Hogar: adultos que estudian,otro,0.031259191339212365
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,11,P209,Sexo,demografico,0.03125884488720299
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,12,idx_lengua_materna_tipo,Tipo de lengua materna,otro,0.03125826374189695
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,13,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.03125699341786258
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,14,hh_limitacion,Hogar: alguna limitación permanente,otro,0.031256941263796655
+Jóvenes,MLP-MA,Atención / máscaras de la arquitectura,15,DOMINIO,Dominio geográfico,geografico,0.03125683323037438
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),1,CCDD,Departamento,geografico,0.0679120690163651
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),2,P209,Sexo,demografico,0.01731963538650962
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),3,idx_nivel_educativo,Nivel educativo (índice),otro,0.01073773437547961
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),4,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.006319447801105456
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),5,P514_2,Año de estudios,educativo,0.006257435258051798
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),6,P514_1,Nivel educativo al que asiste,educativo,0.005403001003372265
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),7,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.005214607109294648
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),8,hh_limitacion,Hogar: alguna limitación permanente,otro,0.0049221966690321155
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),9,P210_A,Edad (años),demografico,0.004326705763954201
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),10,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.003814547469215279
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),11,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.003593431805965034
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),12,hh_n_menores,Hogar: n.º de menores,otro,0.0033443061614412684
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),13,hh_n_adultos,Hogar: n.º de adultos,otro,0.0027257019818942387
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),14,P514_3,Grado de estudios,educativo,0.002704768217216972
+Jóvenes,MLP-MA,Permutación (caída de F1-Macro),15,hh_alfabetismo,Hogar: alfabetismo adulto,otro,0.002660426948753921
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,1,CCDD,Departamento,geografico,0.5652805763332264
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,2,hh_ingreso_mean,Hogar: ingreso promedio,otro,0.09413240850108147
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,3,idx_acceso_digital,Índice de acceso digital (aprox.),otro,0.06927824929758819
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,4,idx_lengua_materna_tipo,Tipo de lengua materna,otro,0.05643481401174149
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,5,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.04973731403983673
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,6,P209,Sexo,demografico,0.03422915307388059
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,7,P210_A,Edad (años),demografico,0.03099011851026731
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,8,P514_1,Nivel educativo al que asiste,educativo,0.030515611767458203
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,9,P513A,Lengua materna (3-17 años),linguistico,0.0211824219789159
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,10,hh_alfabetismo,Hogar: alfabetismo adulto,otro,0.01951963316306617
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,11,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.008611336514351576
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,12,P203,Parentesco con jefe/a de hogar,demografico,0.008274466715514232
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,13,hh_ratio_menores,Hogar: proporción de menores,otro,0.007411234185921765
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,14,P205,Parentesco con jefe/a de núcleo,demografico,0.0027605552174098835
+Jóvenes,TabNet,Atención / máscaras de la arquitectura,15,hh_nivel_educ_max,Hogar: nivel educativo máximo,otro,0.001508659292385621
+Jóvenes,TabNet,Permutación (caída de F1-Macro),1,CCDD,Departamento,geografico,0.10433749836381832
+Jóvenes,TabNet,Permutación (caída de F1-Macro),2,P514_1,Nivel educativo al que asiste,educativo,0.01792250500265108
+Jóvenes,TabNet,Permutación (caída de F1-Macro),3,P513A,Lengua materna (3-17 años),linguistico,0.012583552319793245
+Jóvenes,TabNet,Permutación (caída de F1-Macro),4,hh_ingreso_mean,Hogar: ingreso promedio,otro,0.010283362565356854
+Jóvenes,TabNet,Permutación (caída de F1-Macro),5,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.00932151514189968
+Jóvenes,TabNet,Permutación (caída de F1-Macro),6,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.007581124753277065
+Jóvenes,TabNet,Permutación (caída de F1-Macro),7,P209,Sexo,demografico,0.007579320250030368
+Jóvenes,TabNet,Permutación (caída de F1-Macro),8,hh_alfabetismo,Hogar: alfabetismo adulto,otro,0.00735503542012883
+Jóvenes,TabNet,Permutación (caída de F1-Macro),9,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.007346433069511067
+Jóvenes,TabNet,Permutación (caída de F1-Macro),10,DOMINIO,Dominio geográfico,geografico,0.007168717832338171
+Jóvenes,TabNet,Permutación (caída de F1-Macro),11,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.006223753291104324
+Jóvenes,TabNet,Permutación (caída de F1-Macro),12,P514_2,Año de estudios,educativo,0.004275598411823067
+Jóvenes,TabNet,Permutación (caída de F1-Macro),13,idx_acceso_digital,Índice de acceso digital (aprox.),otro,0.0028244753365575526
+Jóvenes,TabNet,Permutación (caída de F1-Macro),14,hh_tasa_ocupacion,Hogar: tasa de ocupación,otro,0.002684480722856375
+Jóvenes,TabNet,Permutación (caída de F1-Macro),15,hh_tamano,Hogar: tamaño,otro,0.0023169840476744605
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,1,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.03337697158630932
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,2,CCDD,Departamento,geografico,0.03284702502298429
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,3,P211,Nacionalidad,demografico,0.032556730494696755
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,4,hh_tamano,Hogar: tamaño,otro,0.032540188610441494
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,5,P514_1,Nivel educativo al que asiste,educativo,0.03239845255833737
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,6,P210_A,Edad (años),demografico,0.03236593668564447
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,7,hh_lengua_indigena,Hogar: adultos con lengua originaria,otro,0.03234810936153175
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,8,P514_2,Año de estudios,educativo,0.03208584317783771
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,9,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.03198351257234909
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,10,hh_estudia,Hogar: adultos que estudian,otro,0.03196996365253806
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,11,hh_limitacion,Hogar: alguna limitación permanente,otro,0.03192897346962068
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,12,hh_n_adultos,Hogar: n.º de adultos,otro,0.0316984307904686
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,13,P514_3,Grado de estudios,educativo,0.031576847365622336
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,14,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.031555177151905894
+Jóvenes,FT-Transformer,Atención / máscaras de la arquitectura,15,hh_tasa_ocupacion,Hogar: tasa de ocupación,otro,0.03155372479672366
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),1,CCDD,Departamento,geografico,0.060874115624954116
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),2,P514_1,Nivel educativo al que asiste,educativo,0.015532673534048913
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),3,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.015073046028324636
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),4,DOMINIO,Dominio geográfico,geografico,0.014122947198653313
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),5,hh_ingreso_mean,Hogar: ingreso promedio,otro,0.01149496951069138
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),6,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.008689467797549902
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),7,idx_nivel_educativo,Nivel educativo (índice),otro,0.00628296622205939
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),8,hh_ratio_menores,Hogar: proporción de menores,otro,0.00518412874051057
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),9,P210_A,Edad (años),demografico,0.004790411233836907
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),10,P212,Estado civil,demografico,0.0045037193561888915
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),11,hh_n_adultos,Hogar: n.º de adultos,otro,0.0025405330563676256
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),12,hh_nivel_educ_jefe,Hogar: nivel educativo del jefe/a,otro,0.0022478955775577605
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),13,hh_alfabetismo,Hogar: alfabetismo adulto,otro,0.002126826069279608
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),14,hh_nivel_educ_max,Hogar: nivel educativo máximo,otro,0.0020002803938584113
+Jóvenes,FT-Transformer,Permutación (caída de F1-Macro),15,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.001964889309969816
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,1,idx_nivel_educativo,Nivel educativo (índice),otro,0.046939382662178585
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,2,hh_ratio_menores,Hogar: proporción de menores,otro,0.023428890090425356
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,3,P309,Asiste a educación actualmente,educativo,0.02244158761067729
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,4,hh_n_adultos,Hogar: n.º de adultos,otro,0.021790764515589218
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,5,P302_12,Habla: inglés,linguistico,0.020584834068576627
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,6,hh_tasa_ocupacion,Hogar: tasa de ocupación,otro,0.019857223429714497
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,7,CCDD,Departamento,geografico,0.019327738623627598
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,8,P306_C,Tipo de centro de estudios,educativo,0.019258176280151893
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,9,DOMINIO,Dominio geográfico,geografico,0.01899486718250406
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,10,P210_A,Edad (años),demografico,0.018958698340175262
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,11,hh_tamano,Hogar: tamaño,otro,0.0186754440389196
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,12,P308_1,Lee y escribe en lengua originaria,linguistico,0.01853054515219379
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,13,P315_4,Limitación permanente para: moverse o caminar,salud,0.018476729610296398
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,14,ESTRATOSOCIO,Estrato socioeconómico,geografico,0.018390891474037243
+Adultos,MLP-MA,Atención / máscaras de la arquitectura,15,P314_1,Sin ganancia / no sabe su ingreso,socioeconomico,0.018338064996681853
+Adultos,MLP-MA,Permutación (caída de F1-Macro),1,idx_nivel_educativo,Nivel educativo (índice),otro,0.04373129680442942
+Adultos,MLP-MA,Permutación (caída de F1-Macro),2,CCDD,Departamento,geografico,0.03251649426673572
+Adultos,MLP-MA,Permutación (caída de F1-Macro),3,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.016347221426111058
+Adultos,MLP-MA,Permutación (caída de F1-Macro),4,P212,Estado civil,demografico,0.011485393107373657
+Adultos,MLP-MA,Permutación (caída de F1-Macro),5,P309,Asiste a educación actualmente,educativo,0.00964598146321527
+Adultos,MLP-MA,Permutación (caída de F1-Macro),6,P210_A,Edad (años),demografico,0.008779651468203956
+Adultos,MLP-MA,Permutación (caída de F1-Macro),7,P313,Categoría ocupacional,socioeconomico,0.008412947335091034
+Adultos,MLP-MA,Permutación (caída de F1-Macro),8,P310_C,Tipo de centro (estudios actuales),educativo,0.008404074097047243
+Adultos,MLP-MA,Permutación (caída de F1-Macro),9,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.007541912716653536
+Adultos,MLP-MA,Permutación (caída de F1-Macro),10,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.006598449494784793
+Adultos,MLP-MA,Permutación (caída de F1-Macro),11,P314,Ingreso mensual (ocupación principal),socioeconomico,0.006511428763812703
+Adultos,MLP-MA,Permutación (caída de F1-Macro),12,P209,Sexo,demografico,0.006412163038882794
+Adultos,MLP-MA,Permutación (caída de F1-Macro),13,hh_lengua_indigena,Hogar: adultos con lengua originaria,otro,0.006297746774189002
+Adultos,MLP-MA,Permutación (caída de F1-Macro),14,P301,Lengua materna,linguistico,0.005041946949127111
+Adultos,MLP-MA,Permutación (caída de F1-Macro),15,hh_ratio_menores,Hogar: proporción de menores,otro,0.005036281853031325
+Adultos,TabNet,Atención / máscaras de la arquitectura,1,P315_1,Limitación permanente para: ver,salud,0.17790318754563453
+Adultos,TabNet,Atención / máscaras de la arquitectura,2,P309,Asiste a educación actualmente,educativo,0.14102311608141344
+Adultos,TabNet,Atención / máscaras de la arquitectura,3,P312_4,Semana pasada: chacra o crianza,socioeconomico,0.13820931018578334
+Adultos,TabNet,Atención / máscaras de la arquitectura,4,idx_nivel_educativo,Nivel educativo (índice),otro,0.13467541017814605
+Adultos,TabNet,Atención / máscaras de la arquitectura,5,hh_nivel_educ_mean,Hogar: nivel educativo promedio,otro,0.08657965371469056
+Adultos,TabNet,Atención / máscaras de la arquitectura,6,hh_estudia,Hogar: adultos que estudian,otro,0.07782654244877257
+Adultos,TabNet,Atención / máscaras de la arquitectura,7,P307_1,Sabe leer y escribir (espontánea),linguistico,0.052422832389668564
+Adultos,TabNet,Atención / máscaras de la arquitectura,8,hh_nivel_educ_jefe,Hogar: nivel educativo del jefe/a,otro,0.0434891559627077
+Adultos,TabNet,Atención / máscaras de la arquitectura,9,P212,Estado civil,demografico,0.038002313279674384
+Adultos,TabNet,Atención / máscaras de la arquitectura,10,P313,Categoría ocupacional,socioeconomico,0.022337959754093053
+Adultos,TabNet,Atención / máscaras de la arquitectura,11,P302_1,Habla: quechua,linguistico,0.017598564253926807
+Adultos,TabNet,Atención / máscaras de la arquitectura,12,P314,Ingreso mensual (ocupación principal),socioeconomico,0.014141207940881187
+Adultos,TabNet,Atención / máscaras de la arquitectura,13,P306_C,Tipo de centro de estudios,educativo,0.014051318298943906
+Adultos,TabNet,Atención / máscaras de la arquitectura,14,P211,Nacionalidad,demografico,0.010412427023615738
+Adultos,TabNet,Atención / máscaras de la arquitectura,15,DOMINIO,Dominio geográfico,geografico,0.007559773846906968
+Adultos,TabNet,Permutación (caída de F1-Macro),1,idx_nivel_educativo,Nivel educativo (índice),otro,0.0327037583258496
+Adultos,TabNet,Permutación (caída de F1-Macro),2,CCDD,Departamento,geografico,0.011141472779457854
+Adultos,TabNet,Permutación (caída de F1-Macro),3,P309,Asiste a educación actualmente,educativo,0.010191956856367793
+Adultos,TabNet,Permutación (caída de F1-Macro),4,P304,Pertenencia a pueblo indígena u originario,educativo,0.004725714029160388
+Adultos,TabNet,Permutación (caída de F1-Macro),5,P313,Categoría ocupacional,socioeconomico,0.004617572056931103
+Adultos,TabNet,Permutación (caída de F1-Macro),6,P209,Sexo,demografico,0.004426056231113269
+Adultos,TabNet,Permutación (caída de F1-Macro),7,hh_nivel_educ_max,Hogar: nivel educativo máximo,otro,0.003466863327499662
+Adultos,TabNet,Permutación (caída de F1-Macro),8,P212,Estado civil,demografico,0.0034120094170030555
+Adultos,TabNet,Permutación (caída de F1-Macro),9,hh_nivel_educ_jefe,Hogar: nivel educativo del jefe/a,otro,0.003391388890684669
+Adultos,TabNet,Permutación (caída de F1-Macro),10,P310_C,Tipo de centro (estudios actuales),educativo,0.0030611129990875305
+Adultos,TabNet,Permutación (caída de F1-Macro),11,P315_4,Limitación permanente para: moverse o caminar,salud,0.0029614855300289697
+Adultos,TabNet,Permutación (caída de F1-Macro),12,P302_12,Habla: inglés,linguistico,0.0022124873584975133
+Adultos,TabNet,Permutación (caída de F1-Macro),13,hh_limitacion,Hogar: alguna limitación permanente,otro,0.0021491784627283295
+Adultos,TabNet,Permutación (caída de F1-Macro),14,P306_C,Tipo de centro de estudios,educativo,0.0020623175868088226
+Adultos,TabNet,Permutación (caída de F1-Macro),15,P312_3,Semana pasada: trabajo ocasional,socioeconomico,0.0020189140207521237
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,1,P302_12,Habla: inglés,linguistico,0.021526065460463685
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,2,hh_n_menores,Hogar: n.º de menores,otro,0.021138387743787363
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,3,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.020617468011902125
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,4,P209,Sexo,demografico,0.02053140012995165
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,5,hh_n_adultos,Hogar: n.º de adultos,otro,0.020211890191412493
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,6,hh_alfabetismo,Hogar: alfabetismo adulto,otro,0.019914675344605674
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,7,P310_C,Tipo de centro (estudios actuales),educativo,0.019807615712167815
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,8,hh_nivel_educ_max,Hogar: nivel educativo máximo,otro,0.019543442839190156
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,9,P312_3,Semana pasada: trabajo ocasional,socioeconomico,0.01951995617530219
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,10,hh_pueblo_indigena,Hogar: adultos de pueblo originario,otro,0.019471707922151468
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,11,P307_1,Sabe leer y escribir (espontánea),linguistico,0.019066266497838637
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,12,hh_etnia_jefe,Hogar: etnia del jefe/a,otro,0.01887680463070173
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,13,CCDD,Departamento,geografico,0.018785000531760385
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,14,hh_nivel_educ_jefe,Hogar: nivel educativo del jefe/a,otro,0.01875471868612003
+Adultos,FT-Transformer,Atención / máscaras de la arquitectura,15,P314,Ingreso mensual (ocupación principal),socioeconomico,0.01862710680198669
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),1,idx_nivel_educativo,Nivel educativo (índice),otro,0.03895561631045524
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),2,CCDD,Departamento,geografico,0.011587113875516327
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),3,ESTRATO,Estrato geográfico (tamaño de centro poblado),geografico,0.006154859821368856
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),4,P309,Asiste a educación actualmente,educativo,0.005395802590031158
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),5,P209,Sexo,demografico,0.004608136183709588
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),6,hh_tamano,Hogar: tamaño,otro,0.003998060487907795
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),7,P312_7_8,Semana pasada: cuidado del hogar / no trabajó,socioeconomico,0.003951525191795868
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),8,P210_A,Edad (años),demografico,0.0029854488672976798
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),9,P306_C,Tipo de centro de estudios,educativo,0.0023220175828653398
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),10,P313,Categoría ocupacional,socioeconomico,0.0019259939673847242
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),11,P212,Estado civil,demografico,0.001854829638001802
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),12,P211,Nacionalidad,demografico,0.00163190631949874
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),13,P312_1,Semana pasada: tenía trabajo sin trabajar,socioeconomico,0.0016029003390117442
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),14,hh_n_menores,Hogar: n.º de menores,otro,0.0013030387589671826
+Adultos,FT-Transformer,Permutación (caída de F1-Macro),15,P312_3,Semana pasada: trabajo ocasional,socioeconomico,0.0010839585902489384

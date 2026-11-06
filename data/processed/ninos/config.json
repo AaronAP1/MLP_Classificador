@@ -1,0 +1,227 @@
+{
+  "grupo": "ninos",
+  "seed": 42,
+  "etl_version": 2,
+  "segmentacion": {
+    "rango_edad": [
+      3,
+      13
+    ],
+    "edad_observada": [
+      3,
+      13
+    ],
+    "n_registros": 15528,
+    "procedencia_csv": {
+      "ninos": 15528
+    },
+    "edad_con_clase": [
+      3,
+      13
+    ]
+  },
+  "target": {
+    "fuente": "chapter_500",
+    "n_valid": 15333,
+    "n_discarded": 195,
+    "counts": {
+      "No Lector": 2632,
+      "Lector Medio": 4095,
+      "Lector Frecuente": 8606
+    },
+    "ratios": {
+      "No Lector": 0.171656,
+      "Lector Medio": 0.267071,
+      "Lector Frecuente": 0.561273
+    },
+    "imbalance_ratio": 3.27,
+    "min_class_count": 2632
+  },
+  "indicadores_derivados": {
+    "indicadores_construidos": [
+      "idx_acceso_digital",
+      "idx_nivel_educativo",
+      "idx_lengua_materna_tipo",
+      "idx_n_lenguas_habladas"
+    ],
+    "nivel_educativo_fuente": "P306 (ultimo nivel aprobado, escala 1-12) con respaldo en P310_N y P514_1.",
+    "nivel_educativo_familiar": "Se construye en el bloque de contexto del hogar como hh_nivel_educ_mean / _max / _jefe.",
+    "acceso_digital_exacto": false,
+    "acceso_digital_nota": "APROXIMADO: el capitulo 600 no esta en data/raw/. Se usan estrato socioeconomico, grado de urbanidad y modalidad educativa como proxies.",
+    "frecuencia_lectora_semanal": "NO incorporada a X: se deriva del target y provocaria fuga. Ver docstring de features.py.",
+    "contexto_hogar": {
+      "columnas": [
+        "hh_nivel_educ_max",
+        "hh_nivel_educ_mean",
+        "hh_alfabetismo",
+        "hh_lengua_indigena",
+        "hh_pueblo_indigena",
+        "hh_etnia_jefe",
+        "hh_tasa_ocupacion",
+        "hh_ingreso_mean",
+        "hh_ingreso_max",
+        "hh_estudia",
+        "hh_limitacion",
+        "hh_n_adultos",
+        "hh_nivel_educ_jefe",
+        "hh_tamano",
+        "hh_n_menores",
+        "hh_ratio_menores"
+      ],
+      "clave_hogar": [
+        "UBIGEO",
+        "CONG",
+        "VIVIENDA",
+        "HOGAR"
+      ],
+      "motivo": "La ENL solo aplica el capitulo 300 (lengua materna, etnia, nivel educativo alcanzado, ocupacion, ingreso) a personas de 18+. Sin este bloque los grupos de 3-17 quedan sin variables socioculturales propias.",
+      "cobertura": 1.0
+    }
+  },
+  "columnas_texto_excluidas": [],
+  "limpieza": {
+    "umbral_faltantes_fila": 0.2,
+    "n_antes": 15333,
+    "n_despues": 15333,
+    "n_removidos": 0
+  },
+  "seleccion_features": {
+    "universo_inicial": 99,
+    "descartadas_varianza": 64,
+    "descartadas_correlacion": 3,
+    "objetivo_articulo": 71,
+    "n_final": 32,
+    "coincide_con_articulo": false,
+    "features": [
+      "P210_A",
+      "P514_2",
+      "idx_acceso_digital",
+      "idx_nivel_educativo",
+      "hh_nivel_educ_max",
+      "hh_nivel_educ_mean",
+      "hh_alfabetismo",
+      "hh_lengua_indigena",
+      "hh_pueblo_indigena",
+      "hh_tasa_ocupacion",
+      "hh_ingreso_mean",
+      "hh_estudia",
+      "hh_limitacion",
+      "hh_n_adultos",
+      "hh_nivel_educ_jefe",
+      "hh_tamano",
+      "hh_n_menores",
+      "hh_ratio_menores",
+      "DOMINIO",
+      "ESTRATO",
+      "ESTRATOSOCIO",
+      "CCDD",
+      "P203",
+      "P205",
+      "P209",
+      "P211",
+      "P212",
+      "P513A",
+      "P514_1",
+      "P514_3",
+      "idx_lengua_materna_tipo",
+      "hh_etnia_jefe"
+    ],
+    "dimensiones": {
+      "otro": 18,
+      "demografico": 6,
+      "geografico": 4,
+      "educativo": 3,
+      "linguistico": 1
+    }
+  },
+  "codificacion": {
+    "categorias_por_variable": {
+      "DOMINIO": 8,
+      "ESTRATO": 8,
+      "ESTRATOSOCIO": 6,
+      "CCDD": 25,
+      "P203": 5,
+      "P205": 2,
+      "P209": 2,
+      "P211": 2,
+      "P212": 3,
+      "P513A": 13,
+      "P514_1": 5,
+      "P514_3": 7,
+      "idx_lengua_materna_tipo": 4,
+      "hh_etnia_jefe": 10
+    },
+    "embeddings": {
+      "DOMINIO": 8,
+      "ESTRATOSOCIO": 6,
+      "CCDD": 25,
+      "P203": 5,
+      "P212": 3,
+      "P513A": 13,
+      "P514_1": 5,
+      "idx_lengua_materna_tipo": 4,
+      "hh_etnia_jefe": 10
+    },
+    "log1p": [
+      "hh_ingreso_mean"
+    ],
+    "nota": "Label Encoding: una categorica con k categorias se guarda como codigo/(k-1) en [0, 1]. Las nominales de `embeddings` entran a los modelos como embedding (round(x*(k-1)) -> vector aprendido)."
+  },
+  "balanceo": {
+    "metodo": "class_weights",
+    "donde": "Dentro de cada ajuste, solo sobre la parte de entrenamiento (cada fold de la CV y el reentrenamiento). Los splits guardados conservan la distribucion natural de clases."
+  },
+  "splits": {
+    "train": {
+      "n": 10733,
+      "dist": {
+        "0": 1842,
+        "1": 2867,
+        "2": 6024
+      }
+    },
+    "val": {
+      "n": 2300,
+      "dist": {
+        "0": 395,
+        "1": 614,
+        "2": 1291
+      }
+    },
+    "test": {
+      "n": 2300,
+      "dist": {
+        "0": 395,
+        "1": 614,
+        "2": 1291
+      }
+    }
+  },
+  "n_features": 32,
+  "armonizacion_csv": {
+    "ninos": {
+      "filas": 21652,
+      "columnas_merge_unificadas": []
+    },
+    "jovenes": {
+      "filas": 14021,
+      "columnas_merge_unificadas": [
+        "FACTOR200_FINAL",
+        "P201",
+        "P203",
+        "P206",
+        "P207",
+        "P208",
+        "PERS_NRO",
+        "RES_PER",
+        "TIPO_ENT",
+        "TIPO_ENT_O"
+      ],
+      "celdas_vacias_convertidas_a_0": 3086580
+    },
+    "adultos": {
+      "filas": 40559,
+      "columnas_merge_unificadas": []
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "model": "ft_transformer",
+  "preset": "standard",
+  "cv_folds": 5,
+  "cv_epochs": 60,
+  "final_epochs": 200,
+  "nota_epocas": "La CV usa 60 epocas por coste; el modelo final se entrena con 200 epocas.",
+  "scoring": "f1_macro",
+  "n_configs": 16,
+  "n_fits": 80,
+  "elapsed_sec": 1988.36,
+  "best_params": {
+    "lr": 0.0001,
+    "batch_size": 128,
+    "dropout": 0.2,
+    "weight_decay": 1e-05,
+    "depth": 4
+  },
+  "best_cv_score": 0.43627295991917076,
+  "best_cv_std": 0.0031488169110796076
+}

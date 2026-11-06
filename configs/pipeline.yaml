@@ -1,0 +1,251 @@
+# =====================================================================
+# CONFIGURACION UNICA DE VERDAD  -  Pipeline alineado al manuscrito
+# "Modelos de red neuronal profunda para clasificar el comportamiento
+#  lector de los peruanos segun caracteristicas demograficas y
+#  socioculturales"
+#
+# Cada valor corresponde a una afirmacion del articulo (la seccion se indica
+# en el comentario) o a una decision que el articulo debe recoger; estas
+# ultimas estan explicadas en su comentario y en README_ENTRENAMIENTO.md §7.
+# NINGUN hiperparametro debe quedar incrustado en el codigo.
+# =====================================================================
+
+seed: 42                       # III-D  reproducibilidad
+n_classes: 3                   # III  No Lector / Lector Medio / Lector Frecuente
+
+class_names:
+  - "No Lector"
+  - "Lector Medio"
+  - "Lector Frecuente"
+
+# ---------------------------------------------------------------------
+# 1. SEGMENTACION ETARIA  (Seccion IV del articulo)
+#    El articulo define: Ninos 3-13, Jovenes 14-17, Adultos 18+
+#    Los CSV originales usaban bandas distintas (0-15 / 16-27 / 28-99),
+#    por eso la segmentacion se rehace aqui desde `edad_total`.
+# ---------------------------------------------------------------------
+groups:
+  ninos:
+    edad_min: 3
+    edad_max: 13
+    target_source: "chapter_500"        # P506 · frecuencia de lectura de LIBROS
+  jovenes:
+    edad_min: 14
+    edad_max: 17
+    target_source: "chapter_500"        # P506 · frecuencia de lectura de LIBROS
+  adultos:
+    edad_min: 18
+    edad_max: 64                        # los capitulos 300-400 de la ENL solo se aplican
+                                        # de 18 a 64 años: nadie de 65+ tiene la clase
+    target_source: "chapter_400_libros" # P408 + P409 · lectura de LIBROS
+    # Alternativa: "chapter_300_400" (P402 + P403, cualquier contenido:
+    # libros, periodicos, revistas...). Con ella el 67 % de adultos es
+    # "Lector Frecuente" y la clase deja de ser comparable con la de
+    # menores, que P506 mide solo sobre libros. Ver src/aligned/target.py.
+
+# ---------------------------------------------------------------------
+# 1b. ARMONIZACION DE LOS CSV CRUDOS
+#     jovenes.csv codifica "no aplica" como celda vacia; ninos.csv y
+#     adultos.csv usan 0 (convencion ENL). Sin esta correccion el filtro
+#     de faltantes descartaba el 100 % de jovenes.csv: nadie de 16 a 27
+#     años llegaba al modelo. Ver etl.harmonize_source.
+# ---------------------------------------------------------------------
+raw_harmonization:
+  blank_means_not_applicable: ["jovenes"]
+
+# ---------------------------------------------------------------------
+# 2. PREPROCESAMIENTO  (Seccion III-A)
+# ---------------------------------------------------------------------
+preprocessing:
+  max_missing_row_ratio: 0.20    # III-A "se eliminaron registros con mas del 20% de valores faltantes"
+  categorical_encoding: "label"  # III-A "Label Encoding"
+  numeric_scaling: "minmax"      # III-A "Min-Max Scaling"
+  missing_numeric_strategy: "median"
+  missing_categorical_fill: -1   # categoria explicita "sin dato" antes del Label Encoding
+  # Montos en soles muy asimetricos: log1p antes del Min-Max. Sin esto el
+  # ingreso quedaba casi entero cerca de 0 y el umbral de varianza lo descartaba.
+  log_transform: ["P314", "hh_ingreso_mean", "hh_ingreso_max"]
+
+# ---------------------------------------------------------------------
+# 3. FEATURE ENGINEERING Y SELECCION  (Seccion III-B)
+#    Objetivo declarado: matriz final de 71 variables por individuo.
+# ---------------------------------------------------------------------
+features:
+  target_n_features: 71          # III-B "matriz final de 71 variables"
+  variance_threshold: 0.005      # III-B "umbral de varianza (Variance Threshold)"
+  correlation_threshold: 0.95    # III-B "inspeccion de correlacion"
+  build_derived_indicators: true # III-B indicadores derivados
+  ranking_method: "mutual_info"  # criterio para recortar a exactamente 71
+
+# ---------------------------------------------------------------------
+# 4. PARTICION Y BALANCEO  (Seccion III-B / III-E-1)
+# ---------------------------------------------------------------------
+split:
+  train_size: 0.70               # III-B "70% para entrenamiento"
+  val_size: 0.15                 # III-B "15% para validacion"
+  test_size: 0.15                # III-B "15% para prueba"
+  stratify: true                 # III-B "muestreo estratificado"
+
+balancing:
+  # class_weights: entropia cruzada ponderada por el inverso de la
+  #                frecuencia de cada clase (no crea muestras).
+  # smote:         SMOTE solo sobre la parte de entrenamiento de cada ajuste.
+  # none:          sin tratamiento.
+  # Se aplica dentro de cada fold y en el reentrenamiento, nunca antes de
+  # la CV ni sobre validacion/test. El articulo debe nombrar el metodo que
+  # quede aqui (el resumen ya no menciona SMOTE).
+  method: "class_weights"
+  k_neighbors: 5                 # solo para smote
+  min_class_count: 6             # solo para smote
+
+# ---------------------------------------------------------------------
+# 5. ENTRENAMIENTO  (Seccion III-E-2 / III-E-3 / IV)
+# ---------------------------------------------------------------------
+training:
+  optimizer: "adamw"             # III-E-2 "La optimizacion se realizo mediante AdamW"
+  loss: "cross_entropy"          # III-E-2 "Cross-Entropy Loss"
+  final_epochs: 200              # IV "entrenados durante 200 epocas"
+  early_stopping_patience: 20    # III-E-3 "Early Stopping con paciencia de 20 epocas"
+  gradient_clip: 1.0
+  scheduler: "reduce_on_plateau"
+  scheduler_patience: 10
+  scheduler_factor: 0.5
+  num_workers: 0                 # >0 solo si la GPU se queda esperando datos
+  device: "auto"                 # auto | cuda | cpu
+  amp: "auto"                    # precision mixta: auto (=cuda) | true | false
+
+# ---------------------------------------------------------------------
+# 6. BUSQUEDA DE HIPERPARAMETROS  (Seccion III-E-4, Tabla 2)
+#    Grid Search + validacion cruzada estratificada 5-Fold sobre el 70%.
+#    Al terminar: reentrenamiento sobre 70%+15% = 85% con la mejor config.
+# ---------------------------------------------------------------------
+gridsearch:
+  enabled: true
+  cv_folds: 5                    # III-E-4 "Validacion cruzada estratificada 5-Fold"
+  cv_epochs: 60                  # epocas reducidas durante CV; el modelo final usa 200
+  cv_patience: 12
+  refit_on: 0.85                 # III-E-5 "reentrenado sobre el 85% del dataset"
+  scoring: "f1_macro"            # metrica de seleccion (robusta al desbalance)
+  preset: "standard"             # fast | standard | paper
+
+  # ---- Tabla 2 del articulo, en su forma completa ----
+  # lr_tabnet: TabNet necesita un learning rate mayor que MLP+MA y
+  # FT-Transformer; sus autores recomiendan ~0,02 (Arik y Pfister, ref. [15]).
+  # Con 0,001-0,0001 aprende tan lento que el early stopping lo corta antes:
+  # en Jovenes quedaba en F1-Macro 0,27 (azar); con 0,005-0,02 llega a ~0,37.
+  # TabNet no usa dropout, asi que esa dimension no se explora para el.
+  presets:
+    paper:
+      lr:           [0.001, 0.0005, 0.0001]
+      lr_tabnet:    [0.02, 0.01, 0.005]
+      batch_size:   [32, 64, 128]
+      dropout:      [0.1, 0.2, 0.3, 0.4]
+      weight_decay: [0.000001, 0.00001, 0.0001]
+      depth:        [3, 4, 5]        # MLP: n capas | TabNet: n_steps (2,3,4) | FT: fijo 4
+    standard:
+      lr:           [0.001, 0.0001]
+      lr_tabnet:    [0.02, 0.005]
+      batch_size:   [64, 128]
+      dropout:      [0.2, 0.3]
+      weight_decay: [0.00001, 0.0001]
+      depth:        [4]
+    fast:
+      lr:           [0.001]
+      lr_tabnet:    [0.02]
+      batch_size:   [128]
+      dropout:      [0.3]
+      weight_decay: [0.0001]
+      depth:        [4]
+
+# ---------------------------------------------------------------------
+# 7. ARQUITECTURAS  (Seccion III-C)
+#    Los valores marcados FIJO son estructurales y no entran al grid.
+# ---------------------------------------------------------------------
+models:
+  # Variables nominales (departamento, lengua, etnia, ocupacion...; lista en
+  # src/aligned/variables.py: NOMINAL_COLUMNS): cada categoria recibe un
+  # vector aprendido en lugar de entrar como un numero con orden arbitrario.
+  # MLP-MA y FT-Transformer usan un embedding del tamaño de su token;
+  # TabNet, sus embeddings categoricos nativos (cat_idxs / cat_dims).
+  categorical_embeddings: true
+
+  mlp_ma:
+    hidden_dims: [256, 128, 64, 32]  # III-C-1 "256 -> 128 -> 64 -> 32"  FIJO
+    n_heads: 4                       # III-C-1 atencion multi-cabeza real
+    attn_dim: 64                     # dimension del espacio de atencion
+    token_out_dim: 4                 # valores por variable que pasan del token atendido
+                                     # al MLP. Con embeddings, 4 rindio mas que 1 en
+                                     # validacion (F1-Macro jovenes 0,424 vs. 0,413;
+                                     # niños 0,444 vs. 0,434)
+    activation: "relu"               # III-C-1 "todas con activacion ReLU"
+
+  tabnet:
+    n_steps: 3                       # III-C-2 "se utilizaron 3 decision steps"  FIJO
+    mask_type: "sparsemax"           # III-C-2 "mascaras sparsemax"  FIJO
+    n_d: 32
+    n_a: 32
+    gamma: 1.3
+    n_independent: 2
+    n_shared: 2
+    lambda_sparse: 0.001
+    virtual_batch_size: 128
+    cat_emb_dim_max: 4               # embedding de cada nominal: min(4, k-1) dimensiones
+
+  ft_transformer:
+    emb_dim: 64                      # III-C-3 "embedding de 64 dimensiones"  FIJO
+    n_layers: 4                      # III-C-3 "4 capas encoder"  FIJO
+    n_heads: 8
+    dim_feedforward: 256
+    use_cls_token: true              # III-C-3 token [CLS]
+
+# ---------------------------------------------------------------------
+# 8. EVALUACION  (Seccion III-E-5 / III-F)
+# ---------------------------------------------------------------------
+evaluation:
+  metrics:                           # III-E-5
+    - accuracy
+    - f1_weighted
+    - f1_macro
+    - precision_weighted
+    - recall_weighted
+    - roc_auc_ovr
+  copeland_metrics:                  # III-F-3 metricas que entran al ranking
+    - accuracy
+    - f1_weighted
+    - precision_weighted
+  stability:                         # III-F-4 "evaluacion de estabilidad"
+    multiseed: true
+    seeds: [42, 123, 456, 789, 2024] # "Cinco ejecuciones con diferentes semillas"
+  interpretability: true             # III-G  mascaras TabNet + atencion FT / MLP-MA
+  interpretability_samples: 2048     # filas de test usadas para la importancia
+  ensemble: true                     # voto suave de los 3 modelos (en `report`, sin reentrenar)
+
+# ---------------------------------------------------------------------
+# 9. RUTAS
+#     `--tag <nombre>` cambia la carpeta de la corrida: results/<nombre> y
+#     reports/<nombre>. La corrida del articulo es `--tag final`.
+# ---------------------------------------------------------------------
+paths:
+  raw_dir: "data/raw"                # extractos de la ENL 2022, un CSV por grupo
+  processed_dir: "data/processed"    # salida del ETL: train/val/test por grupo
+  results_dir: "results/latest"      # una carpeta por grupo x modelo
+  figures_dir: "reports/latest"      # tablas y figuras de `report`
+  metadata_dir: "data/dictionaries"  # diccionarios oficiales de la ENL (referencia)
+
+# ---------------------------------------------------------------------
+# 10. PRUEBA DE HUMO  (python run_pipeline.py smoke)
+#     Recorre el pipeline completo con pocos datos y pocas epocas para
+#     comprobar que todo funciona. Escribe en carpetas propias y marca
+#     cada figura con "PRUEBA DE HUMO": sus numeros NO son resultados.
+# ---------------------------------------------------------------------
+smoke_test:
+  max_rows_per_split: 600
+  final_epochs: 4
+  early_stopping_patience: 2
+  cv_folds: 2
+  cv_epochs: 2
+  cv_patience: 1
+  preset: "fast"
+  seeds: [42, 123]
+  results_dir: "results/_smoke"
+  figures_dir: "reports/_smoke"

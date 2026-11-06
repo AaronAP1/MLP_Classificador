@@ -1,0 +1,4 @@
+Grupo,Edades,Registros con clase,Eliminados >20% faltantes,Registros finales,No Lector,Lector Medio,Lector Frecuente,Variables finales,Train/Val/Test
+Niños,3-13,15333,0,15333,2632 (17.2 %),4095 (26.7 %),8606 (56.1 %),32,10733 / 2300 / 2300
+Jóvenes,14-17,5642,0,5642,751 (13.3 %),1556 (27.6 %),3335 (59.1 %),32,3949 / 846 / 847
+Adultos,18-64,40530,0,40530,23216 (57.3 %),6539 (16.1 %),10775 (26.6 %),56,28371 / 6079 / 6080

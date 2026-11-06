@@ -1,0 +1,27 @@
+{
+  "total": 9,
+  "exitosos": 9,
+  "fallidos": 0,
+  "hardware": {
+    "dispositivo": "cuda",
+    "torch": "2.14.1+cu126",
+    "python": "3.12.4",
+    "sistema": "Windows-11-10.0.26200-SP0",
+    "procesador": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "gpu_memoria_gb": 8.0,
+    "cuda": "12.6"
+  },
+  "combinaciones": {
+    "ninos_mlp_ma": "ok",
+    "ninos_tabnet": "ok",
+    "ninos_ft_transformer": "ok",
+    "jovenes_mlp_ma": "ok",
+    "jovenes_tabnet": "ok",
+    "jovenes_ft_transformer": "ok",
+    "adultos_mlp_ma": "ok",
+    "adultos_tabnet": "ok",
+    "adultos_ft_transformer": "ok"
+  },
+  "trazas": {}
+}

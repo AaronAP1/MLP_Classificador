@@ -1,0 +1,5 @@
+rank,classifier,copeland_score_global,score_ninos,score_jovenes,score_adultos
+1,Ensemble,9,3,3,3
+2,FT-Transformer,3,1,1,1
+3,MLP-MA,-3,-1,-1,-1
+4,TabNet,-9,-3,-3,-3

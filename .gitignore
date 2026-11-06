@@ -1,0 +1,46 @@
+# ============================================================================
+# Python
+# ============================================================================
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# ============================================================================
+# Editors and operating system
+# ============================================================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ============================================================================
+# Logs and temporary files
+# ============================================================================
+*.log
+*.err
+*.tmp
+*.bak
+~$*
+
+# ============================================================================
+# Pipeline artefacts
+# Only the run reported in the article is versioned: results/final (models,
+# metrics and predictions) and reports/final (tables and figures). Any other
+# run (results/latest, smoke tests, tagged runs) stays local.
+# ============================================================================
+results/*
+!results/README.md
+!results/final/
+reports/*
+!reports/final/
+
+# Fitted ETL preprocessor: rebuilt by `python run_pipeline.py etl`
+data/processed/*/preprocessor.pkl
+
+# Local editor settings
+.vscode/

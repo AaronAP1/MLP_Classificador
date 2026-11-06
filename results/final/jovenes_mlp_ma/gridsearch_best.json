@@ -1,0 +1,21 @@
+{
+  "model": "mlp_ma",
+  "preset": "standard",
+  "cv_folds": 5,
+  "cv_epochs": 60,
+  "final_epochs": 200,
+  "nota_epocas": "La CV usa 60 epocas por coste; el modelo final se entrena con 200 epocas.",
+  "scoring": "f1_macro",
+  "n_configs": 16,
+  "n_fits": 80,
+  "elapsed_sec": 937.06,
+  "best_params": {
+    "lr": 0.0001,
+    "batch_size": 128,
+    "dropout": 0.3,
+    "weight_decay": 0.0001,
+    "depth": 4
+  },
+  "best_cv_score": 0.4311042676267718,
+  "best_cv_std": 0.0105159670826258
+}
